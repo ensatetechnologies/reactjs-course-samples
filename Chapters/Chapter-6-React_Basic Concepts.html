@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React & React Native Complete Course</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ensate-bg: #0a0f1c;
+      --ensate-surface: #111827;
+      --ensate-surface-2: #1a2234;
+      --ensate-border: #2d3a52;
+      --ensate-primary: #22d3ee;
+      --ensate-secondary: #a78bfa;
+      --ensate-accent: #34d399;
+      --ensate-warning: #fbbf24;
+      --ensate-danger: #ef4444;
+      --ensate-text: #f1f5f9;
+      --ensate-text-muted: #94a3b8;
+      --ensate-code-bg: #0d1321;
+      --gradient-1: linear-gradient(135deg, #22d3ee 0%, #a78bfa 100%);
+      --gradient-2: linear-gradient(135deg, #34d399 0%, #22d3ee 100%);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--ensate-bg);
+      color: var(--ensate-text);
+      line-height: 1.7;
+    }
+    
+    .course-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(180deg, var(--ensate-surface) 0%, var(--ensate-bg) 100%);
+      border-radius: 24px;
+      margin-bottom: 3rem;
+      border: 1px solid var(--ensate-border);
+    }
+    
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid var(--ensate-primary);
+      border-radius: 50px;
+      font-size: 0.875rem;
+      color: var(--ensate-primary);
+      margin-bottom: 1.5rem;
+    }
+    
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+    
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--ensate-text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .phase-nav {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .phase-btn {
+      padding: 0.75rem 1.5rem;
+      background: var(--ensate-surface);
+      border: 1px solid var(--ensate-border);
+      border-radius: 12px;
+      color: var(--ensate-text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .phase-btn:hover {
+      border-color: var(--ensate-primary);
+      color: var(--ensate-text);
+    }
+    
+    .phase-btn.active {
+      background: var(--ensate-primary);
+      color: var(--ensate-bg);
+      border-color: var(--ensate-primary);
+    }
+    
+    .phase-section {
+      margin-bottom: 4rem;
+    }
+    
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--ensate-border);
+    }
+    
+    .phase-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    .phase-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    
+    .module-card {
+      background: var(--ensate-surface);
+      border: 1px solid var(--ensate-border);
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    
+    .module-card:hover {
+      border-color: var(--ensate-primary);
+      transform: translateY(-2px);
+    }
+    
+    .module-header {
+      padding: 1.5rem;
+      background: var(--ensate-surface-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .module-number {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--ensate-bg);
+      flex-shrink: 0;
+    }
+    
+    .module-info {
+      flex: 1;
+    }
+    
+    .module-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .module-desc {
+      color: var(--ensate-text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .module-toggle {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s;
+    }
+    
+    .module-card.open .module-toggle {
+      transform: rotate(180deg);
+    }
+    
+    .module-content {
+      display: none;
+      padding: 1.5rem;
+    }
+    
+    .module-card.open .module-content {
+      display: block;
+    }
+    
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--ensate-primary);
+    }
+    
+    .content-text {
+      color: var(--ensate-text-muted);
+      margin-bottom: 1.5rem;
+    }
+    
+    .content-text strong {
+      color: var(--ensate-text);
+    }
+    
+    .code-block {
+      background: var(--ensate-code-bg);
+      border: 1px solid var(--ensate-border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 1.5rem 0;
+    }
+    
+    .code-header {
+      background: var(--ensate-surface-2);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--ensate-border);
+    }
+    
+    .code-filename {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--ensate-text-muted);
+    }
+    
+    .code-dots {
+      display: flex;
+      gap: 0.375rem;
+    }
+    
+    .code-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .code-dot.red { background: #ef4444; }
+    .code-dot.yellow { background: #fbbf24; }
+    .code-dot.green { background: #22c55e; }
+    
+    .code-content {
+      padding: 1.25rem;
+      overflow-x: auto;
+    }
+    
+    .code-content pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    
+    .keyword { color: #c678dd; }
+    .string { color: #98c379; }
+    .function { color: #61afef; }
+    .component { color: #e5c07b; }
+    .comment { color: #5c6370; font-style: italic; }
+    .number { color: #d19a66; }
+    .tag { color: #e06c75; }
+    .attr { color: #d19a66; }
+    .operator { color: #56b6c2; }
+    
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    
+    .concept-card {
+      background: var(--ensate-surface-2);
+      border: 1px solid var(--ensate-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: all 0.2s;
+    }
+    
+    .concept-card:hover {
+      border-color: var(--ensate-primary);
+    }
+    
+    .concept-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .concept-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .concept-desc {
+      font-size: 0.875rem;
+      color: var(--ensate-text-muted);
+    }
+    
+    .mini-project {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%);
+      border: 1px solid var(--ensate-border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+    
+    .mini-project-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .mini-project-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--gradient-2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    .mini-project-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .mini-project-subtitle {
+      color: var(--ensate-accent);
+      font-size: 0.875rem;
+    }
+    
+    .requirements-list {
+      list-style: none;
+      margin: 1rem 0;
+    }
+    
+    .requirements-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      color: var(--ensate-text-muted);
+    }
+    
+    .requirements-list li::before {
+      content: "✓";
+      color: var(--ensate-accent);
+      font-weight: 600;
+    }
+    
+    .tip-box {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--ensate-warning);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.5rem 0;
+    }
+    
+    .tip-title {
+      color: var(--ensate-warning);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .tip-content {
+      color: var(--ensate-text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .diagram-box {
+      background: var(--ensate-surface);
+      border: 1px solid var(--ensate-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+    
+    .diagram-title {
+      color: var(--ensate-primary);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .flow-box {
+      background: var(--ensate-surface-2);
+      border: 1px solid var(--ensate-border);
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+    }
+    
+    .flow-box.highlight {
+      border-color: var(--ensate-primary);
+      background: rgba(34, 211, 238, 0.1);
+    }
+    
+    .flow-arrow {
+      color: var(--ensate-primary);
+      font-size: 1.25rem;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+    
+    .comparison-table th,
+    .comparison-table td {
+      padding: 1rem;
+      text-align: left;
+      border: 1px solid var(--ensate-border);
+    }
+    
+    .comparison-table th {
+      background: var(--ensate-surface-2);
+      font-weight: 600;
+      color: var(--ensate-primary);
+    }
+    
+    .comparison-table td {
+      background: var(--ensate-surface);
+      color: var(--ensate-text-muted);
+    }
+    
+    .tree-diagram {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--ensate-text-muted);
+      text-align: left;
+      display: inline-block;
+    }
+    
+    .tree-diagram .highlight {
+      color: var(--ensate-primary);
+    }
+    
+    @media (max-width: 768px) {
+      .course-container {
+        padding: 1rem;
+      }
+      
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .phase-nav {
+        gap: 0.25rem;
+      }
+      
+      .phase-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="course-container">
+    <!-- Hero Section -->
+    <div class="hero">
+      <div class="hero-badge">⚛️ Complete Course 2024</div>
+      <h1>React & React Native</h1>
+      <p>From Web to Mobile: Master modern UI development with comprehensive examples, code blocks, and hands-on mini projects.</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="phase-nav">
+      <button class="phase-btn active" onclick="showPhase(1)">🧠 Phase 1: Foundations</button>
+      <button class="phase-btn" onclick="showPhase(2)">🚀 Phase 2: Intermediate</button>
+      <button class="phase-btn" onclick="showPhase(3)">📱 Phase 3: React Native</button>
+      <button class="phase-btn" onclick="showPhase(4)">🧩 Phase 4: Advanced</button>
+    </nav>
+
+    <!-- Phase 1: Foundations -->
+    <section class="phase-section" id="phase-1">
+      <div class="phase-header">
+        <div class="phase-icon">🧠</div>
+        <h2 class="phase-title">Phase 1: Foundations of React (Web)</h2>
+      </div>
+
+      <!-- Module 1 -->
+      <div class="module-card open">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">1</div>
+          <div class="module-info">
+            <div class="module-title">Getting Started with React</div>
+            <div class="module-desc">What is React, setup, JSX fundamentals, and project structure</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <!-- What is React -->
+          <div class="section">
+            <h3 class="section-title">📘 What is React? Why React?</h3>
+            <p class="content-text">
+              <strong>React</strong> is a JavaScript library created by Facebook for building user interfaces. It allows you to create reusable UI components and efficiently update the DOM when your data changes using a <strong>Virtual DOM</strong>.
+            </p>
+            
+            <div class="concept-grid">
+              <div class="concept-card">
+                <div class="concept-icon">🧩</div>
+                <div class="concept-title">Component-Based</div>
+                <div class="concept-desc">Build encapsulated components that manage their own state</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">📝</div>
+                <div class="concept-title">Declarative</div>
+                <div class="concept-desc">Design simple views for each state in your application</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">🌐</div>
+                <div class="concept-title">Learn Once, Write Anywhere</div>
+                <div class="concept-desc">Use React for web, mobile, and desktop apps</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">⚡</div>
+                <div class="concept-title">Virtual DOM</div>
+                <div class="concept-desc">Efficient updates through intelligent diffing algorithm</div>
+              </div>
+            </div>
+
+            <div class="diagram-box">
+              <div class="diagram-title">How React's Virtual DOM Works</div>
+              <div class="flow-diagram">
+                <div class="flow-box">State Change</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box highlight">Virtual DOM Updated</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">Diff Calculated</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box highlight">Real DOM Patched</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Setup -->
+          <div class="section">
+            <h3 class="section-title">⚙️ Setting Up Development Environment</h3>
+            <p class="content-text">
+              Before we start coding, we need to set up our development environment. You'll need <strong>Node.js</strong>, <strong>npm</strong> (Node Package Manager), and a code editor like <strong>VS Code</strong>.
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Terminal</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="comment"># Check if Node.js is installed</span>
+node --version
+<span class="comment"># Should output something like: v18.17.0</span>
+
+<span class="comment"># Check npm version</span>
+npm --version
+<span class="comment"># Should output something like: 9.6.7</span>
+
+<span class="comment"># Create a new React application</span>
+npx create-react-app my-first-app
+
+<span class="comment"># Navigate into the project</span>
+cd my-first-app
+
+<span class="comment"># Start the development server</span>
+npm start</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Folder Structure -->
+          <div class="section">
+            <h3 class="section-title">📁 Project Structure</h3>
+            <p class="content-text">
+              When you create a React app, it generates a standard folder structure. Understanding this structure is crucial for organizing your code effectively.
+            </p>
+            
+            <div class="diagram-box">
+              <div class="diagram-title">Create React App Folder Structure</div>
+              <div class="tree-diagram">
+my-first-app/
+├── node_modules/     <span class="comment"># Dependencies</span>
+├── public/
+│   ├── <span class="highlight">index.html</span>    <span class="comment"># Main HTML file</span>
+│   └── favicon.ico
+├── src/
+│   ├── <span class="highlight">App.js</span>        <span class="comment"># Main component</span>
+│   ├── App.css       <span class="comment"># Styles</span>
+│   ├── <span class="highlight">index.js</span>      <span class="comment"># Entry point</span>
+│   └── index.css
+├── package.json      <span class="comment"># Project config</span>
+└── README.md
+              </div>
+            </div>
+          </div>
+
+          <!-- JSX -->
+          <div class="section">
+            <h3 class="section-title">🎨 JSX: The HTML-Flavored Syntax</h3>
+            <p class="content-text">
+              <strong>JSX</strong> (JavaScript XML) is a syntax extension that lets you write HTML-like code in JavaScript. It makes React components more readable and intuitive.
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">App.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="comment">// JSX looks like HTML but is actually JavaScript</span>
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">const</span> name = <span class="string">"React Developer"</span>;
+  <span class="keyword">const</span> currentYear = <span class="keyword">new</span> <span class="function">Date</span>().<span class="function">getFullYear</span>();
+  
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="string">"app"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Hello, {name}!<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Welcome to React in {currentYear}<span class="tag">&lt;/p&gt;</span>
+      
+      {<span class="comment">/* Conditional rendering */</span>}
+      {currentYear >= <span class="number">2024</span> && (
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="string">"badge"</span><span class="tag">&gt;</span>Modern React!<span class="tag">&lt;/span&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="keyword">export default</span> App;</pre>
+              </div>
+            </div>
+
+            <div class="tip-box">
+              <div class="tip-title">💡 JSX Rules to Remember</div>
+              <div class="tip-content">
+                Always close self-closing tags (&lt;img /&gt;, &lt;br /&gt;), use <code>className</code> instead of <code>class</code>, and wrap multiple elements in a parent container or React Fragment (&lt;&gt;...&lt;/&gt;).
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Personal Welcome Page</div>
+                <div class="mini-project-subtitle">Your First React Application</div>
+              </div>
+            </div>
+            <p class="content-text">
+              Create a personal welcome page that displays your name, a greeting based on the time of day, and your favorite quote.
+            </p>
+            <ul class="requirements-list">
+              <li>Display a personalized greeting (Good Morning/Afternoon/Evening)</li>
+              <li>Show your name and a brief introduction</li>
+              <li>Include your favorite programming quote</li>
+              <li>Style the page with basic CSS</li>
+            </ul>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Welcome.js - Starter Code</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;
+<span class="keyword">import</span> <span class="string">'./Welcome.css'</span>;
+
+<span class="keyword">function</span> <span class="function">Welcome</span>() {
+  <span class="keyword">const</span> name = <span class="string">"Your Name"</span>;
+  <span class="keyword">const</span> hour = <span class="keyword">new</span> <span class="function">Date</span>().<span class="function">getHours</span>();
+  
+  <span class="comment">// Determine greeting based on time</span>
+  <span class="keyword">const</span> <span class="function">getGreeting</span> = () => {
+    <span class="keyword">if</span> (hour < <span class="number">12</span>) <span class="keyword">return</span> <span class="string">"Good Morning"</span>;
+    <span class="keyword">if</span> (hour < <span class="number">18</span>) <span class="keyword">return</span> <span class="string">"Good Afternoon"</span>;
+    <span class="keyword">return</span> <span class="string">"Good Evening"</span>;
+  };
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="string">"welcome-container"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>{<span class="function">getGreeting</span>()}, {name}!<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="string">"intro"</span><span class="tag">&gt;</span>
+        Welcome to my React journey
+      <span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;blockquote&gt;</span>
+        "First, solve the problem. Then, write the code."
+        <span class="tag">&lt;cite&gt;</span>- John Johnson<span class="tag">&lt;/cite&gt;</span>
+      <span class="tag">&lt;/blockquote&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="keyword">export default</span> Welcome;</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 2: Components & Props -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">2</div>
+          <div class="module-info">
+            <div class="module-title">Components & Props</div>
+            <div class="module-desc">Functional components, class components, props, and data flow</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">🧩 Understanding Components</h3>
+            <p class="content-text">
+              Components are the <strong>building blocks</strong> of React applications. They let you split the UI into independent, reusable pieces. Think of components as custom HTML elements with their own logic and styling.
+            </p>
+            
+            <div class="diagram-box">
+              <div class="diagram-title">Component Tree Structure</div>
+              <div class="tree-diagram">
+            <span class="highlight">App</span>
+           /    \
+      <span class="highlight">Header</span>    <span class="highlight">Main</span>
+        |       /   \
+       Nav   <span class="highlight">Card</span>  <span class="highlight">Card</span>
+              |       |
+           Button  Button
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">⚡ Functional vs Class Components</h3>
+            <p class="content-text">
+              Modern React primarily uses <strong>functional components</strong> with hooks. Class components are older but still found in legacy code.
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Components.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="comment">// FUNCTIONAL COMPONENT (Modern - Recommended)</span>
+<span class="keyword">function</span> <span class="function">Greeting</span>({ name }) {
+  <span class="keyword">return</span> <span class="tag">&lt;h1&gt;</span>Hello, {name}!<span class="tag">&lt;/h1&gt;</span>;
+}
+
+<span class="comment">// Arrow function syntax</span>
+<span class="keyword">const</span> <span class="function">Greeting</span> = ({ name }) => {
+  <span class="keyword">return</span> <span class="tag">&lt;h1&gt;</span>Hello, {name}!<span class="tag">&lt;/h1&gt;</span>;
+};
+
+<span class="comment">// CLASS COMPONENT (Legacy)</span>
+<span class="keyword">class</span> <span class="component">Greeting</span> <span class="keyword">extends</span> React.Component {
+  <span class="function">render</span>() {
+    <span class="keyword">return</span> <span class="tag">&lt;h1&gt;</span>Hello, {<span class="keyword">this</span>.props.name}!<span class="tag">&lt;/h1&gt;</span>;
+  }
+}</pre>
+              </div>
+            </div>
+
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Functional</th>
+                  <th>Class</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Syntax</td>
+                  <td>Simple function</td>
+                  <td>ES6 class</td>
+                </tr>
+                <tr>
+                  <td>State</td>
+                  <td>useState hook</td>
+                  <td>this.state</td>
+                </tr>
+                <tr>
+                  <td>Lifecycle</td>
+                  <td>useEffect hook</td>
+                  <td>Lifecycle methods</td>
+                </tr>
+                <tr>
+                  <td>Performance</td>
+                  <td>Slightly better</td>
+                  <td>Good</td>
+                </tr>
+                <tr>
+                  <td>Recommendation</td>
+                  <td>✅ Use this</td>
+                  <td>Legacy only</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">📦 Props: Passing Data to Components</h3>
+            <p class="content-text">
+              <strong>Props</strong> (properties) are how we pass data from parent to child components. They're read-only and help make components reusable.
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">UserCard.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="comment">// Child component receives props</span>
+<span class="keyword">function</span> <span class="function">UserCard</span>({ name, role, avatar, isOnline }) {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="string">"user-card"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>={avatar} <span class="attr">alt</span>={name} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{name}<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{role}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;span</span> <span class="attr">className</span>={isOnline ? <span class="string">"online"</span> : <span class="string">"offline"</span>}<span class="tag">&gt;</span>
+        {isOnline ? <span class="string">"● Online"</span> : <span class="string">"○ Offline"</span>}
+      <span class="tag">&lt;/span&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="comment">// Parent component passes props</span>
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;UserCard</span>
+        <span class="attr">name</span>=<span class="string">"Sarah Johnson"</span>
+        <span class="attr">role</span>=<span class="string">"ICU Nurse"</span>
+        <span class="attr">avatar</span>=<span class="string">"/images/sarah.jpg"</span>
+        <span class="attr">isOnline</span>={<span class="keyword">true</span>}
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+
+            <div class="tip-box">
+              <div class="tip-title">💡 Pro Tip: Destructuring Props</div>
+              <div class="tip-content">
+                Always destructure props in the function parameter for cleaner code. Use <code>{ name, age }</code> instead of <code>props.name, props.age</code>.
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Digital ID Card</div>
+                <div class="mini-project-subtitle">Professional Profile Component</div>
+              </div>
+            </div>
+            <p class="content-text">
+              Create a reusable Digital ID Card component for healthcare professionals that displays their photo, name, role, department, and status.
+            </p>
+            <ul class="requirements-list">
+              <li>Create a reusable IDCard component that accepts props</li>
+              <li>Display profile photo, name, job title, department</li>
+              <li>Show on-duty/off-duty status with visual indicator</li>
+              <li>Include employee ID and contact information</li>
+              <li>Make the card responsive and visually appealing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 3: State & Events -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">3</div>
+          <div class="module-info">
+            <div class="module-title">State & Events</div>
+            <div class="module-desc">useState hook, event handling, and managing component state</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">💾 Understanding State</h3>
+            <p class="content-text">
+              <strong>State</strong> is data that changes over time in your component. Unlike props, state is managed within the component and can be updated. When state changes, React automatically re-renders the component.
+            </p>
+            
+            <div class="diagram-box">
+              <div class="diagram-title">State Update Cycle</div>
+              <div class="flow-diagram">
+                <div class="flow-box">User Action</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box highlight">setState()</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">State Updates</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box highlight">Re-render</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">🎣 The useState Hook</h3>
+            <p class="content-text">
+              The <strong>useState</strong> hook is the primary way to add state to functional components. It returns an array with two elements: the current state value and a function to update it.
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Counter.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> React, { useState } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="keyword">function</span> <span class="function">Counter</span>() {
+  <span class="comment">// Declare state variable with initial value</span>
+  <span class="keyword">const</span> [count, setCount] = <span class="function">useState</span>(<span class="number">0</span>);
+  
+  <span class="comment">// Functions to update state</span>
+  <span class="keyword">const</span> <span class="function">increment</span> = () => <span class="function">setCount</span>(count + <span class="number">1</span>);
+  <span class="keyword">const</span> <span class="function">decrement</span> = () => <span class="function">setCount</span>(count - <span class="number">1</span>);
+  <span class="keyword">const</span> <span class="function">reset</span> = () => <span class="function">setCount</span>(<span class="number">0</span>);
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="string">"counter"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>Count: {count}<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={decrement}<span class="tag">&gt;</span>-<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={reset}<span class="tag">&gt;</span>Reset<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={increment}<span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">⚡ Handling Events</h3>
+            <p class="content-text">
+              React events are named using camelCase and pass functions as event handlers, not strings. Events are wrapped in a synthetic event for cross-browser compatibility.
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">EventExamples.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">function</span> <span class="function">EventExamples</span>() {
+  <span class="keyword">const</span> [inputValue, setInputValue] = <span class="function">useState</span>(<span class="string">''</span>);
+
+  <span class="comment">// Click event</span>
+  <span class="keyword">const</span> <span class="function">handleClick</span> = (e) => {
+    e.<span class="function">preventDefault</span>();
+    <span class="function">alert</span>(<span class="string">'Button clicked!'</span>);
+  };
+
+  <span class="comment">// Input change event</span>
+  <span class="keyword">const</span> <span class="function">handleChange</span> = (e) => {
+    <span class="function">setInputValue</span>(e.target.value);
+  };
+
+  <span class="comment">// Keyboard event</span>
+  <span class="keyword">const</span> <span class="function">handleKeyPress</span> = (e) => {
+    <span class="keyword">if</span> (e.key === <span class="string">'Enter'</span>) {
+      <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Enter pressed!'</span>);
+    }
+  };
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>Click Me<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">value</span>={inputValue}
+        <span class="attr">onChange</span>={handleChange}
+        <span class="attr">onKeyPress</span>={handleKeyPress}
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+
+            <div class="tip-box">
+              <div class="tip-title">💡 Never Mutate State Directly!</div>
+              <div class="tip-content">
+                Always use the setter function (setState). Don't do: <code>state.value = newValue</code>. Instead do: <code>setState({ ...state, value: newValue })</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Mood Tracker</div>
+                <div class="mini-project-subtitle">Interactive Wellness Logger</div>
+              </div>
+            </div>
+            <p class="content-text">
+              Build a Mood Tracker app that allows users to log their current mood, add notes, and view their mood history.
+            </p>
+            <ul class="requirements-list">
+              <li>Display mood options (Happy, Neutral, Sad, Stressed, Energetic)</li>
+              <li>Allow users to select a mood and add an optional note</li>
+              <li>Store mood entries with timestamp</li>
+              <li>Display mood history with date and notes</li>
+              <li>Add ability to clear all entries</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 4: Conditional Rendering & Lists -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">4</div>
+          <div class="module-info">
+            <div class="module-title">Conditional Rendering & Lists</div>
+            <div class="module-desc">if/else in JSX, rendering lists with .map(), and keys</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">🔀 Conditional Rendering</h3>
+            <p class="content-text">
+              React allows you to render different UI elements based on conditions. There are several patterns for conditional rendering in JSX.
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">ConditionalRendering.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">function</span> <span class="function">UserGreeting</span>({ isLoggedIn, user }) {
+  <span class="comment">// Method 1: if/else (outside JSX)</span>
+  <span class="keyword">if</span> (!isLoggedIn) {
+    <span class="keyword">return</span> <span class="tag">&lt;h1&gt;</span>Please sign in<span class="tag">&lt;/h1&gt;</span>;
+  }
+  
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Welcome back, {user.name}!<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="comment">{/* Method 2: Ternary operator */}</span>
+      <span class="tag">&lt;p&gt;</span>
+        Status: {user.isPremium ? <span class="string">'Premium'</span> : <span class="string">'Free'</span>}
+      <span class="tag">&lt;/p&gt;</span>
+      
+      <span class="comment">{/* Method 3: Logical AND (&&) */}</span>
+      {user.notifications > <span class="number">0</span> && (
+        <span class="tag">&lt;span&gt;</span>{user.notifications} new messages<span class="tag">&lt;/span&gt;</span>
+      )}
+      
+      <span class="comment">{/* Method 4: Logical OR for fallbacks */}</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>={user.avatar || <span class="string">'/default.png'</span>} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">📋 Rendering Lists with .map()</h3>
+            <p class="content-text">
+              The <strong>.map()</strong> method is the standard way to render lists in React. Each item needs a unique <strong>key</strong> prop for React's reconciliation algorithm.
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">PatientList.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">function</span> <span class="function">PatientList</span>() {
+  <span class="keyword">const</span> patients = [
+    { id: <span class="number">1</span>, name: <span class="string">'John Doe'</span>, room: <span class="string">'101'</span>, status: <span class="string">'stable'</span> },
+    { id: <span class="number">2</span>, name: <span class="string">'Jane Smith'</span>, room: <span class="string">'102'</span>, status: <span class="string">'critical'</span> },
+    { id: <span class="number">3</span>, name: <span class="string">'Bob Johnson'</span>, room: <span class="string">'103'</span>, status: <span class="string">'recovering'</span> }
+  ];
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {patients.<span class="function">map</span>((patient) => (
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={patient.id}<span class="tag">&gt;</span>
+          <span class="tag">&lt;strong&gt;</span>{patient.name}<span class="tag">&lt;/strong&gt;</span>
+          <span class="tag">&lt;span&gt;</span>Room {patient.room}<span class="tag">&lt;/span&gt;</span>
+          <span class="tag">&lt;span</span> <span class="attr">className</span>={\`status-\${patient.status}\`}<span class="tag">&gt;</span>
+            {patient.status}
+          <span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+
+            <div class="tip-box">
+              <div class="tip-title">💡 Why Keys Matter</div>
+              <div class="tip-content">
+                Keys help React identify which items have changed, been added, or removed. Use unique, stable IDs (like database IDs), not array indices, as keys when the list can be reordered.
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Patient List Dashboard</div>
+                <div class="mini-project-subtitle">Interactive Data Display</div>
+              </div>
+            </div>
+            <p class="content-text">
+              Create a Patient List Dashboard that displays patients with filtering, sorting, and status indicators.
+            </p>
+            <ul class="requirements-list">
+              <li>Display list of patients with name, room, status, and admission date</li>
+              <li>Implement filter by patient status (stable, critical, recovering)</li>
+              <li>Add search functionality by patient name</li>
+              <li>Sort patients by name, room number, or admission date</li>
+              <li>Show patient count and critical patient alert banner</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 5: Styling in React -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">5</div>
+          <div class="module-info">
+            <div class="module-title">Styling in React</div>
+            <div class="module-desc">CSS Modules, inline styles, styled-components, and responsive design</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">🎨 Styling Options Overview</h3>
+            
+            <div class="concept-grid">
+              <div class="concept-card">
+                <div class="concept-icon">📄</div>
+                <div class="concept-title">CSS Files</div>
+                <div class="concept-desc">Traditional stylesheets imported into components</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">📦</div>
+                <div class="concept-title">CSS Modules</div>
+                <div class="concept-desc">Scoped CSS with unique class names</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">⚡</div>
+                <div class="concept-title">Inline Styles</div>
+                <div class="concept-desc">JavaScript objects for dynamic styling</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">💅</div>
+                <div class="concept-title">Styled Components</div>
+                <div class="concept-desc">CSS-in-JS with tagged template literals</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">📦 CSS Modules</h3>
+            <p class="content-text">
+              CSS Modules automatically scope your styles to the component, preventing style conflicts. File names end with <code>.module.css</code>.
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Card.module.css & Card.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="comment">/* Card.module.css */</span>
+<span class="tag">.card</span> {
+  background: <span class="string">#111827</span>;
+  border-radius: <span class="number">12px</span>;
+  padding: <span class="number">1.5rem</span>;
+  border: <span class="number">1px</span> solid <span class="string">#2d3a52</span>;
+}
+
+<span class="tag">.title</span> {
+  color: <span class="string">#22d3ee</span>;
+  margin-bottom: <span class="number">1rem</span>;
+}
+
+<span class="comment">// Card.js</span>
+<span class="keyword">import</span> styles <span class="keyword">from</span> <span class="string">'./Card.module.css'</span>;
+
+<span class="keyword">function</span> <span class="function">Card</span>({ title, children }) {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.card}<span class="tag">&gt;</span>
+      <span class="tag">&lt;h2</span> <span class="attr">className</span>={styles.title}<span class="tag">&gt;</span>{title}<span class="tag">&lt;/h2&gt;</span>
+      {children}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Responsive Health Tips Card</div>
+                <div class="mini-project-subtitle">Styled Component Practice</div>
+              </div>
+            </div>
+            <p class="content-text">
+              Create a beautiful, responsive Health Tips Card component using multiple styling approaches.
+            </p>
+            <ul class="requirements-list">
+              <li>Create a card component that displays health tips</li>
+              <li>Use CSS Modules or Styled Components for styling</li>
+              <li>Implement responsive design (mobile, tablet, desktop)</li>
+              <li>Add hover effects and transitions</li>
+              <li>Support light and dark themes via props</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Phase 2: Intermediate React -->
+    <section class="phase-section" id="phase-2" style="display: none;">
+      <div class="phase-header">
+        <div class="phase-icon">🚀</div>
+        <h2 class="phase-title">Phase 2: Intermediate React</h2>
+      </div>
+
+      <!-- Module 6 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">6</div>
+          <div class="module-info">
+            <div class="module-title">useEffect & Lifecycle</div>
+            <div class="module-desc">Side effects, data fetching, cleanup functions, and component lifecycle</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">🔄 Understanding Side Effects</h3>
+            <p class="content-text">
+              <strong>Side effects</strong> are operations that affect something outside of your component: fetching data, subscriptions, manually changing the DOM, timers, and logging. The <strong>useEffect</strong> hook lets you perform side effects in functional components.
+            </p>
+            
+            <div class="diagram-box">
+              <div class="diagram-title">useEffect Dependency Array Behavior</div>
+              <div class="tree-diagram">
+<span class="highlight">useEffect(() => { ... })</span>          → Runs after EVERY render
+<span class="highlight">useEffect(() => { ... }, [])</span>       → Runs ONLY on mount
+<span class="highlight">useEffect(() => { ... }, [dep])</span>    → Runs when 'dep' changes
+<span class="highlight">useEffect(() => { return cleanup })</span> → Cleanup on unmount
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">🎣 useEffect Basics</h3>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">UseEffectBasics.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> { useState, useEffect } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="keyword">function</span> <span class="function">EffectDemo</span>() {
+  <span class="keyword">const</span> [count, setCount] = <span class="function">useState</span>(<span class="number">0</span>);
+
+  <span class="comment">// Runs ONLY on mount (empty array)</span>
+  <span class="function">useEffect</span>(() => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Component mounted!'</span>);
+  }, []);
+
+  <span class="comment">// Runs when 'count' changes</span>
+  <span class="function">useEffect</span>(() => {
+    document.title = <span class="string">\`Count: \${count}\`</span>;
+  }, [count]);
+
+  <span class="comment">// Cleanup function</span>
+  <span class="function">useEffect</span>(() => {
+    <span class="keyword">const</span> timer = <span class="function">setInterval</span>(() => {
+      <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Tick'</span>);
+    }, <span class="number">1000</span>);
+
+    <span class="keyword">return</span> () => <span class="function">clearInterval</span>(timer);
+  }, []);
+
+  <span class="keyword">return</span> <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="function">setCount</span>(c => c+<span class="number">1</span>)}<span class="tag">&gt;</span>{count}<span class="tag">&lt;/button&gt;</span>;
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">🌐 Data Fetching Pattern</h3>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">DataFetching.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">function</span> <span class="function">UserProfile</span>({ userId }) {
+  <span class="keyword">const</span> [user, setUser] = <span class="function">useState</span>(<span class="keyword">null</span>);
+  <span class="keyword">const</span> [loading, setLoading] = <span class="function">useState</span>(<span class="keyword">true</span>);
+  <span class="keyword">const</span> [error, setError] = <span class="function">useState</span>(<span class="keyword">null</span>);
+
+  <span class="function">useEffect</span>(() => {
+    <span class="keyword">const</span> controller = <span class="keyword">new</span> <span class="function">AbortController</span>();
+    
+    <span class="keyword">async function</span> <span class="function">fetchUser</span>() {
+      <span class="keyword">try</span> {
+        <span class="function">setLoading</span>(<span class="keyword">true</span>);
+        <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="function">fetch</span>(
+          <span class="string">\`/api/users/\${userId}\`</span>,
+          { signal: controller.signal }
+        );
+        <span class="keyword">const</span> data = <span class="keyword">await</span> res.<span class="function">json</span>();
+        <span class="function">setUser</span>(data);
+      } <span class="keyword">catch</span> (err) {
+        <span class="keyword">if</span> (err.name !== <span class="string">'AbortError'</span>) {
+          <span class="function">setError</span>(err.message);
+        }
+      } <span class="keyword">finally</span> {
+        <span class="function">setLoading</span>(<span class="keyword">false</span>);
+      }
+    }
+    
+    <span class="function">fetchUser</span>();
+    <span class="keyword">return</span> () => controller.<span class="function">abort</span>();
+  }, [userId]);
+
+  <span class="keyword">if</span> (loading) <span class="keyword">return</span> <span class="tag">&lt;div&gt;</span>Loading...<span class="tag">&lt;/div&gt;</span>;
+  <span class="keyword">if</span> (error) <span class="keyword">return</span> <span class="tag">&lt;div&gt;</span>Error: {error}<span class="tag">&lt;/div&gt;</span>;
+  <span class="keyword">return</span> <span class="tag">&lt;div&gt;</span>{user.name}<span class="tag">&lt;/div&gt;</span>;
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Live Weather Monitor</div>
+                <div class="mini-project-subtitle">Real-time Data Dashboard</div>
+              </div>
+            </div>
+            <ul class="requirements-list">
+              <li>Fetch weather data from OpenWeatherMap API</li>
+              <li>Display temperature, humidity, and conditions</li>
+              <li>Implement auto-refresh every 5 minutes</li>
+              <li>Add loading skeleton and error states</li>
+              <li>Allow location search functionality</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 7 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">7</div>
+          <div class="module-info">
+            <div class="module-title">Forms & Validation</div>
+            <div class="module-desc">Controlled components, form validation, Formik and Yup</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">📝 Controlled Components</h3>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">ControlledForm.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">function</span> <span class="function">ContactForm</span>() {
+  <span class="keyword">const</span> [formData, setFormData] = <span class="function">useState</span>({
+    name: <span class="string">''</span>,
+    email: <span class="string">''</span>,
+    message: <span class="string">''</span>
+  });
+
+  <span class="keyword">const</span> <span class="function">handleChange</span> = (e) => {
+    <span class="keyword">const</span> { name, value } = e.target;
+    <span class="function">setFormData</span>(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  <span class="keyword">const</span> <span class="function">handleSubmit</span> = (e) => {
+    e.<span class="function">preventDefault</span>();
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Submitted:'</span>, formData);
+  };
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">name</span>=<span class="string">"name"</span>
+        <span class="attr">value</span>={formData.name}
+        <span class="attr">onChange</span>={handleChange}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">name</span>=<span class="string">"email"</span>
+        <span class="attr">value</span>={formData.email}
+        <span class="attr">onChange</span>={handleChange}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="string">"submit"</span><span class="tag">&gt;</span>Submit<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Appointment Booking Form</div>
+                <div class="mini-project-subtitle">Complete Form with Validation</div>
+              </div>
+            </div>
+            <ul class="requirements-list">
+              <li>Patient information fields with validation</li>
+              <li>Appointment type selection dropdown</li>
+              <li>Date and time picker</li>
+              <li>Doctor selection dropdown</li>
+              <li>Form submission with loading state</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 8 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">8</div>
+          <div class="module-info">
+            <div class="module-title">Routing with React Router</div>
+            <div class="module-desc">SPA navigation, dynamic routes, and nested routing</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">🛤️ Setting Up React Router</h3>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">App.js - Router Setup</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> { BrowserRouter, Routes, Route, Link } <span class="keyword">from</span> <span class="string">'react-router-dom'</span>;
+
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;BrowserRouter&gt;</span>
+      <span class="tag">&lt;nav&gt;</span>
+        <span class="tag">&lt;Link</span> <span class="attr">to</span>=<span class="string">"/"</span><span class="tag">&gt;</span>Home<span class="tag">&lt;/Link&gt;</span>
+        <span class="tag">&lt;Link</span> <span class="attr">to</span>=<span class="string">"/patients"</span><span class="tag">&gt;</span>Patients<span class="tag">&lt;/Link&gt;</span>
+        <span class="tag">&lt;Link</span> <span class="attr">to</span>=<span class="string">"/about"</span><span class="tag">&gt;</span>About<span class="tag">&lt;/Link&gt;</span>
+      <span class="tag">&lt;/nav&gt;</span>
+      
+      <span class="tag">&lt;Routes&gt;</span>
+        <span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="string">"/"</span> <span class="attr">element</span>={<span class="tag">&lt;Home /&gt;</span>} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="string">"/patients"</span> <span class="attr">element</span>={<span class="tag">&lt;Patients /&gt;</span>} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="string">"/patients/:id"</span> <span class="attr">element</span>={<span class="tag">&lt;PatientDetail /&gt;</span>} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="string">"*"</span> <span class="attr">element</span>={<span class="tag">&lt;NotFound /&gt;</span>} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/Routes&gt;</span>
+    <span class="tag">&lt;/BrowserRouter&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Health Resource Portal</div>
+                <div class="mini-project-subtitle">Multi-page Application</div>
+              </div>
+            </div>
+            <ul class="requirements-list">
+              <li>Home page with health tips overview</li>
+              <li>Articles page with list and detail views</li>
+              <li>Contact page with form</li>
+              <li>404 Not Found page</li>
+              <li>Navigation with active link highlighting</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 9 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">9</div>
+          <div class="module-info">
+            <div class="module-title">Context API & State Management</div>
+            <div class="module-desc">Prop drilling solution, global state, and theming</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">🌐 Context API</h3>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">ThemeContext.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> { createContext, useContext, useState } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="comment">// Create Context</span>
+<span class="keyword">const</span> ThemeContext = <span class="function">createContext</span>();
+
+<span class="comment">// Provider Component</span>
+<span class="keyword">export function</span> <span class="function">ThemeProvider</span>({ children }) {
+  <span class="keyword">const</span> [theme, setTheme] = <span class="function">useState</span>(<span class="string">'light'</span>);
+  
+  <span class="keyword">const</span> <span class="function">toggleTheme</span> = () => {
+    <span class="function">setTheme</span>(t => t === <span class="string">'light'</span> ? <span class="string">'dark'</span> : <span class="string">'light'</span>);
+  };
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;ThemeContext.Provider</span> <span class="attr">value</span>={{ theme, toggleTheme }}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/ThemeContext.Provider&gt;</span>
+  );
+}
+
+<span class="comment">// Custom Hook</span>
+<span class="keyword">export function</span> <span class="function">useTheme</span>() {
+  <span class="keyword">return</span> <span class="function">useContext</span>(ThemeContext);
+}
+
+<span class="comment">// Usage in Component</span>
+<span class="keyword">function</span> <span class="function">Header</span>() {
+  <span class="keyword">const</span> { theme, toggleTheme } = <span class="function">useTheme</span>();
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;header</span> <span class="attr">className</span>={theme}<span class="tag">&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={toggleTheme}<span class="tag">&gt;</span>Toggle Theme<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/header&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: User Preferences Manager</div>
+                <div class="mini-project-subtitle">Global State with Context</div>
+              </div>
+            </div>
+            <ul class="requirements-list">
+              <li>Create UserContext for preferences</li>
+              <li>Theme toggle (light/dark)</li>
+              <li>Language selection</li>
+              <li>Font size adjustment</li>
+              <li>Persist preferences to localStorage</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Phase 3: React Native -->
+    <section class="phase-section" id="phase-3" style="display: none;">
+      <div class="phase-header">
+        <div class="phase-icon">📱</div>
+        <h2 class="phase-title">Phase 3: React Native Essentials</h2>
+      </div>
+
+      <!-- Module 10 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">10</div>
+          <div class="module-info">
+            <div class="module-title">Introduction to React Native</div>
+            <div class="module-desc">Mobile development, Expo setup, and native components</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">📱 React vs React Native</h3>
+            
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>React (Web)</th>
+                  <th>React Native (Mobile)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Rendering</td>
+                  <td>DOM elements</td>
+                  <td>Native components</td>
+                </tr>
+                <tr>
+                  <td>&lt;div&gt;</td>
+                  <td>✅ div</td>
+                  <td>View</td>
+                </tr>
+                <tr>
+                  <td>&lt;p&gt;/&lt;span&gt;</td>
+                  <td>✅ p, span</td>
+                  <td>Text</td>
+                </tr>
+                <tr>
+                  <td>&lt;input&gt;</td>
+                  <td>✅ input</td>
+                  <td>TextInput</td>
+                </tr>
+                <tr>
+                  <td>Styling</td>
+                  <td>CSS</td>
+                  <td>StyleSheet (JS)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">⚙️ Setting Up Expo</h3>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Terminal</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="comment"># Install Expo CLI globally</span>
+npm install -g expo-cli
+
+<span class="comment"># Create new project</span>
+npx create-expo-app my-app
+
+<span class="comment"># Navigate and start</span>
+cd my-app
+npx expo start
+
+<span class="comment"># Scan QR code with Expo Go app on your phone</span></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">🎯 First React Native Component</h3>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">App.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> { View, Text, StyleSheet, TouchableOpacity } <span class="keyword">from</span> <span class="string">'react-native'</span>;
+
+<span class="keyword">export default function</span> <span class="function">App</span>() {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;View</span> <span class="attr">style</span>={styles.container}<span class="tag">&gt;</span>
+      <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.title}<span class="tag">&gt;</span>Hello Nurse!<span class="tag">&lt;/Text&gt;</span>
+      <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.subtitle}<span class="tag">&gt;</span>
+        Welcome to React Native
+      <span class="tag">&lt;/Text&gt;</span>
+      <span class="tag">&lt;TouchableOpacity</span> <span class="attr">style</span>={styles.button}<span class="tag">&gt;</span>
+        <span class="tag">&lt;Text</span> <span class="attr">style</span>={styles.buttonText}<span class="tag">&gt;</span>Get Started<span class="tag">&lt;/Text&gt;</span>
+      <span class="tag">&lt;/TouchableOpacity&gt;</span>
+    <span class="tag">&lt;/View&gt;</span>
+  );
+}
+
+<span class="keyword">const</span> styles = StyleSheet.<span class="function">create</span>({
+  container: {
+    flex: <span class="number">1</span>,
+    backgroundColor: <span class="string">'#0a0f1c'</span>,
+    alignItems: <span class="string">'center'</span>,
+    justifyContent: <span class="string">'center'</span>,
+  },
+  title: {
+    fontSize: <span class="number">32</span>,
+    fontWeight: <span class="string">'bold'</span>,
+    color: <span class="string">'#22d3ee'</span>,
+  },
+  subtitle: {
+    fontSize: <span class="number">18</span>,
+    color: <span class="string">'#94a3b8'</span>,
+    marginTop: <span class="number">8</span>,
+  },
+  button: {
+    backgroundColor: <span class="string">'#22d3ee'</span>,
+    paddingHorizontal: <span class="number">24</span>,
+    paddingVertical: <span class="number">12</span>,
+    borderRadius: <span class="number">8</span>,
+    marginTop: <span class="number">24</span>,
+  },
+  buttonText: {
+    color: <span class="string">'#0a0f1c'</span>,
+    fontWeight: <span class="string">'600'</span>,
+  },
+});</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: "Hello Nurse!" App</div>
+                <div class="mini-project-subtitle">Your First Mobile App</div>
+              </div>
+            </div>
+            <ul class="requirements-list">
+              <li>Display personalized greeting</li>
+              <li>Show current date and time</li>
+              <li>Add a profile image</li>
+              <li>Include shift information display</li>
+              <li>Style with React Native StyleSheet</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 11 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">11</div>
+          <div class="module-info">
+            <div class="module-title">Layouts & Styling</div>
+            <div class="module-desc">Flexbox in React Native and platform-specific styling</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">📐 Flexbox in React Native</h3>
+            <p class="content-text">
+              React Native uses <strong>Flexbox</strong> for layout, similar to CSS but with some differences. The default <code>flexDirection</code> is <code>column</code> (not row).
+            </p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">FlexboxExample.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">const</span> styles = StyleSheet.<span class="function">create</span>({
+  <span class="comment">// Row layout</span>
+  row: {
+    flexDirection: <span class="string">'row'</span>,
+    justifyContent: <span class="string">'space-between'</span>,
+    alignItems: <span class="string">'center'</span>,
+  },
+  <span class="comment">// Column layout (default)</span>
+  column: {
+    flexDirection: <span class="string">'column'</span>,
+    flex: <span class="number">1</span>,
+  },
+  <span class="comment">// Centered content</span>
+  centered: {
+    flex: <span class="number">1</span>,
+    justifyContent: <span class="string">'center'</span>,
+    alignItems: <span class="string">'center'</span>,
+  },
+});</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Vitals Entry Screen</div>
+                <div class="mini-project-subtitle">Form Layout Practice</div>
+              </div>
+            </div>
+            <ul class="requirements-list">
+              <li>Create a vitals entry form layout</li>
+              <li>Input fields for BP, heart rate, temperature</li>
+              <li>Use Flexbox for responsive layout</li>
+              <li>Add platform-specific styling (iOS/Android)</li>
+              <li>Include submit and clear buttons</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 12 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">12</div>
+          <div class="module-info">
+            <div class="module-title">Navigation in React Native</div>
+            <div class="module-desc">Stack, Tab, and Drawer navigators</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">🧭 React Navigation Setup</h3>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Navigation.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> { NavigationContainer } <span class="keyword">from</span> <span class="string">'@react-navigation/native'</span>;
+<span class="keyword">import</span> { createBottomTabNavigator } <span class="keyword">from</span> <span class="string">'@react-navigation/bottom-tabs'</span>;
+<span class="keyword">import</span> { createStackNavigator } <span class="keyword">from</span> <span class="string">'@react-navigation/stack'</span>;
+
+<span class="keyword">const</span> Tab = <span class="function">createBottomTabNavigator</span>();
+<span class="keyword">const</span> Stack = <span class="function">createStackNavigator</span>();
+
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;NavigationContainer&gt;</span>
+      <span class="tag">&lt;Tab.Navigator&gt;</span>
+        <span class="tag">&lt;Tab.Screen</span> <span class="attr">name</span>=<span class="string">"Home"</span> <span class="attr">component</span>={HomeScreen} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;Tab.Screen</span> <span class="attr">name</span>=<span class="string">"Patients"</span> <span class="attr">component</span>={PatientsStack} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;Tab.Screen</span> <span class="attr">name</span>=<span class="string">"Profile"</span> <span class="attr">component</span>={ProfileScreen} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/Tab.Navigator&gt;</span>
+    <span class="tag">&lt;/NavigationContainer&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Mobile Health Assistant</div>
+                <div class="mini-project-subtitle">Complete Navigation App</div>
+              </div>
+            </div>
+            <ul class="requirements-list">
+              <li>Bottom tab navigation (Home, Patients, Settings)</li>
+              <li>Stack navigation for patient details</li>
+              <li>Pass parameters between screens</li>
+              <li>Custom tab bar styling</li>
+              <li>Header customization</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 13 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">13</div>
+          <div class="module-info">
+            <div class="module-title">Working with APIs</div>
+            <div class="module-desc">Fetching data and displaying dynamic content</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">🌐 API Fetching in React Native</h3>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">MedicineList.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> { useState, useEffect } <span class="keyword">from</span> <span class="string">'react'</span>;
+<span class="keyword">import</span> { View, FlatList, Text, ActivityIndicator } <span class="keyword">from</span> <span class="string">'react-native'</span>;
+
+<span class="keyword">function</span> <span class="function">MedicineList</span>() {
+  <span class="keyword">const</span> [medicines, setMedicines] = <span class="function">useState</span>([]);
+  <span class="keyword">const</span> [loading, setLoading] = <span class="function">useState</span>(<span class="keyword">true</span>);
+
+  <span class="function">useEffect</span>(() => {
+    <span class="function">fetch</span>(<span class="string">'https://api.example.com/medicines'</span>)
+      .<span class="function">then</span>(res => res.<span class="function">json</span>())
+      .<span class="function">then</span>(data => {
+        <span class="function">setMedicines</span>(data);
+        <span class="function">setLoading</span>(<span class="keyword">false</span>);
+      });
+  }, []);
+
+  <span class="keyword">if</span> (loading) {
+    <span class="keyword">return</span> <span class="tag">&lt;ActivityIndicator</span> <span class="attr">size</span>=<span class="string">"large"</span> <span class="tag">/&gt;</span>;
+  }
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;FlatList</span>
+      <span class="attr">data</span>={medicines}
+      <span class="attr">keyExtractor</span>={(item) => item.id}
+      <span class="attr">renderItem</span>={({ item }) => (
+        <span class="tag">&lt;View</span> <span class="attr">style</span>={styles.item}<span class="tag">&gt;</span>
+          <span class="tag">&lt;Text&gt;</span>{item.name}<span class="tag">&lt;/Text&gt;</span>
+          <span class="tag">&lt;Text&gt;</span>{item.dosage}<span class="tag">&lt;/Text&gt;</span>
+        <span class="tag">&lt;/View&gt;</span>
+      )}
+    <span class="tag">/&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Project -->
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🎯</div>
+              <div>
+                <div class="mini-project-title">Mini Project: Medicine Reminder App</div>
+                <div class="mini-project-subtitle">API Integration</div>
+              </div>
+            </div>
+            <ul class="requirements-list">
+              <li>Fetch medicine list from API</li>
+              <li>Display in FlatList with search</li>
+              <li>Add medicine to reminder list</li>
+              <li>Set reminder times</li>
+              <li>Local notification (bonus)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Phase 4: Advanced -->
+    <section class="phase-section" id="phase-4" style="display: none;">
+      <div class="phase-header">
+        <div class="phase-icon">🧩</div>
+        <h2 class="phase-title">Phase 4: Advanced Concepts & Capstone</h2>
+      </div>
+
+      <!-- Module 14 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">14</div>
+          <div class="module-info">
+            <div class="module-title">Performance Optimization</div>
+            <div class="module-desc">Memoization, lazy loading, and FlatList optimization</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">⚡ React Performance Techniques</h3>
+            
+            <div class="concept-grid">
+              <div class="concept-card">
+                <div class="concept-icon">🧠</div>
+                <div class="concept-title">React.memo</div>
+                <div class="concept-desc">Prevent unnecessary re-renders of components</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">📦</div>
+                <div class="concept-title">useMemo</div>
+                <div class="concept-desc">Memoize expensive calculations</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">🔗</div>
+                <div class="concept-title">useCallback</div>
+                <div class="concept-desc">Memoize function references</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">📑</div>
+                <div class="concept-title">Lazy Loading</div>
+                <div class="concept-desc">Load components on demand</div>
+              </div>
+            </div>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">PerformanceOptimization.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> { memo, useMemo, useCallback, lazy, Suspense } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="comment">// React.memo - Prevents re-render if props haven't changed</span>
+<span class="keyword">const</span> ExpensiveComponent = <span class="function">memo</span>(({ data }) => {
+  <span class="keyword">return</span> <span class="tag">&lt;div&gt;</span>{data.name}<span class="tag">&lt;/div&gt;</span>;
+});
+
+<span class="comment">// useMemo - Memoize expensive calculations</span>
+<span class="keyword">function</span> <span class="function">PatientStats</span>({ patients }) {
+  <span class="keyword">const</span> criticalCount = <span class="function">useMemo</span>(() => {
+    <span class="keyword">return</span> patients.<span class="function">filter</span>(p => p.status === <span class="string">'critical'</span>).length;
+  }, [patients]);
+  
+  <span class="keyword">return</span> <span class="tag">&lt;div&gt;</span>Critical: {criticalCount}<span class="tag">&lt;/div&gt;</span>;
+}
+
+<span class="comment">// useCallback - Memoize function references</span>
+<span class="keyword">function</span> <span class="function">ParentComponent</span>() {
+  <span class="keyword">const</span> handleClick = <span class="function">useCallback</span>((id) => {
+    <span class="function">console</span>.<span class="function">log</span>(<span class="string">'Clicked:'</span>, id);
+  }, []);
+  
+  <span class="keyword">return</span> <span class="tag">&lt;ChildComponent</span> <span class="attr">onClick</span>={handleClick} <span class="tag">/&gt;</span>;
+}
+
+<span class="comment">// Lazy loading with Suspense</span>
+<span class="keyword">const</span> HeavyChart = <span class="function">lazy</span>(() => <span class="keyword">import</span>(<span class="string">'./HeavyChart'</span>));
+
+<span class="keyword">function</span> <span class="function">Dashboard</span>() {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;Suspense</span> <span class="attr">fallback</span>={<span class="tag">&lt;div&gt;</span>Loading...<span class="tag">&lt;/div&gt;</span>}<span class="tag">&gt;</span>
+      <span class="tag">&lt;HeavyChart /&gt;</span>
+    <span class="tag">&lt;/Suspense&gt;</span>
+  );
+}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 15 -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">15</div>
+          <div class="module-info">
+            <div class="module-title">Native Device Features</div>
+            <div class="module-desc">Camera, location, notifications, and permissions</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">📱 Accessing Device Features</h3>
+            
+            <div class="concept-grid">
+              <div class="concept-card">
+                <div class="concept-icon">📷</div>
+                <div class="concept-title">Camera</div>
+                <div class="concept-desc">expo-camera for photo/video capture</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">📍</div>
+                <div class="concept-title">Location</div>
+                <div class="concept-desc">expo-location for GPS coordinates</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">🔔</div>
+                <div class="concept-title">Notifications</div>
+                <div class="concept-desc">expo-notifications for push alerts</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">🔐</div>
+                <div class="concept-title">Permissions</div>
+                <div class="concept-desc">Request and handle app permissions</div>
+              </div>
+            </div>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">LocationExample.js</span>
+                <div class="code-dots">
+                  <div class="code-dot red"></div>
+                  <div class="code-dot yellow"></div>
+                  <div class="code-dot green"></div>
+                </div>
+              </div>
+              <div class="code-content">
+<pre><span class="keyword">import</span> * <span class="keyword">as</span> Location <span class="keyword">from</span> <span class="string">'expo-location'</span>;
+
+<span class="keyword">async function</span> <span class="function">getLocation</span>() {
+  <span class="comment">// Request permission</span>
+  <span class="keyword">const</span> { status } = <span class="keyword">await</span> Location.<span class="function">requestForegroundPermissionsAsync</span>();
+  
+  <span class="keyword">if</span> (status !== <span class="string">'granted'</span>) {
+    <span class="function">alert</span>(<span class="string">'Permission denied!'</span>);
+    <span class="keyword">return</span>;
+  }
+  
+  <span class="comment">// Get current location</span>
+  <span class="keyword">const</span> location = <span class="keyword">await</span> Location.<span class="function">getCurrentPositionAsync</span>({});
+  <span class="function">console</span>.<span class="function">log</span>(location.coords);
+}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 16: Capstone -->
+      <div class="module-card">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-number">16</div>
+          <div class="module-info">
+            <div class="module-title">Capstone Project</div>
+            <div class="module-desc">Build a complete application from scratch</div>
+          </div>
+          <div class="module-toggle">▼</div>
+        </div>
+        <div class="module-content">
+          <div class="section">
+            <h3 class="section-title">🎓 Capstone Project Options</h3>
+            <p class="content-text">
+              Choose one of the following projects to demonstrate your React/React Native skills. Each project should include all core concepts learned throughout the course.
+            </p>
+            
+            <div class="concept-grid">
+              <div class="concept-card">
+                <div class="concept-icon">📅</div>
+                <div class="concept-title">Nursing Shift Scheduler</div>
+                <div class="concept-desc">Calendar-based shift management with team coordination</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">🧘</div>
+                <div class="concept-title">Mental Wellness Tracker</div>
+                <div class="concept-desc">Mood logging, journaling, and self-care reminders</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">👥</div>
+                <div class="concept-title">Community Health Forum</div>
+                <div class="concept-desc">Q&A platform for health discussions</div>
+              </div>
+              <div class="concept-card">
+                <div class="concept-icon">💊</div>
+                <div class="concept-title">Medication Manager</div>
+                <div class="concept-desc">Track prescriptions with reminders and refill alerts</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">📋 Project Requirements</h3>
+            
+            <ul class="requirements-list">
+              <li><strong>UI/UX:</strong> Clean, intuitive interface with responsive design</li>
+              <li><strong>State Management:</strong> Proper use of useState, useContext, or Redux</li>
+              <li><strong>Data Persistence:</strong> API integration or local storage</li>
+              <li><strong>Navigation:</strong> Multi-screen app with proper routing</li>
+              <li><strong>Forms:</strong> Input validation and error handling</li>
+              <li><strong>Performance:</strong> Optimized rendering with memoization</li>
+              <li><strong>Documentation:</strong> README with setup instructions</li>
+              <li><strong>Testing:</strong> Basic component tests (bonus)</li>
+            </ul>
+          </div>
+
+          <div class="mini-project">
+            <div class="mini-project-header">
+              <div class="mini-project-icon">🏆</div>
+              <div>
+                <div class="mini-project-title">Example: Nursing Shift Scheduler</div>
+                <div class="mini-project-subtitle">Full-Stack Application</div>
+              </div>
+            </div>
+            <p class="content-text">
+              Build a comprehensive shift scheduling app for nursing teams with the following features:
+            </p>
+            <ul class="requirements-list">
+              <li>User authentication (login/register)</li>
+              <li>Calendar view with drag-drop shift assignment</li>
+              <li>Shift swap requests between nurses</li>
+              <li>Push notifications for schedule changes</li>
+              <li>Manager dashboard for approvals</li>
+              <li>Report generation (hours worked, coverage)</li>
+              <li>Dark/light theme support</li>
+              <li>Offline mode with sync</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 3rem; color: var(--ensate-text-muted); border-top: 1px solid var(--ensate-border); margin-top: 4rem;">
+      <p>React & React Native Complete Course</p>
+      <p style="font-size: 0.875rem; margin-top: 0.5rem;">From Foundations to Advanced • 16 Modules • 13 Mini Projects</p>
+    </footer>
+  </div>
+
+  <script>
+    function showPhase(phaseNum) {
+      // Hide all phases
+      document.querySelectorAll('.phase-section').forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // Show selected phase
+      document.getElementById('phase-' + phaseNum).style.display = 'block';
+      
+      // Update button states
+      document.querySelectorAll('.phase-btn').forEach((btn, index) => {
+        btn.classList.toggle('active', index === phaseNum - 1);
+      });
+      
+      // Scroll to top of content
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+    }
+    
+    function toggleModule(header) {
+      const card = header.parentElement;
+      card.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

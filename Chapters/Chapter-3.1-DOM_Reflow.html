@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Understanding DOM Reflows - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(239,68,68,0.1) 0%, transparent 40%), radial-gradient(circle at 70% 50%, rgba(34,211,153,0.1) 0%, transparent 40%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, var(--danger), var(--warning), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-num { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-header .badge { margin-left: auto; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .badge-bad { background: var(--danger); color: #fff; }
+    .badge-good { background: var(--accent); color: #000; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.08), transparent); }
+    .card-success { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.08), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    /* Pipeline Diagram */
+    .pipeline { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 1.5rem; background: var(--surface2); border-radius: 12px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .pipeline-step { background: var(--surface); border: 2px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; text-align: center; min-width: 100px; transition: all 0.3s; }
+    .pipeline-step.highlight { border-color: var(--danger); background: rgba(239,68,68,0.1); }
+    .pipeline-step.good { border-color: var(--accent); background: rgba(52,211,153,0.1); }
+    .pipeline-arrow { color: var(--primary); font-size: 1.25rem; }
+    .pipeline-step-title { font-weight: 600; font-size: 0.9rem; }
+    .pipeline-step-sub { color: var(--muted); font-size: 0.75rem; }
+    
+    /* Reflow Diagram */
+    .reflow-diagram { background: var(--surface2); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    .reflow-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.75rem 0; flex-wrap: wrap; }
+    .reflow-box { padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; }
+    .reflow-change { background: var(--secondary); color: #000; }
+    .reflow-action { background: var(--danger); color: #fff; }
+    .reflow-paint { background: var(--warning); color: #000; }
+    .reflow-display { background: var(--accent); color: #000; }
+    .reflow-arrow { color: var(--muted); }
+    
+    /* Comparison Table */
+    .compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .compare-table th, .compare-table td { padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); }
+    .compare-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .compare-table td { background: var(--surface); }
+    .compare-table tr:hover td { background: var(--surface2); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-yes { background: rgba(239,68,68,0.2); color: var(--danger); }
+    .badge-no { background: rgba(52,211,153,0.2); color: var(--accent); }
+    
+    /* Demo Area */
+    .demo-container { background: var(--surface2); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    .demo-controls { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .demo-btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-family: inherit; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .demo-btn-bad { background: var(--danger); color: #fff; }
+    .demo-btn-good { background: var(--accent); color: #000; }
+    .demo-btn:hover { transform: translateY(-2px); }
+    .demo-output { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; min-height: 150px; }
+    .demo-stats { display: flex; gap: 2rem; margin-top: 1rem; }
+    .demo-stat { text-align: center; }
+    .demo-stat-value { font-size: 2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .demo-stat-label { color: var(--muted); font-size: 0.85rem; }
+    .demo-item { background: var(--surface2); padding: 0.5rem 1rem; margin: 0.25rem 0; border-radius: 6px; font-size: 0.9rem; }
+    
+    /* Virtual DOM Diagram */
+    .vdom-diagram { background: var(--surface2); border-radius: 12px; padding: 2rem; margin: 1.5rem 0; }
+    .vdom-flow { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .vdom-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 140px; }
+    .vdom-box.highlight { border-color: var(--primary); box-shadow: 0 0 20px rgba(34,211,238,0.2); }
+    .vdom-box-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .vdom-box-title { font-weight: 600; margin-bottom: 0.25rem; }
+    .vdom-box-sub { color: var(--muted); font-size: 0.8rem; }
+    .vdom-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    /* Summary Cards */
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+    @media (max-width: 768px) { .summary-grid { grid-template-columns: 1fr; } }
+    .summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; }
+    .summary-card-title { font-weight: 600; margin-bottom: 0.5rem; }
+    .summary-card-value { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    .summary-card-perf { font-size: 0.9rem; }
+    .perf-slow { color: var(--danger); }
+    .perf-good { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <h1>🔄 Understanding DOM Reflows</h1>
+      <p>Why multiple DOM updates cause performance issues and how to fix them</p>
+    </div>
+
+    <!-- Section 1: What is a Reflow -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-num">1</div>
+        <div class="section-title">What is a Reflow?</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          A <strong style="color: var(--danger);">reflow</strong> (also called "layout") is when the browser 
+          <strong>recalculates the positions and sizes</strong> of all elements on the page. 
+          It's an <em>expensive operation</em> that can cause performance issues.
+        </p>
+
+        <h3 style="color: var(--primary); margin-bottom: 1rem;">🌊 Browser Rendering Pipeline</h3>
+        <div class="pipeline">
+          <div class="pipeline-step">
+            <div class="pipeline-step-title">JavaScript</div>
+            <div class="pipeline-step-sub">Code runs</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="pipeline-step-title">Style</div>
+            <div class="pipeline-step-sub">CSS applied</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step highlight">
+            <div class="pipeline-step-title">Layout</div>
+            <div class="pipeline-step-sub">⚠️ REFLOW</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="pipeline-step-title">Paint</div>
+            <div class="pipeline-step-sub">Draw pixels</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="pipeline-step-title">Composite</div>
+            <div class="pipeline-step-sub">Layer merge</div>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">🔥 Why Reflows are Expensive</div>
+          <div class="warning-content">
+            During a reflow, the browser must recalculate the geometry of <strong>every affected element</strong> 
+            in the document. This includes computing widths, heights, positions, and how elements affect each other.
+            With complex pages, this can take significant time!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: What Triggers Reflows -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-num">2</div>
+        <div class="section-title">What Triggers a Reflow?</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Multiple Reflows Example <span class="badge badge-bad">❌ BAD</span></div>
+          <div class="code-body"><pre><span class="cmt">// Each of these operations triggers a separate reflow:</span>
+element.style.width = <span class="str">'100px'</span>     <span class="cmt">// 1️⃣ Reflow</span>
+element.style.height = <span class="str">'200px'</span>    <span class="cmt">// 2️⃣ Reflow</span>
+element.style.margin = <span class="str">'10px'</span>     <span class="cmt">// 3️⃣ Reflow</span>
+element.style.padding = <span class="str">'5px'</span>     <span class="cmt">// 4️⃣ Reflow</span>
+
+<span class="cmt">// 4 separate reflows = SLOW! 🐌</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--danger); margin: 2rem 0 1rem;">📋 Reflow Triggers</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Triggers Reflow?</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Adding/removing elements</td>
+              <td><span class="badge badge-yes">✅ Yes</span></td>
+              <td>DOM structure changes</td>
+            </tr>
+            <tr>
+              <td>Changing element size (width, height)</td>
+              <td><span class="badge badge-yes">✅ Yes</span></td>
+              <td>Affects surrounding elements</td>
+            </tr>
+            <tr>
+              <td>Changing position (top, left, margin)</td>
+              <td><span class="badge badge-yes">✅ Yes</span></td>
+              <td>Layout recalculation needed</td>
+            </tr>
+            <tr>
+              <td>Changing font size</td>
+              <td><span class="badge badge-yes">✅ Yes</span></td>
+              <td>Text boxes resize</td>
+            </tr>
+            <tr>
+              <td>Reading layout properties*</td>
+              <td><span class="badge badge-yes">✅ Yes</span></td>
+              <td>Forces synchronous layout!</td>
+            </tr>
+            <tr>
+              <td>Changing color/background</td>
+              <td><span class="badge badge-no">❌ No</span></td>
+              <td>Only repaint (cheaper)</td>
+            </tr>
+            <tr>
+              <td>Changing opacity</td>
+              <td><span class="badge badge-no">❌ No</span></td>
+              <td>Composite only</td>
+            </tr>
+            <tr>
+              <td>CSS transforms (translate, scale)</td>
+              <td><span class="badge badge-no">❌ No</span></td>
+              <td>GPU accelerated ✨</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 *Layout Properties That Force Reflow</div>
+          <div class="tip-content">
+            Reading these properties forces the browser to calculate layout immediately:<br>
+            <code>offsetWidth</code>, <code>offsetHeight</code>, <code>offsetTop</code>, <code>offsetLeft</code>,
+            <code>clientWidth</code>, <code>clientHeight</code>, <code>scrollWidth</code>, <code>scrollHeight</code>,
+            <code>getBoundingClientRect()</code>, <code>getComputedStyle()</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Visual Explanation -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-num">3</div>
+        <div class="section-title">Visual: Multiple Reflows Problem</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h3 style="color: var(--danger); margin-bottom: 1rem;">❌ Multiple DOM Updates = Multiple Reflows</h3>
+        
+        <div class="reflow-diagram">
+          <p style="text-align: center; color: var(--muted); margin-bottom: 1rem;">Each DOM change triggers the full rendering cycle:</p>
+          
+          <div class="reflow-row">
+            <div class="reflow-box reflow-change">Change 1</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-action">🔄 REFLOW 1</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-paint">🎨 REPAINT</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-display">📺 Display</div>
+          </div>
+          
+          <div class="reflow-row">
+            <div class="reflow-box reflow-change">Change 2</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-action">🔄 REFLOW 2</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-paint">🎨 REPAINT</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-display">📺 Display</div>
+          </div>
+          
+          <div class="reflow-row">
+            <div class="reflow-box reflow-change">Change 3</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-action">🔄 REFLOW 3</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-paint">🎨 REPAINT</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-display">📺 Display</div>
+          </div>
+          
+          <p style="text-align: center; color: var(--danger); margin-top: 1rem; font-weight: 600;">
+            😱 Each DOM change = Full layout recalculation!
+          </p>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">✅ Batched Updates = Single Reflow</h3>
+        
+        <div class="reflow-diagram" style="border: 2px solid var(--accent);">
+          <p style="text-align: center; color: var(--muted); margin-bottom: 1rem;">Build in memory, apply once:</p>
+          
+          <div class="reflow-row" style="justify-content: center;">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+              <div class="reflow-box reflow-change">Change 1</div>
+              <div class="reflow-box reflow-change">Change 2</div>
+              <div class="reflow-box reflow-change">Change 3</div>
+            </div>
+            <span class="reflow-arrow" style="font-size: 2rem;">→</span>
+            <div class="reflow-box" style="background: var(--surface); border: 2px dashed var(--primary); padding: 1rem;">
+              📦 Build in<br>Memory
+            </div>
+            <span class="reflow-arrow" style="font-size: 2rem;">→</span>
+            <div class="reflow-box reflow-action">🔄 SINGLE REFLOW</div>
+            <span class="reflow-arrow">→</span>
+            <div class="reflow-box reflow-display">📺 Display</div>
+          </div>
+          
+          <p style="text-align: center; color: var(--accent); margin-top: 1rem; font-weight: 600;">
+            🎉 All changes applied in ONE reflow!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Code Examples -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-num">4</div>
+        <div class="section-title">Bad vs Good Code Examples</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="grid-2">
+          <!-- Bad Example -->
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 1rem;">❌ Bad: Multiple Reflows</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; inefficient.js</div>
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">updateList</span>(items) {
+  <span class="kw">const</span> list = document.<span class="fn">getElementById</span>(<span class="str">'list'</span>)
+  
+  list.innerHTML = <span class="str">''</span>  <span class="cmt">// Reflow #1</span>
+  
+  items.<span class="fn">forEach</span>(item => {
+    <span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">'li'</span>)
+    li.textContent = item
+    list.<span class="fn">appendChild</span>(li)  <span class="cmt">// Reflow on EACH!</span>
+  })
+}
+
+<span class="cmt">// 1000 items = 1001 reflows! 🔥💀</span></pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-top: 1rem;">
+              <strong>Problem:</strong> Each <code>appendChild()</code> triggers a reflow because the browser 
+              needs to recalculate the layout after each element is added.
+            </p>
+          </div>
+
+          <!-- Good Example -->
+          <div class="card card-success">
+            <h4 style="color: var(--accent); margin-bottom: 1rem;">✅ Good: Single Reflow</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; efficient.js</div>
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">updateList</span>(items) {
+  <span class="kw">const</span> list = document.<span class="fn">getElementById</span>(<span class="str">'list'</span>)
+  <span class="kw">const</span> fragment = document.<span class="fn">createDocumentFragment</span>()
+  
+  <span class="cmt">// Build in memory (no reflows)</span>
+  items.<span class="fn">forEach</span>(item => {
+    <span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">'li'</span>)
+    li.textContent = item
+    fragment.<span class="fn">appendChild</span>(li)  <span class="cmt">// In memory!</span>
+  })
+  
+  <span class="cmt">// Single DOM update</span>
+  list.innerHTML = <span class="str">''</span>
+  list.<span class="fn">appendChild</span>(fragment)  <span class="cmt">// 1 reflow! ✅</span>
+}</pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-top: 1rem;">
+              <strong>Solution:</strong> Use <code>DocumentFragment</code> to build elements in memory, 
+              then add them to the DOM all at once.
+            </p>
+          </div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">⚠️ Worst Case: Forced Synchronous Layout</h3>
+        
+        <div class="grid-2">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 1rem;">❌ Terrible: Read-Write Loop</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Forces reflow on EVERY iteration</span>
+elements.<span class="fn">forEach</span>(el => {
+  <span class="cmt">// Read forces layout calculation</span>
+  el.style.width = box.offsetWidth + <span class="str">'px'</span>
+  <span class="cmt">// Read forces ANOTHER layout!</span>
+  el.style.height = box.offsetHeight + <span class="str">'px'</span>
+})
+
+<span class="cmt">// 100 elements = 200 forced reflows! 💀</span></pre></div>
+            </div>
+          </div>
+
+          <div class="card card-success">
+            <h4 style="color: var(--accent); margin-bottom: 1rem;">✅ Better: Read Once, Write Many</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Read ONCE outside the loop</span>
+<span class="kw">const</span> width = box.offsetWidth
+<span class="kw">const</span> height = box.offsetHeight
+
+<span class="cmt">// Write many times</span>
+elements.<span class="fn">forEach</span>(el => {
+  el.style.width = width + <span class="str">'px'</span>
+  el.style.height = height + <span class="str">'px'</span>
+})
+
+<span class="cmt">// Browser batches writes = 1 reflow! ✅</span></pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Interactive Demo -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-num">5</div>
+        <div class="section-title">🎮 Interactive Demo</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          See the performance difference between multiple reflows and batched updates:
+        </p>
+
+        <div class="demo-container">
+          <div class="demo-controls">
+            <button class="demo-btn demo-btn-bad" onclick="runBadDemo()">
+              ❌ Bad: Multiple Reflows (500 items)
+            </button>
+            <button class="demo-btn demo-btn-good" onclick="runGoodDemo()">
+              ✅ Good: Batched Update (500 items)
+            </button>
+            <button class="demo-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--border);" onclick="clearDemo()">
+              🗑️ Clear
+            </button>
+          </div>
+          
+          <div class="demo-stats">
+            <div class="demo-stat">
+              <div class="demo-stat-value" id="demo-time" style="color: var(--muted);">0</div>
+              <div class="demo-stat-label">Time (ms)</div>
+            </div>
+            <div class="demo-stat">
+              <div class="demo-stat-value" id="demo-reflows" style="color: var(--muted);">0</div>
+              <div class="demo-stat-label">Estimated Reflows</div>
+            </div>
+          </div>
+          
+          <div class="demo-output" id="demo-output" style="max-height: 200px; overflow-y: auto;">
+            <p style="color: var(--muted); text-align: center; padding: 2rem;">
+              Click a button above to run the demo
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: React's Solution -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-num">6</div>
+        <div class="section-title">⚛️ How React Solves This</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          React uses a <strong style="color: var(--primary);">Virtual DOM</strong> to batch all updates 
+          and minimize reflows automatically!
+        </p>
+
+        <div class="vdom-diagram">
+          <h4 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary);">React's Virtual DOM Process</h4>
+          <div class="vdom-flow">
+            <div class="vdom-box">
+              <div class="vdom-box-icon">📝</div>
+              <div class="vdom-box-title">State Change</div>
+              <div class="vdom-box-sub">setState() called</div>
+            </div>
+            <div class="vdom-arrow">→</div>
+            <div class="vdom-box highlight">
+              <div class="vdom-box-icon">🔄</div>
+              <div class="vdom-box-title">Virtual DOM Diff</div>
+              <div class="vdom-box-sub">Compare old vs new</div>
+            </div>
+            <div class="vdom-arrow">→</div>
+            <div class="vdom-box">
+              <div class="vdom-box-icon">📊</div>
+              <div class="vdom-box-title">Calculate Changes</div>
+              <div class="vdom-box-sub">Minimum updates</div>
+            </div>
+            <div class="vdom-arrow">→</div>
+            <div class="vdom-box" style="border-color: var(--accent);">
+              <div class="vdom-box-icon">✨</div>
+              <div class="vdom-box-title">Batch Update</div>
+              <div class="vdom-box-sub">Single reflow!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 1.5rem;">
+          <div class="card">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">Without React (Vanilla JS)</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Manual DOM updates</span>
+todos.<span class="fn">forEach</span>(todo => {
+  <span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">'li'</span>)
+  li.textContent = todo.text
+  list.<span class="fn">appendChild</span>(li)  <span class="cmt">// Reflow!</span>
+})
+
+<span class="cmt">// Must manually batch updates</span>
+<span class="cmt">// Easy to make mistakes</span></pre></div>
+            </div>
+          </div>
+
+          <div class="card card-success">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">With React</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Declarative - React handles batching</span>
+<span class="kw">return</span> (
+  <span class="tag">&lt;ul&gt;</span>
+    {todos.<span class="fn">map</span>(todo => (
+      <span class="tag">&lt;li</span> <span class="attr">key</span>={todo.id}<span class="tag">&gt;</span>{todo.text}<span class="tag">&lt;/li&gt;</span>
+    ))}
+  <span class="tag">&lt;/ul&gt;</span>
+)
+
+<span class="cmt">// React batches all updates automatically!</span>
+<span class="cmt">// Single reflow guaranteed ✅</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Why React is Faster</div>
+          <div class="tip-content">
+            React's Virtual DOM acts as a buffer between your code and the real DOM. 
+            It collects all changes, calculates the minimum number of DOM operations needed, 
+            and applies them in a single batch - resulting in just <strong>one reflow</strong>!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Summary -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-num">✓</div>
+        <div class="section-title">Summary</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h3 style="color: var(--primary); margin-bottom: 1rem;">🎯 Key Takeaways</h3>
+        
+        <div class="summary-grid">
+          <div class="summary-card" style="border-color: var(--danger);">
+            <div class="summary-card-title">Multiple DOM Updates</div>
+            <div class="summary-card-value">📈 Many</div>
+            <div class="summary-card-perf perf-slow">🐌 Slow Performance</div>
+          </div>
+          <div class="summary-card" style="border-color: var(--warning);">
+            <div class="summary-card-title">DocumentFragment</div>
+            <div class="summary-card-value">1️⃣ One</div>
+            <div class="summary-card-perf perf-good">✅ Good Performance</div>
+          </div>
+          <div class="summary-card" style="border-color: var(--accent);">
+            <div class="summary-card-title">React Virtual DOM</div>
+            <div class="summary-card-value">1️⃣ Batched</div>
+            <div class="summary-card-perf perf-good">✅ Excellent Performance</div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📝 Best Practices</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ Do This</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Use <code>DocumentFragment</code> for batch updates</li>
+              <li>Read layout properties once, outside loops</li>
+              <li>Use CSS transforms instead of position changes</li>
+              <li>Use React or other frameworks for complex UIs</li>
+              <li>Debounce resize/scroll handlers</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ Avoid This</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Appending elements one by one in loops</li>
+              <li>Reading layout properties inside loops</li>
+              <li>Interleaving reads and writes</li>
+              <li>Changing layout properties in animations</li>
+              <li>Using <code>innerHTML</code> repeatedly</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(52,211,153,0.1)); border-radius: 16px;">
+          <h3 style="margin-bottom: 0.5rem;">🚀 Performance Matters!</h3>
+          <p style="color: var(--muted);">Minimizing reflows is key to building fast, responsive web applications.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    // Demo functions
+    function runBadDemo() {
+      const output = document.getElementById('demo-output');
+      const timeDisplay = document.getElementById('demo-time');
+      const reflowsDisplay = document.getElementById('demo-reflows');
+      
+      output.innerHTML = '';
+      
+      const start = performance.now();
+      
+      // Bad: Multiple reflows
+      for (let i = 0; i < 500; i++) {
+        const div = document.createElement('div');
+        div.className = 'demo-item';
+        div.textContent = `Item ${i + 1} - Added with individual appendChild (reflow!)`;
+        output.appendChild(div); // Each triggers reflow
+      }
+      
+      const end = performance.now();
+      const time = (end - start).toFixed(2);
+      
+      timeDisplay.textContent = time;
+      timeDisplay.style.color = 'var(--danger)';
+      reflowsDisplay.textContent = '~500';
+      reflowsDisplay.style.color = 'var(--danger)';
+    }
+
+    function runGoodDemo() {
+      const output = document.getElementById('demo-output');
+      const timeDisplay = document.getElementById('demo-time');
+      const reflowsDisplay = document.getElementById('demo-reflows');
+      
+      output.innerHTML = '';
+      
+      const start = performance.now();
+      
+      // Good: Single reflow with DocumentFragment
+      const fragment = document.createDocumentFragment();
+      
+      for (let i = 0; i < 500; i++) {
+        const div = document.createElement('div');
+        div.className = 'demo-item';
+        div.textContent = `Item ${i + 1} - Added via DocumentFragment (batched!)`;
+        fragment.appendChild(div); // No reflow - in memory
+      }
+      
+      output.appendChild(fragment); // Single reflow
+      
+      const end = performance.now();
+      const time = (end - start).toFixed(2);
+      
+      timeDisplay.textContent = time;
+      timeDisplay.style.color = 'var(--accent)';
+      reflowsDisplay.textContent = '1';
+      reflowsDisplay.style.color = 'var(--accent)';
+    }
+
+    function clearDemo() {
+      const output = document.getElementById('demo-output');
+      const timeDisplay = document.getElementById('demo-time');
+      const reflowsDisplay = document.getElementById('demo-reflows');
+      
+      output.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 2rem;">Click a button above to run the demo</p>';
+      timeDisplay.textContent = '0';
+      timeDisplay.style.color = 'var(--muted)';
+      reflowsDisplay.textContent = '0';
+      reflowsDisplay.style.color = 'var(--muted)';
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Course - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 30%, rgba(97,218,251,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(167,139,250,0.15) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--react), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badge { display: inline-block; background: linear-gradient(135deg, var(--react), var(--secondary)); color: var(--bg); padding: 0.4rem 1.25rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; position: relative; }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-num { width: 40px; height: 40px; background: linear-gradient(135deg, var(--react), var(--secondary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; font-size: 1rem; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+    .card-react { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.08), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 100px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--react); box-shadow: 0 0 20px rgba(97,218,251,0.3); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    .compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .compare-table th, .compare-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .compare-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .compare-table td { background: var(--surface); }
+    .compare-table tr:hover td { background: var(--surface2); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    .badge-react { background: rgba(97,218,251,0.2); color: var(--react); }
+    
+    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: start; margin: 1.5rem 0; }
+    .vs-divider { display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--warning); font-size: 1.5rem; padding-top: 2rem; }
+    @media (max-width: 900px) { .vs-container { grid-template-columns: 1fr; } .vs-divider { padding: 1rem 0; } }
+    
+    h2 { color: var(--react); margin-bottom: 1rem; }
+    h3 { color: var(--primary); margin: 1.5rem 0 1rem; }
+    h4 { color: var(--secondary); margin: 1rem 0 0.5rem; }
+    
+    .learning-objectives { background: var(--surface2); border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
+    .learning-objectives h4 { color: var(--accent); margin-top: 0; }
+    .learning-objectives ul { color: var(--muted); padding-left: 1.5rem; }
+    .learning-objectives li { margin: 0.5rem 0; }
+    
+    .chapter-badge { display: inline-block; background: var(--react); color: var(--bg); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+    
+    .key-concept { background: linear-gradient(135deg, rgba(97,218,251,0.1), rgba(167,139,250,0.1)); border: 1px solid var(--react); border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
+    .key-concept h4 { color: var(--react); margin-top: 0; }
+    
+    .file-structure { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin: 1rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--muted); }
+    .file-structure .folder { color: var(--warning); }
+    .file-structure .file { color: var(--accent); }
+    
+    .summary-box { background: linear-gradient(135deg, rgba(52,211,153,0.1), transparent); border: 1px solid var(--accent); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    .summary-box h4 { color: var(--accent); margin-top: 0; }
+    .summary-box ul { color: var(--muted); padding-left: 1.5rem; }
+    .summary-box li { margin: 0.5rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badge">⚛️ Complete React Course</div>
+      <h1>React - The Complete Guide</h1>
+      <p>From Fundamentals to Advanced Concepts | Chapters 1-4</p>
+    </div>
+
+    <!-- Chapter 1: React What and Why -->
+    <div class="section open" id="ch1">
+      <div class="section-header" onclick="toggleSection('ch1')">
+        <div class="section-num">1</div>
+        <div class="section-title">Chapter 1: React – What and Why</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="chapter-badge">SECTION 1 - CHAPTER 1</div>
+        
+        <div class="learning-objectives">
+          <h4>🎯 Learning Objectives</h4>
+          <ul>
+            <li>Describe what React is and why you would use it</li>
+            <li>Compare React to web projects built with just JavaScript</li>
+            <li>Explain the difference between imperative and declarative code</li>
+            <li>Differentiate between single-page applications (SPAs) and multi-page apps</li>
+            <li>Create new React projects</li>
+          </ul>
+        </div>
+
+        <h2>What is React?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong style="color: var(--react);">React.js</strong> (or just React) is one of the most popular frontend JavaScript libraries. 
+          The creators call it <em>"The library for web and native user interfaces."</em>
+        </p>
+
+        <div class="key-concept">
+          <h4>🔑 Key Concept: What is a Library?</h4>
+          <p style="color: var(--muted);">A <strong>library</strong> is a collection of functionalities that you can use in your code to achieve results that would normally require more code and work. Libraries help you write more concise, less error-prone code and enable you to implement features more quickly.</p>
+          <p style="color: var(--muted); margin-top: 0.5rem;">React is a library that focuses on providing functionalities that help you create <strong>interactive and reactive UIs</strong>.</p>
+        </div>
+
+        <h3>The Problem with "Vanilla JavaScript"</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          <strong>Vanilla JavaScript</strong> refers to JavaScript without any frameworks or libraries. While it has the advantage of smaller download sizes, the downside is that you must implement all functionalities from scratch.
+        </p>
+
+        <div class="grid-2">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger);">❌ Vanilla JS Example (Imperative)</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; vanilla.js</div>
+              <div class="code-body"><pre><span class="kw">const</span> buttonElement = document
+  .<span class="fn">querySelector</span>(<span class="str">'button'</span>);
+<span class="kw">const</span> paragraphElement = document
+  .<span class="fn">querySelector</span>(<span class="str">'p'</span>);
+
+<span class="kw">function</span> <span class="fn">updateTextHandler</span>() {
+  paragraphElement.textContent = 
+    <span class="str">'Text was changed!'</span>;
+}
+
+buttonElement.<span class="fn">addEventListener</span>(
+  <span class="str">'click'</span>, 
+  updateTextHandler
+);</pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem;">Step-by-step instructions telling the browser exactly HOW to do things.</p>
+          </div>
+
+          <div class="card card-react">
+            <h4 style="color: var(--react);">✅ React Example (Declarative)</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; App.jsx</div>
+              <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [outputText, setOutputText] = 
+    <span class="fn">useState</span>(<span class="str">'Initial text'</span>);
+
+  <span class="kw">function</span> <span class="fn">updateTextHandler</span>() {
+    <span class="fn">setOutputText</span>(<span class="str">'Text was changed!'</span>);
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={updateTextHandler}<span class="tag">&gt;</span>
+        Click to change text
+      <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{outputText}<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}</pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem;">Describe WHAT you want, React handles HOW.</p>
+          </div>
+        </div>
+
+        <h3>Imperative vs Declarative</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Imperative (Vanilla JS)</th>
+              <th>Declarative (React)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Write step-by-step instructions</td>
+              <td>Describe the desired end state</td>
+            </tr>
+            <tr>
+              <td>Manually select DOM elements</td>
+              <td>No DOM selection needed</td>
+            </tr>
+            <tr>
+              <td>Manually update DOM content</td>
+              <td>React updates automatically</td>
+            </tr>
+            <tr>
+              <td>Must manage all event listeners</td>
+              <td>Event handling built into JSX</td>
+            </tr>
+            <tr>
+              <td>~75% code is DOM boilerplate</td>
+              <td>Focus on business logic</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 When to Use React</div>
+          <div class="tip-content">
+            React is NOT a great solution for very simple UIs. If you can solve a problem with a few lines of vanilla JavaScript, there's probably no strong reason to use React. React shines when building <strong>complex, interactive UIs</strong>.
+          </div>
+        </div>
+
+        <h3>How React Manipulates the DOM</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📝</div>
+            <div style="font-weight: 600;">JSX Code</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">You write</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">⚡</div>
+            <div style="font-weight: 600;">Transform</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Build process</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">🌳</div>
+            <div style="font-weight: 600; color: var(--react);">Virtual DOM</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">React creates</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">🖥️</div>
+            <div style="font-weight: 600;">Real DOM</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">react-dom updates</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--react);">react package</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Creates the virtual DOM and derives the current UI state. Provides features like JSX and state management.</p>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary);">react-dom package</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Acts as a "translation bridge" between React code and the browser's actual DOM. Produces DOM-manipulating instructions.</p>
+          </div>
+        </div>
+
+        <h3>Single Page Applications (SPAs)</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          React can be used to manage parts of a website OR the entire page. When React controls all subpages and routing, it's called a <strong>Single Page Application (SPA)</strong>.
+        </p>
+
+        <div class="key-concept">
+          <h4>🔑 What is an SPA?</h4>
+          <p style="color: var(--muted);">A website that contains only <strong>one HTML file</strong> (typically named index.html), which loads the React JavaScript code. The entire UI is then created and managed by JavaScript via React. URL changes are handled by React (client-side routing) without loading new HTML pages from the server.</p>
+        </div>
+
+        <h3>Creating a React Project with Vite</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          <strong>Vite</strong> is an open-source development and build tool that creates projects with a built-in, preconfigured build process for JSX transpilation.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Terminal Commands</div>
+          <div class="code-body"><pre><span class="cmt"># Create a new React project</span>
+npm create vite@latest my-react-project
+
+<span class="cmt"># Navigate to project folder</span>
+cd my-react-project
+
+<span class="cmt"># Install dependencies</span>
+npm install
+
+<span class="cmt"># Start development server (localhost:5173)</span>
+npm run dev
+
+<span class="cmt"># Stop the server</span>
+Ctrl + C</pre></div>
+        </div>
+
+        <h4>Project Structure</h4>
+        <div class="file-structure">
+📁 my-react-project/
+├── 📁 <span class="folder">src/</span>
+│   ├── 📄 <span class="file">main.jsx</span>        <span class="cmt"># Entry script (executed first)</span>
+│   ├── 📄 <span class="file">App.jsx</span>         <span class="cmt"># Root component</span>
+│   ├── 📄 <span class="file">*.css</span>           <span class="cmt"># Styling files</span>
+│   └── 📁 <span class="folder">assets/</span>         <span class="cmt"># Images and assets</span>
+├── 📁 <span class="folder">public/</span>              <span class="cmt"># Static files (favicon, etc.)</span>
+├── 📄 <span class="file">index.html</span>          <span class="cmt"># Single HTML page</span>
+├── 📄 <span class="file">package.json</span>        <span class="cmt"># Dependencies & scripts</span>
+├── 📄 <span class="file">package-lock.json</span>   <span class="cmt"># Locked dependency versions</span>
+└── 📁 <span class="folder">node_modules/</span>       <span class="cmt"># Installed packages</span>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 Note: .jsx Extension</div>
+          <div class="note-content">Vite enforces using <code>.jsx</code> as a file extension for files containing JSX code. You cannot use <code>.js</code> for JSX in Vite projects.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter 2: Components and JSX -->
+    <div class="section" id="ch2">
+      <div class="section-header" onclick="toggleSection('ch2')">
+        <div class="section-num">2</div>
+        <div class="section-title">Chapter 2: Understanding React Components and JSX</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="chapter-badge">CHAPTER 2</div>
+
+        <div class="learning-objectives">
+          <h4>🎯 Learning Objectives</h4>
+          <ul>
+            <li>Define what exactly components are</li>
+            <li>Build and use components effectively</li>
+            <li>Utilize common naming conventions and code patterns</li>
+            <li>Describe the relationship between components and JSX</li>
+            <li>Write JSX code and understand why it's used</li>
+            <li>Write React components without using JSX code</li>
+          </ul>
+        </div>
+
+        <h2>What Are Components?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Components are <strong style="color: var(--react);">reusable building blocks</strong> that are combined to compose the final user interface. Think of them like LEGO blocks for your UI.
+        </p>
+
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📋</div>
+            <div style="font-weight: 600;">Sidebar</div>
+          </div>
+          <span style="color: var(--primary); font-size: 1.5rem;">+</span>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📝</div>
+            <div style="font-weight: 600;">Header</div>
+          </div>
+          <span style="color: var(--primary); font-size: 1.5rem;">+</span>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📊</div>
+            <div style="font-weight: 600;">TaskList</div>
+          </div>
+          <span style="color: var(--primary); font-size: 1.5rem;">=</span>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">🖥️</div>
+            <div style="font-weight: 600; color: var(--react);">Complete UI</div>
+          </div>
+        </div>
+
+        <div class="key-concept">
+          <h4>🔑 Why Components?</h4>
+          <ul style="color: var(--muted); padding-left: 1.5rem;">
+            <li>Work on small, manageable chunks of code</li>
+            <li>Easier to maintain than one huge file</li>
+            <li>Components can be nested inside other components</li>
+            <li>Reuse the same component with different configurations</li>
+          </ul>
+        </div>
+
+        <h3>The Anatomy of a Component</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; SubmitButton.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">SubmitButton</span>() {
+  <span class="kw">const</span> [isSubmitted, setIsSubmitted] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="kw">function</span> <span class="fn">handleSubmit</span>() {
+    <span class="fn">setIsSubmitted</span>(<span class="kw">true</span>);
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleSubmit}<span class="tag">&gt;</span>
+      {isSubmitted ? <span class="str">'Loading…'</span> : <span class="str">'Submit'</span>}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> SubmitButton;</pre></div>
+        </div>
+
+        <h4>Key Observations:</h4>
+        <ul style="color: var(--muted); padding-left: 1.5rem; margin-bottom: 1rem;">
+          <li>Component functions use <strong>PascalCase</strong> names (e.g., SubmitButton)</li>
+          <li>Inner functions use <strong>camelCase</strong> (e.g., handleSubmit)</li>
+          <li>Component functions return <strong>JSX code</strong> (HTML-like syntax)</li>
+          <li>Features like <code>useState()</code> can be used inside components</li>
+          <li>Components are <strong>exported</strong> to be used elsewhere</li>
+        </ul>
+
+        <h3>Using Components</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; AuthForm.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> SubmitButton <span class="kw">from</span> <span class="str">'./SubmitButton.jsx'</span>;
+
+<span class="kw">function</span> <span class="fn">AuthForm</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;SubmitButton /&gt;</span>  <span class="cmt">{/* Using the component */}</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> AuthForm;</pre></div>
+        </div>
+
+        <h3>What Makes a Function a Component?</h3>
+        <div class="card card-react">
+          <p style="color: var(--muted);">A function qualifies as a <strong>React component</strong> if it returns something that can be rendered by React (typically JSX code). Once it qualifies, it can be used like an HTML element in JSX code.</p>
+        </div>
+
+        <div class="vs-container">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">✅ This IS a Component</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Greeting</span>() {
+  <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Hello!<span class="tag">&lt;/p&gt;</span>;
+}</pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem;">Returns renderable JSX</p>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="card card-danger">
+            <h4 style="color: var(--danger);">❌ This is NOT a Component</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">calculate</span>(a, b) {
+  <span class="kw">return</span> { sum: a + b };
+}</pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem;">Returns an object, not JSX</p>
+          </div>
+        </div>
+
+        <h3>The Root Component & render()</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; main.jsx (Entry Point)</div>
+          <div class="code-body"><pre><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> ReactDOM <span class="kw">from</span> <span class="str">'react-dom/client'</span>;
+<span class="kw">import</span> <span class="str">'./index.css'</span>;
+<span class="kw">import</span> App <span class="kw">from</span> <span class="str">'./App.jsx'</span>;
+
+<span class="cmt">// Create entry point attached to DOM element with id="root"</span>
+<span class="kw">const</span> root = ReactDOM.<span class="fn">createRoot</span>(
+  document.<span class="fn">getElementById</span>(<span class="str">'root'</span>)
+);
+
+<span class="cmt">// Render the App component (root component)</span>
+root.<span class="fn">render</span>(<span class="tag">&lt;App /&gt;</span>);</pre></div>
+        </div>
+
+        <h3>Naming Conventions</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>What</th>
+              <th>Convention</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Component Function Names</td>
+              <td><span class="badge badge-react">PascalCase</span> (Required in JSX)</td>
+              <td><code>SubmitButton</code>, <code>AuthForm</code></td>
+            </tr>
+            <tr>
+              <td>Inner Functions</td>
+              <td><span class="badge badge-primary">camelCase</span></td>
+              <td><code>handleSubmit</code>, <code>updateText</code></td>
+            </tr>
+            <tr>
+              <td>File Names</td>
+              <td><span class="badge badge-secondary">PascalCase or kebab-case</span></td>
+              <td><code>SubmitButton.jsx</code> or <code>submit-button.jsx</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Important: Uppercase Starting Character</div>
+          <div class="warning-content">
+            You <strong>must</strong> use an uppercase starting character for custom component names in JSX. This is how React tells custom components apart from built-in elements like <code>&lt;div&gt;</code>.
+            <br><br>
+            <code>&lt;greeting /&gt;</code> ❌ Won't work<br>
+            <code>&lt;Greeting /&gt;</code> ✅ Correct
+          </div>
+        </div>
+
+        <h3>JSX vs HTML vs JavaScript</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          <strong>JSX</strong> is a syntax extension that looks like HTML but is actually syntactical sugar that gets transformed to regular JavaScript.
+        </p>
+
+        <div class="vs-container">
+          <div class="card">
+            <h4 style="color: var(--react);">JSX Code (What you write)</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Greeting</span>() {
+  <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Hello World!<span class="tag">&lt;/p&gt;</span>;
+}</pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">→</div>
+          <div class="card">
+            <h4 style="color: var(--secondary);">Transformed Code (What runs)</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Greeting</span>() {
+  <span class="kw">return</span> React.<span class="fn">createElement</span>(
+    <span class="str">'p'</span>, 
+    {}, 
+    <span class="str">'Hello World!'</span>
+  );
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>JSX Rules</h3>
+        <div class="grid-2">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger);">❌ Invalid: Multiple Root Elements</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;p&gt;</span>Hello<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;p&gt;</span>World<span class="tag">&lt;/p&gt;</span>
+  ); <span class="cmt">// Error! Two values</span>
+}</pre></div>
+            </div>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">✅ Valid: Use Fragment</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Hello<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;p&gt;</span>World<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  ); <span class="cmt">// Fragment wraps them</span>
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 React Fragment</div>
+          <div class="tip-content">
+            Use <code>&lt;&gt;...&lt;/&gt;</code> or <code>&lt;React.Fragment&gt;...&lt;/React.Fragment&gt;</code> to wrap multiple sibling elements without adding extra DOM nodes.
+          </div>
+        </div>
+
+        <h4>Self-Closing Tags Required</h4>
+        <div class="code-block">
+          <div class="code-body"><pre><span class="cmt">// HTML allows void elements</span>
+<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="str">"image.png"</span><span class="tag">&gt;</span>  <span class="cmt">// Works in HTML</span>
+
+<span class="cmt">// JSX requires self-closing</span>
+<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="str">"image.png"</span> <span class="tag">/&gt;</span>  <span class="cmt">// Required in JSX</span></pre></div>
+        </div>
+
+        <h3>Outputting Dynamic Content</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Dynamic Content with Curly Braces</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> userName = <span class="str">'Max'</span>;
+  <span class="kw">const</span> age = <span class="num">30</span>;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="cmt">{/* Output variables */}</span>
+      <span class="tag">&lt;p&gt;</span>Hi, my name is {userName}!<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="cmt">{/* Inline calculations */}</span>
+      <span class="tag">&lt;p&gt;</span>Next year I'll be {age + <span class="num">1</span>}<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="cmt">{/* Function calls */}</span>
+      <span class="tag">&lt;p&gt;</span>Name uppercase: {userName.<span class="fn">toUpperCase</span>()}<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="cmt">{/* Dynamic attributes */}</span>
+      <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">value</span>={userName} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>Rendering Images</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--accent);">Local Images (src/ folder)</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">import</span> myImage <span class="kw">from</span> <span class="str">'./assets/my-image.png'</span>;
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> <span class="tag">&lt;img</span> <span class="attr">src</span>={myImage} <span class="tag">/&gt;</span>;
+}</pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem;">Import the image and use it as a dynamic value.</p>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--warning);">Public Folder Images</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="str">"/images/demo.jpg"</span> <span class="tag">/&gt;</span>;
+}
+<span class="cmt">// Note: Don't include 'public' in path</span></pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem;">Reference directly (files skip build process).</p>
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <h4>📝 Chapter 2 Summary</h4>
+          <ul>
+            <li>Components are reusable building blocks that return JSX</li>
+            <li>Custom component names must start with uppercase in JSX</li>
+            <li>JSX is syntactical sugar transformed to <code>React.createElement()</code></li>
+            <li>Use <code>{}</code> for dynamic content in JSX</li>
+            <li>JSX elements must have closing tags</li>
+            <li>Use fragments <code>&lt;&gt;</code> to wrap multiple elements</li>
+            <li>Import local images; reference public folder images directly</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter 3: Props -->
+    <div class="section" id="ch3">
+      <div class="section-header" onclick="toggleSection('ch3')">
+        <div class="section-num">3</div>
+        <div class="section-title">Chapter 3: Components and Props</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="chapter-badge">CHAPTER 3</div>
+
+        <div class="learning-objectives">
+          <h4>🎯 Learning Objectives</h4>
+          <ul>
+            <li>Build reusable React components</li>
+            <li>Utilize props to make components configurable</li>
+            <li>Build flexible user interfaces by combining components with props</li>
+          </ul>
+        </div>
+
+        <h2>What Are Props?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong style="color: var(--react);">Props</strong> (short for "properties") are how you configure components - just like HTML attributes configure HTML elements. Props make components truly reusable.
+        </p>
+
+        <div class="vs-container">
+          <div class="card">
+            <h4 style="color: var(--muted);">HTML Elements</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"https://google.com"</span><span class="tag">&gt;</span>
+  Use Google
+<span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"https://react.dev"</span><span class="tag">&gt;</span>
+  Learn React
+<span class="tag">&lt;/a&gt;</span></pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem;">Same element, different configurations</p>
+          </div>
+          <div class="vs-divider">=</div>
+          <div class="card card-react">
+            <h4 style="color: var(--react);">React Components</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="tag">&lt;GoalItem</span> 
+  <span class="attr">id</span>=<span class="str">"g1"</span> 
+  <span class="attr">title</span>=<span class="str">"Learn React"</span> 
+<span class="tag">/&gt;</span>
+<span class="tag">&lt;GoalItem</span> 
+  <span class="attr">id</span>=<span class="str">"g2"</span> 
+  <span class="attr">title</span>=<span class="str">"Build Projects"</span> 
+<span class="tag">/&gt;</span></pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem;">Same component, different configurations</p>
+          </div>
+        </div>
+
+        <h3>Passing Props to Components</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; GoalList.jsx (Parent Component)</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">GoalList</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      <span class="cmt">{/* Passing props as attributes */}</span>
+      <span class="tag">&lt;GoalItem</span> <span class="attr">id</span>=<span class="str">"g1"</span> <span class="attr">title</span>=<span class="str">"Finish the book!"</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;GoalItem</span> <span class="attr">id</span>=<span class="str">"g2"</span> <span class="attr">title</span>=<span class="str">"Learn all about React!"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>Consuming Props in a Component</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          React automatically passes a <strong>props object</strong> to every component function. This object contains all the attributes you set on the component.
+        </p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--secondary);">Method 1: Using props Object</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">GoalItem</span>(props) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;li&gt;</span>
+      {props.title} (ID: {props.id})
+    <span class="tag">&lt;/li&gt;</span>
+  );
+}</pre></div>
+            </div>
+          </div>
+          <div class="card card-react">
+            <h4 style="color: var(--react);">Method 2: Destructuring (Preferred)</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">GoalItem</span>({ title, id }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;li&gt;</span>
+      {title} (ID: {id})
+    <span class="tag">&lt;/li&gt;</span>
+  );
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>The Special "children" Prop</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          Content placed between component tags is available via the special <code>children</code> prop.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Using children Prop</div>
+          <div class="code-body"><pre><span class="cmt">// Usage - content between tags</span>
+<span class="tag">&lt;GoalItem</span> <span class="attr">id</span>=<span class="str">"g1"</span><span class="tag">&gt;</span>Learn React<span class="tag">&lt;/GoalItem&gt;</span>
+
+<span class="cmt">// Component - access via children</span>
+<span class="kw">function</span> <span class="fn">GoalItem</span>({ id, children }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;li&gt;</span>
+      {children} (ID: {id})
+    <span class="tag">&lt;/li&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>Passing Objects as Props</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Passing Grouped Data</div>
+          <div class="code-body"><pre><span class="cmt">// Individual props</span>
+<span class="tag">&lt;GoalItem</span> <span class="attr">title</span>=<span class="str">"A book"</span> <span class="attr">days</span>={<span class="num">10</span>} <span class="attr">id</span>=<span class="str">"g1"</span> <span class="tag">/&gt;</span>
+
+<span class="cmt">// OR grouped as an object</span>
+<span class="kw">const</span> goalData = { title: <span class="str">'A book'</span>, days: <span class="num">10</span>, id: <span class="str">'g1'</span> };
+<span class="tag">&lt;GoalItem</span> <span class="attr">data</span>={goalData} <span class="tag">/&gt;</span>
+
+<span class="cmt">// Consuming grouped data</span>
+<span class="kw">function</span> <span class="fn">GoalItem</span>({ data }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;li&gt;</span>
+      {data.title} - {data.days} days
+    <span class="tag">&lt;/li&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>Default Prop Values</h3>
+        <div class="code-block">
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Avatar</span>({ person, size = <span class="num">100</span> }) {
+  <span class="cmt">// size defaults to 100 if not provided</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span> 
+      <span class="attr">src</span>={person.imageUrl} 
+      <span class="attr">width</span>={size} 
+      <span class="attr">height</span>={size} 
+    <span class="tag">/&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;Avatar</span> <span class="attr">person</span>={user} <span class="tag">/&gt;</span>  <span class="cmt">// size = 100 (default)</span>
+<span class="tag">&lt;Avatar</span> <span class="attr">person</span>={user} <span class="attr">size</span>={<span class="num">50</span>} <span class="tag">/&gt;</span>  <span class="cmt">// size = 50</span></pre></div>
+        </div>
+
+        <h3>Spreading Props</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Forwarding Props with Spread Operator</div>
+          <div class="code-body"><pre><span class="cmt">// Repetitive (verbose)</span>
+<span class="kw">function</span> <span class="fn">Profile</span>({ person, size, color, borderRadius }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;Avatar</span>
+      <span class="attr">person</span>={person}
+      <span class="attr">size</span>={size}
+      <span class="attr">color</span>={color}
+      <span class="attr">borderRadius</span>={borderRadius}
+    <span class="tag">/&gt;</span>
+  );
+}
+
+<span class="cmt">// Concise (using spread)</span>
+<span class="kw">function</span> <span class="fn">Profile</span>(props) {
+  <span class="kw">return</span> <span class="tag">&lt;Avatar</span> {...props} <span class="tag">/&gt;</span>;
+}</pre></div>
+        </div>
+
+        <h3>Wrapper Components with Rest Props</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Custom Link Component</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Link</span>({ children, ...props }) {
+  <span class="cmt">// ...props collects all remaining props</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;a</span> 
+      {...props}  <span class="cmt">// Spread them onto &lt;a&gt;</span>
+      <span class="attr">target</span>=<span class="str">"_blank"</span> 
+      <span class="attr">rel</span>=<span class="str">"noopener noreferrer"</span>
+    <span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/a&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage - href gets passed through</span>
+<span class="tag">&lt;Link</span> <span class="attr">href</span>=<span class="str">"https://google.com"</span><span class="tag">&gt;</span>
+  Google
+<span class="tag">&lt;/Link&gt;</span></pre></div>
+        </div>
+
+        <h3>Props Are Immutable</h3>
+        <div class="warning">
+          <div class="warning-title">⚠️ Important: Props Are Read-Only</div>
+          <div class="warning-content">
+            Props are <strong>immutable</strong> - you cannot change them inside the component. When a component needs different props, it must "ask" its parent to pass new props. The old props are then discarded.
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <h4>📝 Chapter 3 Summary</h4>
+          <ul>
+            <li>Props make components configurable and reusable</li>
+            <li>Props are passed like attributes: <code>&lt;Component prop={value} /&gt;</code></li>
+            <li>Access props via the props object or destructuring</li>
+            <li>The <code>children</code> prop contains content between component tags</li>
+            <li>Use default values with destructuring: <code>{ size = 100 }</code></li>
+            <li>Spread operator <code>{...props}</code> forwards all props</li>
+            <li>Rest property <code>...props</code> collects remaining props</li>
+            <li>Props are immutable - components cannot modify them</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter 4: Events and State -->
+    <div class="section" id="ch4">
+      <div class="section-header" onclick="toggleSection('ch4')">
+        <div class="section-num">4</div>
+        <div class="section-title">Chapter 4: Working with Events and State</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="chapter-badge">CHAPTER 4</div>
+
+        <div class="learning-objectives">
+          <h4>🎯 Learning Objectives</h4>
+          <ul>
+            <li>Add user event handlers (e.g., for button clicks)</li>
+            <li>Update the UI via a concept called state</li>
+            <li>Build real dynamic and interactive UIs</li>
+          </ul>
+        </div>
+
+        <h2>Events in React</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          React lets you add <strong style="color: var(--react);">event handlers</strong> to your JSX. Event handlers are functions triggered in response to interactions like clicking, hovering, or form inputs.
+        </p>
+
+        <h3>Adding Event Handlers</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Three Ways to Add Event Handlers</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Button</span>() {
+  <span class="cmt">// 1. Named function</span>
+  <span class="kw">function</span> <span class="fn">handleClick</span>() {
+    <span class="fn">alert</span>(<span class="str">'You clicked me!'</span>);
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="cmt">{/* Method 1: Pass function reference */}</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>Click 1<span class="tag">&lt;/button&gt;</span>
+      
+      <span class="cmt">{/* Method 2: Inline arrow function */}</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">alert</span>(<span class="str">'Clicked!'</span>)}<span class="tag">&gt;</span>
+        Click 2
+      <span class="tag">&lt;/button&gt;</span>
+      
+      <span class="cmt">{/* Method 3: Inline function expression */}</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={<span class="kw">function</span>() { <span class="fn">alert</span>(<span class="str">'Clicked!'</span>); }}<span class="tag">&gt;</span>
+        Click 3
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Pass Function, Don't Call It!</div>
+          <div class="warning-content">
+            <table class="compare-table" style="margin-top: 0.5rem;">
+              <thead>
+                <tr>
+                  <th style="color: var(--accent);">✅ Correct (passing)</th>
+                  <th style="color: var(--danger);">❌ Wrong (calling)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>&lt;button onClick={handleClick}&gt;</code></td>
+                  <td><code>&lt;button onClick={handleClick()}&gt;</code></td>
+                </tr>
+                <tr>
+                  <td><code>&lt;button onClick={() => alert('!')}&gt;</code></td>
+                  <td><code>&lt;button onClick={alert('!')}&gt;</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="margin-top: 0.75rem;">Adding <code>()</code> calls the function immediately during rendering!</p>
+          </div>
+        </div>
+
+        <h3>Common Event Props</h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4 style="color: var(--primary);">Mouse Events</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">
+              <code>onClick</code><br>
+              <code>onDoubleClick</code><br>
+              <code>onMouseEnter</code><br>
+              <code>onMouseLeave</code>
+            </p>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary);">Form Events</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">
+              <code>onChange</code><br>
+              <code>onSubmit</code><br>
+              <code>onFocus</code><br>
+              <code>onBlur</code>
+            </p>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--accent);">Keyboard Events</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">
+              <code>onKeyDown</code><br>
+              <code>onKeyUp</code><br>
+              <code>onKeyPress</code>
+            </p>
+          </div>
+        </div>
+
+        <h3>Reading Props in Event Handlers</h3>
+        <div class="code-block">
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">AlertButton</span>({ message, children }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">alert</span>(message)}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;AlertButton</span> <span class="attr">message</span>=<span class="str">"Playing!"</span><span class="tag">&gt;</span>Play Movie<span class="tag">&lt;/AlertButton&gt;</span>
+<span class="tag">&lt;AlertButton</span> <span class="attr">message</span>=<span class="str">"Uploading!"</span><span class="tag">&gt;</span>Upload<span class="tag">&lt;/AlertButton&gt;</span></pre></div>
+        </div>
+
+        <h3>Event Propagation</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">Events "bubble" up the tree. You can stop propagation with <code>e.stopPropagation()</code>.</p>
+
+        <div class="code-block">
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Button</span>({ onClick, children }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={e => {
+      e.<span class="fn">stopPropagation</span>();  <span class="cmt">// Stop bubbling</span>
+      <span class="fn">onClick</span>();
+    }}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>Preventing Default Behavior</h3>
+        <div class="code-block">
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Signup</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={e => {
+      e.<span class="fn">preventDefault</span>();  <span class="cmt">// Stop page reload</span>
+      <span class="fn">alert</span>(<span class="str">'Submitting!'</span>);
+    }}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input /&gt;</span>
+      <span class="tag">&lt;button&gt;</span>Send<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <hr style="border-color: var(--border); margin: 2rem 0;">
+
+        <h2>State: Making UIs Dynamic</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong style="color: var(--react);">State</strong> is data that, when changed, triggers React to re-render the component and update the UI.
+        </p>
+
+        <div class="key-concept">
+          <h4>🔑 Why State?</h4>
+          <p style="color: var(--muted);">Regular JavaScript variables don't trigger UI updates. React doesn't track them. When you need the UI to change based on data, you must use <strong>state</strong>.</p>
+        </div>
+
+        <h3>The useState Hook</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; useState Syntax</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="cmt">// Declare state: [currentValue, setterFunction] = useState(initialValue)</span>
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+  <span class="kw">function</span> <span class="fn">handleClick</span>() {
+    <span class="fn">setCount</span>(count + <span class="num">1</span>);  <span class="cmt">// Update state → triggers re-render</span>
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Count: {count}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>Increment<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">👆</div>
+            <div style="font-weight: 600;">User Action</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Click button</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📝</div>
+            <div style="font-weight: 600;">setState()</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Update state</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">🔄</div>
+            <div style="font-weight: 600; color: var(--react);">Re-render</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Component runs again</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">🖥️</div>
+            <div style="font-weight: 600;">UI Updates</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">DOM changes</div>
+          </div>
+        </div>
+
+        <h3>useState Returns an Array</h3>
+        <div class="code-block">
+          <div class="code-body"><pre><span class="cmt">// useState returns [currentValue, setterFunction]</span>
+<span class="kw">const</span> stateArray = <span class="fn">useState</span>(<span class="str">'initial'</span>);
+<span class="kw">const</span> value = stateArray[<span class="num">0</span>];      <span class="cmt">// Current state value</span>
+<span class="kw">const</span> setValue = stateArray[<span class="num">1</span>];  <span class="cmt">// Function to update state</span>
+
+<span class="cmt">// Using array destructuring (preferred)</span>
+<span class="kw">const</span> [value, setValue] = <span class="fn">useState</span>(<span class="str">'initial'</span>);</pre></div>
+        </div>
+
+        <h3>Naming Conventions for State</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Element</th>
+              <th>Convention</th>
+              <th>Examples</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>State Value (1st element)</td>
+              <td>Descriptive name</td>
+              <td><code>count</code>, <code>email</code>, <code>isOpen</code></td>
+            </tr>
+            <tr>
+              <td>Setter Function (2nd element)</td>
+              <td><code>set</code> + StateName</td>
+              <td><code>setCount</code>, <code>setEmail</code>, <code>setIsOpen</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Complete Example: Email Validation</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; EmailInput.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">EmailInput</span>() {
+  <span class="kw">const</span> [errorMessage, setErrorMessage] = <span class="fn">useState</span>(<span class="str">''</span>);
+
+  <span class="kw">function</span> <span class="fn">evaluateEmail</span>(event) {
+    <span class="kw">const</span> enteredEmail = event.target.value;
+    
+    <span class="kw">if</span> (enteredEmail.trim() === <span class="str">''</span> || !enteredEmail.<span class="fn">includes</span>(<span class="str">'@'</span>)) {
+      <span class="fn">setErrorMessage</span>(<span class="str">'The entered email address is invalid.'</span>);
+    } <span class="kw">else</span> {
+      <span class="fn">setErrorMessage</span>(<span class="str">''</span>);
+    }
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">placeholder</span>=<span class="str">"Your email"</span>
+        <span class="attr">type</span>=<span class="str">"email"</span>
+        <span class="attr">onBlur</span>={evaluateEmail}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;p</span> <span class="attr">style</span>={{ color: <span class="str">'red'</span> }}<span class="tag">&gt;</span>{errorMessage}<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>State Value Types</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">State can hold any JavaScript value type:</p>
+        
+        <div class="grid-3">
+          <div class="card">
+            <h4 style="color: var(--primary);">Primitives</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="fn">useState</span>(<span class="str">'text'</span>)    <span class="cmt">// string</span>
+<span class="fn">useState</span>(<span class="num">42</span>)        <span class="cmt">// number</span>
+<span class="fn">useState</span>(<span class="kw">true</span>)     <span class="cmt">// boolean</span>
+<span class="fn">useState</span>(<span class="kw">null</span>)     <span class="cmt">// null</span></pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary);">Objects</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="fn">useState</span>({
+  name: <span class="str">'John'</span>,
+  age: <span class="num">25</span>
+})</pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--accent);">Arrays</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="fn">useState</span>([
+  <span class="str">'item1'</span>,
+  <span class="str">'item2'</span>
+])</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Lifting State Up</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          When two components need to share state, move it to their closest common parent and pass it down via props.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Lifting State Example</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Parent holds the shared state</span>
+<span class="kw">function</span> <span class="fn">Accordion</span>() {
+  <span class="kw">const</span> [activeIndex, setActiveIndex] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="tag">&lt;Panel</span>
+        <span class="attr">title</span>=<span class="str">"About"</span>
+        <span class="attr">isActive</span>={activeIndex === <span class="num">0</span>}
+        <span class="attr">onShow</span>={() => <span class="fn">setActiveIndex</span>(<span class="num">0</span>)}
+      <span class="tag">&gt;</span>
+        About content...
+      <span class="tag">&lt;/Panel&gt;</span>
+      <span class="tag">&lt;Panel</span>
+        <span class="attr">title</span>=<span class="str">"History"</span>
+        <span class="attr">isActive</span>={activeIndex === <span class="num">1</span>}
+        <span class="attr">onShow</span>={() => <span class="fn">setActiveIndex</span>(<span class="num">1</span>)}
+      <span class="tag">&gt;</span>
+        History content...
+      <span class="tag">&lt;/Panel&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}
+
+<span class="cmt">// Child receives state via props</span>
+<span class="kw">function</span> <span class="fn">Panel</span>({ title, children, isActive, onShow }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;section&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{title}<span class="tag">&lt;/h3&gt;</span>
+      {isActive ? (
+        <span class="tag">&lt;p&gt;</span>{children}<span class="tag">&lt;/p&gt;</span>
+      ) : (
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onShow}<span class="tag">&gt;</span>Show<span class="tag">&lt;/button&gt;</span>
+      )}
+    <span class="tag">&lt;/section&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Single Source of Truth</div>
+          <div class="tip-content">
+            For each unique piece of state, choose one component to "own" it. Instead of duplicating state between components, lift it up to their common parent and pass it down via props.
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <h4>📝 Chapter 4 Summary</h4>
+          <ul>
+            <li>Event handlers are passed to JSX elements like <code>onClick={handleClick}</code></li>
+            <li>Pass functions, don't call them: <code>onClick={fn}</code> not <code>onClick={fn()}</code></li>
+            <li>Use <code>e.stopPropagation()</code> to stop event bubbling</li>
+            <li>Use <code>e.preventDefault()</code> to prevent default browser behavior</li>
+            <li><strong>State</strong> is data that triggers UI updates when changed</li>
+            <li><code>useState</code> returns <code>[value, setValue]</code></li>
+            <li>Calling the setter function triggers a re-render</li>
+            <li>State can be any JavaScript value type</li>
+            <li>Lift state up to share it between components</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Reference -->
+    <div class="section" id="ref">
+      <div class="section-header" onclick="toggleSection('ref')">
+        <div class="section-num">📋</div>
+        <div class="section-title">Quick Reference</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h3>JSX Rules Cheat Sheet</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--accent);">✅ Do</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Use PascalCase for component names</li>
+              <li>Return a single root element</li>
+              <li>Self-close empty elements: <code>&lt;img /&gt;</code></li>
+              <li>Use <code>{}</code> for dynamic values</li>
+              <li>Use <code>className</code> instead of <code>class</code></li>
+              <li>Use <code>htmlFor</code> instead of <code>for</code></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--danger);">❌ Don't</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Return sibling elements without wrapper</li>
+              <li>Use lowercase for custom components</li>
+              <li>Forget closing tags</li>
+              <li>Use <code>class</code> or <code>for</code> attributes</li>
+              <li>Put statements in <code>{}</code></li>
+              <li>Call event handlers: <code>onClick={fn()}</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Common Hooks</h3>
+        <div class="code-block">
+          <div class="code-body"><pre><span class="cmt">// State management</span>
+<span class="kw">const</span> [value, setValue] = <span class="fn">useState</span>(initialValue);
+
+<span class="cmt">// Effect (side effects, lifecycle)</span>
+<span class="fn">useEffect</span>(() => {
+  <span class="cmt">// Run on mount/update</span>
+  <span class="kw">return</span> () => { <span class="cmt">/* cleanup */</span> };
+}, [dependencies]);
+
+<span class="cmt">// Context (global state)</span>
+<span class="kw">const</span> value = <span class="fn">useContext</span>(MyContext);
+
+<span class="cmt">// Reducer (complex state)</span>
+<span class="kw">const</span> [state, dispatch] = <span class="fn">useReducer</span>(reducer, initialState);</pre></div>
+        </div>
+
+        <h3>Terminal Commands</h3>
+        <div class="code-block">
+          <div class="code-body"><pre><span class="cmt"># Create new project</span>
+npm create vite@latest my-app
+
+<span class="cmt"># Install dependencies</span>
+npm install
+
+<span class="cmt"># Start dev server</span>
+npm run dev
+
+<span class="cmt"># Build for production</span>
+npm run build</pre></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+    // Open first section by default
+    document.getElementById('ch1').classList.add('open');
+  </script>
+</body>
+</html>

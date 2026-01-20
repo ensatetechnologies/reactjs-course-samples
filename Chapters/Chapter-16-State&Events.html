@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 3: State & Events - Counter & Mood Tracker | React Course</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb; --state: #f472b6; --events: #fb923c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    /* Hero Section */
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(244,114,182,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(251,146,60,0.15) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--state), var(--events)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-state { background: var(--state); color: white; }
+    .badge-events { background: var(--events); color: white; }
+    .badge-react { background: #20232a; color: var(--react); }
+    .badge-module { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #000; }
+    
+    /* Section Styles */
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; }
+    .icon-intro { background: linear-gradient(135deg, var(--primary), #0891b2); }
+    .icon-state { background: linear-gradient(135deg, var(--state), #db2777); }
+    .icon-events { background: linear-gradient(135deg, var(--events), #ea580c); }
+    .icon-counter { background: linear-gradient(135deg, var(--secondary), #7c3aed); }
+    .icon-mood { background: linear-gradient(135deg, var(--accent), #059669); }
+    .icon-patterns { background: linear-gradient(135deg, var(--warning), #d97706); }
+    .icon-project { background: linear-gradient(135deg, var(--react), #0891b2); }
+    .icon-best { background: linear-gradient(135deg, #ec4899, #db2777); }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-badge { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    /* Code Blocks */
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    /* Syntax Highlighting */
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .prop { color: #e5c07b; } .op { color: #56b6c2; }
+    
+    /* Grid Layouts */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 500px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    /* Cards */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; transition: all 0.3s; }
+    .card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-state { border-color: var(--state); background: linear-gradient(135deg, rgba(244,114,182,0.08), transparent); }
+    .card-events { border-color: var(--events); background: linear-gradient(135deg, rgba(251,146,60,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    
+    /* Info Boxes */
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    /* Flow Diagrams */
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.state { border-color: var(--state); box-shadow: 0 0 20px rgba(244,114,182,0.2); }
+    .flow-box.event { border-color: var(--events); box-shadow: 0 0 20px rgba(251,146,60,0.2); }
+    .flow-box.ui { border-color: var(--accent); box-shadow: 0 0 20px rgba(52,211,153,0.2); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    /* Tables */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    /* Badges */
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    /* Highlight Box */
+    .highlight-box { background: linear-gradient(135deg, rgba(244,114,182,0.1), rgba(251,146,60,0.05)); border: 1px solid rgba(244,114,182,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    
+    /* Interactive Demo */
+    .demo-container { background: var(--surface2); border: 2px solid var(--border); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .demo-title { color: var(--primary); font-weight: 600; margin-bottom: 1rem; text-align: center; }
+    
+    /* Counter Demo */
+    .counter-demo { text-align: center; }
+    .counter-display { font-size: 5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin: 1rem 0; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .counter-buttons { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 1rem; font-weight: 600; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: var(--bg); }
+    .btn-primary:hover { background: #06b6d4; transform: translateY(-2px); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 2px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--primary); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
+    .btn-accent { background: var(--accent); color: var(--bg); }
+    .btn-accent:hover { background: #10b981; transform: translateY(-2px); }
+    .btn-warning { background: var(--warning); color: var(--bg); }
+    .btn-warning:hover { background: #f59e0b; transform: translateY(-2px); }
+    
+    /* Mood Tracker Demo */
+    .mood-demo { text-align: center; }
+    .mood-display { font-size: 6rem; margin: 1rem 0; transition: all 0.3s; }
+    .mood-label { font-size: 1.5rem; color: var(--text); margin-bottom: 1rem; }
+    .mood-buttons { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; }
+    .mood-btn { font-size: 2.5rem; padding: 0.75rem; background: var(--surface); border: 2px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+    .mood-btn:hover { transform: scale(1.1); border-color: var(--primary); }
+    .mood-btn.active { border-color: var(--accent); background: rgba(52,211,153,0.2); transform: scale(1.15); }
+    .mood-history { margin-top: 1.5rem; padding: 1rem; background: var(--surface); border-radius: 10px; }
+    .mood-history-title { color: var(--muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .mood-history-items { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+    .mood-history-item { font-size: 1.5rem; opacity: 0.6; }
+    
+    /* Concept Cards */
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.3s; }
+    .concept-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .concept-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .concept-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem; }
+    .concept-desc { color: var(--muted); font-size: 0.85rem; }
+    
+    /* VS Container */
+    .vs-container { display: flex; align-items: stretch; gap: 1rem; margin: 1rem 0; }
+    .vs-box { flex: 1; padding: 1rem; border-radius: 12px; }
+    .vs-box.good { background: rgba(52,211,153,0.1); border: 1px solid var(--accent); }
+    .vs-box.bad { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); }
+    .vs-divider { display: flex; align-items: center; font-weight: 700; color: var(--warning); }
+    @media (max-width: 768px) { .vs-container { flex-direction: column; } .vs-divider { justify-content: center; padding: 0.5rem; } }
+    
+    /* Step Indicator */
+    .step-indicator { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; }
+    .step-text { font-weight: 600; color: var(--primary); }
+    
+    /* Event Flow */
+    .event-flow { background: var(--surface2); border-radius: 16px; padding: 1.5rem; margin: 1.5rem 0; }
+    .event-step { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+    .event-step:last-child { margin-bottom: 0; }
+    .event-num { min-width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--events), var(--state)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .event-content { flex: 1; }
+    .event-title { font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+    .event-desc { color: var(--muted); font-size: 0.9rem; }
+    
+    /* Footer */
+    .footer { text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(244,114,182,0.1), rgba(251,146,60,0.05)); border-radius: 16px; border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-module">Module 3</span>
+        <span class="hero-badge badge-state">🔄 State</span>
+        <span class="hero-badge badge-events">⚡ Events</span>
+        <span class="hero-badge badge-react">⚛️ React</span>
+      </div>
+      <h1>State & Events</h1>
+      <p>Build Interactive Apps: Counter & Mood Tracker Projects</p>
+    </div>
+
+    <!-- Section 1: Introduction -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-intro">💡</div>
+        <div class="section-title">Introduction: State + Events = Interactivity</div>
+        <span class="section-badge badge-primary">Foundation</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">The Magic Formula</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>State</strong> holds your data. <strong>Events</strong> trigger changes to that data.
+          Together, they create <em>interactive</em> React applications that respond to user actions!
+        </p>
+
+        <div class="flow-diagram">
+          <div class="flow-box event">
+            <div style="font-size: 2rem;">👆</div>
+            <div style="font-weight: 600; color: var(--events);">User Action</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Click, Type, Submit</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 2rem;">⚡</div>
+            <div style="font-weight: 600;">Event Handler</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">onClick, onChange</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box state">
+            <div style="font-size: 2rem;">🔄</div>
+            <div style="font-weight: 600; color: var(--state);">State Update</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">setState(newValue)</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box ui">
+            <div style="font-size: 2rem;">✨</div>
+            <div style="font-weight: 600; color: var(--accent);">UI Re-renders</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Automatic!</div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🎯 What We'll Build</h3>
+        <div class="grid-2">
+          <div class="card card-secondary">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <div style="font-size: 2.5rem;">🔢</div>
+              <div>
+                <h3 style="color: var(--secondary); margin: 0;">Counter App</h3>
+                <span class="badge badge-secondary">Project 1</span>
+              </div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.95rem;">
+              The classic first React project! Learn to:
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem; margin-top: 0.5rem;">
+              <li>Handle button clicks</li>
+              <li>Update state with useState</li>
+              <li>Increment, decrement, reset</li>
+              <li>Add step values & bounds</li>
+            </ul>
+          </div>
+          
+          <div class="card card-accent">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <div style="font-size: 2.5rem;">😊</div>
+              <div>
+                <h3 style="color: var(--accent); margin: 0;">Mood Tracker</h3>
+                <span class="badge badge-accent">Project 2</span>
+              </div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.95rem;">
+              Track your daily emotions! Learn to:
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem; margin-top: 0.5rem;">
+              <li>Work with different data types</li>
+              <li>Manage arrays in state</li>
+              <li>Conditional rendering</li>
+              <li>Build a history feature</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="color: var(--events); margin: 2rem 0 1rem;">⚡ Common React Events</h3>
+        <div class="grid-4">
+          <div class="concept-card">
+            <div class="concept-icon">👆</div>
+            <div class="concept-name">onClick</div>
+            <div class="concept-desc">Button clicks, links</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⌨️</div>
+            <div class="concept-name">onChange</div>
+            <div class="concept-desc">Input fields, selects</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📝</div>
+            <div class="concept-name">onSubmit</div>
+            <div class="concept-desc">Form submissions</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🖱️</div>
+            <div class="concept-name">onMouseOver</div>
+            <div class="concept-desc">Hover effects</div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Insight</div>
+          <div class="tip-content">
+            Every interactive feature in React follows the same pattern:<br>
+            <strong>User Action → Event Handler → State Change → Re-render</strong><br>
+            Master this pattern, and you can build anything!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Understanding Events -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-events">⚡</div>
+        <div class="section-title">Understanding Event Handling in React</div>
+        <span class="section-badge badge-events" style="background: rgba(251,146,60,0.2); color: var(--events);">Events</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--events); margin-bottom: 1rem;">How Events Work in React</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          React events are similar to DOM events but with some differences. They use <strong>camelCase</strong> naming
+          and you pass <strong>functions</strong> as handlers, not strings.
+        </p>
+
+        <h3 style="color: var(--primary);">📝 Syntax Comparison: HTML vs React</h3>
+        <div class="vs-container">
+          <div class="vs-box bad">
+            <h4 style="color: var(--danger); margin-bottom: 0.5rem;">❌ HTML (Don't use in React)</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="cmt">&lt;!-- HTML style - strings --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="str">"handleClick()"</span><span class="tag">&gt;</span>
+  Click Me
+<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;input</span> <span class="attr">onchange</span>=<span class="str">"handleChange()"</span> <span class="tag">/&gt;</span></pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">→</div>
+          <div class="vs-box good">
+            <h4 style="color: var(--accent); margin-bottom: 0.5rem;">✅ React (Use this!)</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="cmt">{/* React style - functions */}</span>
+<span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>
+  Click Me
+<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;input</span> <span class="attr">onChange</span>={handleChange} <span class="tag">/&gt;</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🎯 Three Ways to Define Event Handlers</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Event Handler Patterns</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">EventExamples</span>() {
+  <span class="cmt">// Method 1: Named function (RECOMMENDED)</span>
+  <span class="kw">const</span> <span class="fn">handleClick</span> = () => {
+    console.<span class="fn">log</span>(<span class="str">'Button clicked!'</span>);
+  };
+
+  <span class="cmt">// Method 2: Named function with event object</span>
+  <span class="kw">const</span> <span class="fn">handleInputChange</span> = (event) => {
+    console.<span class="fn">log</span>(<span class="str">'Value:'</span>, event.target.value);
+  };
+
+  <span class="cmt">// Method 3: Named function with custom parameter</span>
+  <span class="kw">const</span> <span class="fn">handleItemClick</span> = (itemId) => {
+    console.<span class="fn">log</span>(<span class="str">'Item clicked:'</span>, itemId);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* Method 1: Pass function reference */}</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>
+        Click Me
+      <span class="tag">&lt;/button&gt;</span>
+
+      <span class="cmt">{/* Method 2: Function automatically receives event */}</span>
+      <span class="tag">&lt;input</span> <span class="attr">onChange</span>={handleInputChange} <span class="tag">/&gt;</span>
+
+      <span class="cmt">{/* Method 3: Arrow function to pass arguments */}</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">handleItemClick</span>(<span class="num">123</span>)}<span class="tag">&gt;</span>
+        Click Item 123
+      <span class="tag">&lt;/button&gt;</span>
+
+      <span class="cmt">{/* Method 4: Inline arrow function (for simple cases) */}</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => console.<span class="fn">log</span>(<span class="str">'Inline!'</span>)}<span class="tag">&gt;</span>
+        Inline Handler
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Common Mistake: Calling Instead of Passing</div>
+          <div class="warning-content">
+            <code>onClick={handleClick()}</code> ❌ WRONG - This calls the function immediately!<br>
+            <code>onClick={handleClick}</code> ✅ CORRECT - This passes the function reference.
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">📋 The Event Object</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Using the Event Object</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">EventObjectDemo</span>() {
+  <span class="cmt">// Event object is automatically passed to handlers</span>
+  <span class="kw">const</span> <span class="fn">handleClick</span> = (event) => {
+    console.<span class="fn">log</span>(<span class="str">'Event type:'</span>, event.type);           <span class="cmt">// 'click'</span>
+    console.<span class="fn">log</span>(<span class="str">'Target element:'</span>, event.target);       <span class="cmt">// the button element</span>
+    console.<span class="fn">log</span>(<span class="str">'Current target:'</span>, event.currentTarget); <span class="cmt">// element with handler</span>
+  };
+
+  <span class="kw">const</span> <span class="fn">handleInputChange</span> = (event) => {
+    <span class="kw">const</span> value = event.target.value;  <span class="cmt">// Get input value</span>
+    <span class="kw">const</span> name = event.target.name;    <span class="cmt">// Get input name attribute</span>
+    console.<span class="fn">log</span>(<span class="str">`${name}: ${value}`</span>);
+  };
+
+  <span class="kw">const</span> <span class="fn">handleSubmit</span> = (event) => {
+    event.<span class="fn">preventDefault</span>();  <span class="cmt">// Prevent page reload!</span>
+    console.<span class="fn">log</span>(<span class="str">'Form submitted!'</span>);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">name</span>=<span class="str">"username"</span>
+        <span class="attr">onChange</span>={handleInputChange}
+        <span class="attr">placeholder</span>=<span class="str">"Enter username"</span>
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>
+        Submit
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--state); margin: 2rem 0 1rem;">🔗 Connecting Events to State</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Events + State = Interactive UI</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">InteractiveExample</span>() {
+  <span class="cmt">// State to hold our data</span>
+  <span class="kw">const</span> [message, setMessage] = <span class="fn">useState</span>(<span class="str">'Hello!'</span>);
+  <span class="kw">const</span> [inputValue, setInputValue] = <span class="fn">useState</span>(<span class="str">''</span>);
+
+  <span class="cmt">// Event handler that updates state</span>
+  <span class="kw">const</span> <span class="fn">handleButtonClick</span> = () => {
+    <span class="fn">setMessage</span>(<span class="str">'Button was clicked!'</span>);  <span class="cmt">// Update state → UI re-renders</span>
+  };
+
+  <span class="cmt">// Event handler for input</span>
+  <span class="kw">const</span> <span class="fn">handleInputChange</span> = (event) => {
+    <span class="fn">setInputValue</span>(event.target.value);  <span class="cmt">// Store input value in state</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{message}<span class="tag">&lt;/p&gt;</span>  <span class="cmt">{/* Displays current state */}</span>
+      
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleButtonClick}<span class="tag">&gt;</span>
+        Change Message
+      <span class="tag">&lt;/button&gt;</span>
+      
+      <span class="tag">&lt;input</span>
+        <span class="attr">value</span>={inputValue}
+        <span class="attr">onChange</span>={handleInputChange}
+        <span class="attr">placeholder</span>=<span class="str">"Type something..."</span>
+      <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;p&gt;</span>You typed: {inputValue}<span class="tag">&lt;/p&gt;</span>  <span class="cmt">{/* Live preview */}</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Counter Project -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-counter">🔢</div>
+        <div class="section-title">Project 1: Building the Counter App</div>
+        <span class="section-badge badge-secondary">Hands-On</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--secondary); margin-bottom: 1rem;">🔢 The Classic Counter</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The Counter is the "Hello World" of React projects. It teaches the fundamental pattern 
+          of state management and event handling that you'll use in every React app.
+        </p>
+
+        <!-- Live Demo -->
+        <div class="demo-container">
+          <div class="demo-title">🎮 Live Demo: Try the Counter!</div>
+          <div class="counter-demo">
+            <div class="counter-display" id="counter-display">0</div>
+            <div class="counter-buttons">
+              <button class="btn btn-danger" onclick="updateCounter(-1)">− Decrease</button>
+              <button class="btn btn-secondary" onclick="resetCounter()">↺ Reset</button>
+              <button class="btn btn-primary" onclick="updateCounter(1)">+ Increase</button>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📝 Step 1: Basic Counter</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Counter.jsx - Basic Version</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="cmt">// Step 1: Create state variable</span>
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+  <span class="cmt">//    ↑         ↑                ↑</span>
+  <span class="cmt">//  value    setter        initial value</span>
+
+  <span class="cmt">// Step 2: Create event handlers</span>
+  <span class="kw">const</span> <span class="fn">handleIncrement</span> = () => {
+    <span class="fn">setCount</span>(count + <span class="num">1</span>);  <span class="cmt">// Add 1 to current count</span>
+  };
+
+  <span class="kw">const</span> <span class="fn">handleDecrement</span> = () => {
+    <span class="fn">setCount</span>(count - <span class="num">1</span>);  <span class="cmt">// Subtract 1 from count</span>
+  };
+
+  <span class="kw">const</span> <span class="fn">handleReset</span> = () => {
+    <span class="fn">setCount</span>(<span class="num">0</span>);  <span class="cmt">// Reset to 0</span>
+  };
+
+  <span class="cmt">// Step 3: Render UI with state and handlers</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"counter"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Counter<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Display current count */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"count-display"</span><span class="tag">&gt;</span>
+        {count}
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Buttons with onClick handlers */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"buttons"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleDecrement}<span class="tag">&gt;</span>−<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleReset}<span class="tag">&gt;</span>Reset<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleIncrement}<span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> Counter;</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">📝 Step 2: Add Step Value</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Counter.jsx - With Step Value</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> [step, setStep] = <span class="fn">useState</span>(<span class="num">1</span>);  <span class="cmt">// New: step value state</span>
+
+  <span class="cmt">// Use step value in calculations</span>
+  <span class="kw">const</span> <span class="fn">handleIncrement</span> = () => <span class="fn">setCount</span>(count + step);
+  <span class="kw">const</span> <span class="fn">handleDecrement</span> = () => <span class="fn">setCount</span>(count - step);
+  <span class="kw">const</span> <span class="fn">handleReset</span> = () => <span class="fn">setCount</span>(<span class="num">0</span>);
+
+  <span class="cmt">// Handle step change from input</span>
+  <span class="kw">const</span> <span class="fn">handleStepChange</span> = (event) => {
+    <span class="kw">const</span> value = <span class="fn">parseInt</span>(event.target.value) || <span class="num">1</span>;
+    <span class="fn">setStep</span>(value);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"counter"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Counter<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"count-display"</span><span class="tag">&gt;</span>{count}<span class="tag">&lt;/div&gt;</span>
+      
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"buttons"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleDecrement}<span class="tag">&gt;</span>− {step}<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleReset}<span class="tag">&gt;</span>Reset<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleIncrement}<span class="tag">&gt;</span>+ {step}<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Step value input */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"step-control"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;label&gt;</span>
+          Step:
+          <span class="tag">&lt;input</span>
+            <span class="attr">type</span>=<span class="str">"number"</span>
+            <span class="attr">value</span>={step}
+            <span class="attr">onChange</span>={handleStepChange}
+            <span class="attr">min</span>=<span class="str">"1"</span>
+          <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/label&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">📝 Step 3: Add Bounds (Min/Max)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Counter.jsx - With Bounds</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>({ min = <span class="num">0</span>, max = <span class="num">100</span>, initialValue = <span class="num">0</span> }) {
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(initialValue);
+  <span class="kw">const</span> [step, setStep] = <span class="fn">useState</span>(<span class="num">1</span>);
+
+  <span class="cmt">// Check bounds before updating</span>
+  <span class="kw">const</span> <span class="fn">handleIncrement</span> = () => {
+    <span class="kw">const</span> newValue = count + step;
+    <span class="kw">if</span> (newValue <= max) {
+      <span class="fn">setCount</span>(newValue);
+    }
+  };
+
+  <span class="kw">const</span> <span class="fn">handleDecrement</span> = () => {
+    <span class="kw">const</span> newValue = count - step;
+    <span class="kw">if</span> (newValue >= min) {
+      <span class="fn">setCount</span>(newValue);
+    }
+  };
+
+  <span class="kw">const</span> <span class="fn">handleReset</span> = () => <span class="fn">setCount</span>(initialValue);
+  
+  <span class="kw">const</span> <span class="fn">handleStepChange</span> = (e) => {
+    <span class="fn">setStep</span>(<span class="fn">parseInt</span>(e.target.value) || <span class="num">1</span>);
+  };
+
+  <span class="cmt">// Determine if buttons should be disabled</span>
+  <span class="kw">const</span> isAtMax = count >= max;
+  <span class="kw">const</span> isAtMin = count <= min;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"counter"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Counter<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Show bounds info */}</span>
+      <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"bounds-info"</span><span class="tag">&gt;</span>
+        Range: {min} to {max}
+      <span class="tag">&lt;/p&gt;</span>
+      
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"count-display"</span><span class="tag">&gt;</span>{count}<span class="tag">&lt;/div&gt;</span>
+      
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"buttons"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> 
+          <span class="attr">onClick</span>={handleDecrement}
+          <span class="attr">disabled</span>={isAtMin}  <span class="cmt">{/* Disable at min */}</span>
+        <span class="tag">&gt;</span>
+          −
+        <span class="tag">&lt;/button&gt;</span>
+        
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleReset}<span class="tag">&gt;</span>Reset<span class="tag">&lt;/button&gt;</span>
+        
+        <span class="tag">&lt;button</span> 
+          <span class="attr">onClick</span>={handleIncrement}
+          <span class="attr">disabled</span>={isAtMax}  <span class="cmt">{/* Disable at max */}</span>
+        <span class="tag">&gt;</span>
+          +
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Warning messages */}</span>
+      {isAtMax && <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"warning"</span><span class="tag">&gt;</span>Maximum reached!<span class="tag">&lt;/p&gt;</span>}
+      {isAtMin && <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"warning"</span><span class="tag">&gt;</span>Minimum reached!<span class="tag">&lt;/p&gt;</span>}
+      
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"step-control"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;label&gt;</span>
+          Step:
+          <span class="tag">&lt;input</span>
+            <span class="attr">type</span>=<span class="str">"number"</span>
+            <span class="attr">value</span>={step}
+            <span class="attr">onChange</span>={handleStepChange}
+            <span class="attr">min</span>=<span class="str">"1"</span>
+          <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/label&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage:</span>
+<span class="cmt">// &lt;Counter min={-10} max={50} initialValue={10} /&gt;</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--state); margin: 2rem 0 1rem;">📝 Step 4: Complete Styled Counter</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Counter.jsx - Final Version with Styles</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> <span class="str">'./Counter.css'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>({ min = <span class="num">0</span>, max = <span class="num">100</span>, initialValue = <span class="num">0</span> }) {
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(initialValue);
+  <span class="kw">const</span> [step, setStep] = <span class="fn">useState</span>(<span class="num">1</span>);
+  <span class="kw">const</span> [history, setHistory] = <span class="fn">useState</span>([initialValue]);
+
+  <span class="cmt">// Update count and track history</span>
+  <span class="kw">const</span> <span class="fn">updateCount</span> = (newValue) => {
+    <span class="kw">if</span> (newValue >= min && newValue <= max) {
+      <span class="fn">setCount</span>(newValue);
+      <span class="fn">setHistory</span>(prev => [...prev, newValue].<span class="fn">slice</span>(-<span class="num">10</span>)); <span class="cmt">// Keep last 10</span>
+    }
+  };
+
+  <span class="kw">const</span> <span class="fn">increment</span> = () => <span class="fn">updateCount</span>(count + step);
+  <span class="kw">const</span> <span class="fn">decrement</span> = () => <span class="fn">updateCount</span>(count - step);
+  <span class="kw">const</span> <span class="fn">reset</span> = () => {
+    <span class="fn">setCount</span>(initialValue);
+    <span class="fn">setHistory</span>([initialValue]);
+  };
+
+  <span class="cmt">// Calculate percentage for progress bar</span>
+  <span class="kw">const</span> percentage = ((count - min) / (max - min)) * <span class="num">100</span>;
+  
+  <span class="cmt">// Determine color based on value</span>
+  <span class="kw">const</span> <span class="fn">getColor</span> = () => {
+    <span class="kw">if</span> (count < <span class="num">0</span>) <span class="kw">return</span> <span class="str">'#ef4444'</span>;  <span class="cmt">// Red for negative</span>
+    <span class="kw">if</span> (count === <span class="num">0</span>) <span class="kw">return</span> <span class="str">'#94a3b8'</span>; <span class="cmt">// Gray for zero</span>
+    <span class="kw">return</span> <span class="str">'#22d3ee'</span>;  <span class="cmt">// Cyan for positive</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"counter-container"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>🔢 Counter<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Progress bar */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"progress-bar"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> 
+          <span class="attr">className</span>=<span class="str">"progress-fill"</span>
+          <span class="attr">style</span>={{ <span class="prop">width</span>: <span class="str">`${percentage}%`</span> }}
+        <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Count display */}</span>
+      <span class="tag">&lt;div</span> 
+        <span class="attr">className</span>=<span class="str">"count-display"</span>
+        <span class="attr">style</span>={{ <span class="prop">color</span>: <span class="fn">getColor</span>() }}
+      <span class="tag">&gt;</span>
+        {count}
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Buttons */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"button-group"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span>
+          <span class="attr">className</span>=<span class="str">"btn btn-decrement"</span>
+          <span class="attr">onClick</span>={decrement}
+          <span class="attr">disabled</span>={count <= min}
+        <span class="tag">&gt;</span>
+          − {step}
+        <span class="tag">&lt;/button&gt;</span>
+        
+        <span class="tag">&lt;button</span> <span class="attr">className</span>=<span class="str">"btn btn-reset"</span> <span class="attr">onClick</span>={reset}<span class="tag">&gt;</span>
+          ↺ Reset
+        <span class="tag">&lt;/button&gt;</span>
+        
+        <span class="tag">&lt;button</span>
+          <span class="attr">className</span>=<span class="str">"btn btn-increment"</span>
+          <span class="attr">onClick</span>={increment}
+          <span class="attr">disabled</span>={count >= max}
+        <span class="tag">&gt;</span>
+          + {step}
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Step selector */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"step-selector"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span&gt;</span>Step:<span class="tag">&lt;/span&gt;</span>
+        {[<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>, <span class="num">25</span>].<span class="fn">map</span>(s => (
+          <span class="tag">&lt;button</span>
+            <span class="attr">key</span>={s}
+            <span class="attr">className</span>={<span class="str">`step-btn ${step === s ? 'active' : ''}`</span>}
+            <span class="attr">onClick</span>={() => <span class="fn">setStep</span>(s)}
+          <span class="tag">&gt;</span>
+            {s}
+          <span class="tag">&lt;/button&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* History */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"history"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span&gt;</span>History:<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"history-items"</span><span class="tag">&gt;</span>
+          {history.<span class="fn">map</span>((val, i) => (
+            <span class="tag">&lt;span</span> <span class="attr">key</span>={i} <span class="attr">className</span>=<span class="str">"history-item"</span><span class="tag">&gt;</span>
+              {val}
+            <span class="tag">&lt;/span&gt;</span>
+          ))}
+        <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> Counter;</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Concepts Learned</div>
+          <div class="tip-content">
+            ✅ <strong>useState</strong> for managing counter value<br>
+            ✅ <strong>onClick</strong> event handlers for buttons<br>
+            ✅ <strong>Conditional rendering</strong> for warning messages<br>
+            ✅ <strong>disabled attribute</strong> based on state<br>
+            ✅ <strong>Dynamic styling</strong> based on value<br>
+            ✅ <strong>Array state</strong> for history tracking
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: State Update Patterns -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-patterns">⚙️</div>
+        <div class="section-title">Important: State Update Patterns</div>
+        <span class="section-badge badge-warning">Critical</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--warning); margin-bottom: 1rem;">⚠️ State Updates You Must Know</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          State updates in React have some important behaviors you need to understand
+          to avoid bugs and write better code.
+        </p>
+
+        <h3 style="color: var(--danger);">🚨 Problem: State is Asynchronous</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; The Async Problem</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">BuggyCounter</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+  <span class="kw">const</span> <span class="fn">handleClick</span> = () => {
+    <span class="cmt">// ❌ BUG: These don't work as expected!</span>
+    <span class="fn">setCount</span>(count + <span class="num">1</span>);  <span class="cmt">// count is still 0</span>
+    <span class="fn">setCount</span>(count + <span class="num">1</span>);  <span class="cmt">// count is still 0</span>
+    <span class="fn">setCount</span>(count + <span class="num">1</span>);  <span class="cmt">// count is still 0</span>
+    
+    <span class="cmt">// Result: count becomes 1, not 3!</span>
+    <span class="cmt">// Why? All three use the same "stale" count value (0)</span>
+    
+    console.<span class="fn">log</span>(count); <span class="cmt">// Still logs 0! State hasn't updated yet</span>
+  };
+
+  <span class="kw">return</span> <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>Count: {count}<span class="tag">&lt;/button&gt;</span>;
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">✅ Solution: Functional Updates</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Correct Way - Functional Updates</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">CorrectCounter</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+  <span class="kw">const</span> <span class="fn">handleClick</span> = () => {
+    <span class="cmt">// ✅ CORRECT: Use functional update!</span>
+    <span class="fn">setCount</span>(prev => prev + <span class="num">1</span>);  <span class="cmt">// prev = 0 → returns 1</span>
+    <span class="fn">setCount</span>(prev => prev + <span class="num">1</span>);  <span class="cmt">// prev = 1 → returns 2</span>
+    <span class="fn">setCount</span>(prev => prev + <span class="num">1</span>);  <span class="cmt">// prev = 2 → returns 3</span>
+    
+    <span class="cmt">// Result: count becomes 3! ✅</span>
+    <span class="cmt">// Each update receives the LATEST state value</span>
+  };
+
+  <span class="kw">return</span> <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>Count: {count}<span class="tag">&lt;/button&gt;</span>;
+}</pre></div>
+        </div>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">📝 Rule of Thumb</h4>
+          <p style="color: var(--muted);">
+            If your new state depends on the previous state, <strong>always use functional updates</strong>:<br><br>
+            <code>setState(prev => newValueBasedOnPrev)</code>
+          </p>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🔄 Updating Objects in State</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Updating Object State</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">UserProfile</span>() {
+  <span class="kw">const</span> [user, setUser] = <span class="fn">useState</span>({
+    <span class="prop">name</span>: <span class="str">'John'</span>,
+    <span class="prop">age</span>: <span class="num">25</span>,
+    <span class="prop">city</span>: <span class="str">'Mumbai'</span>
+  });
+
+  <span class="cmt">// ❌ WRONG: Mutating state directly</span>
+  <span class="kw">const</span> <span class="fn">wrongUpdate</span> = () => {
+    user.age = <span class="num">26</span>;  <span class="cmt">// Never do this!</span>
+    <span class="fn">setUser</span>(user);   <span class="cmt">// React won't detect the change</span>
+  };
+
+  <span class="cmt">// ✅ CORRECT: Create new object with spread</span>
+  <span class="kw">const</span> <span class="fn">correctUpdate</span> = () => {
+    <span class="fn">setUser</span>({
+      ...user,        <span class="cmt">// Copy all existing properties</span>
+      <span class="prop">age</span>: <span class="num">26</span>         <span class="cmt">// Override the one you want to change</span>
+    });
+  };
+
+  <span class="cmt">// ✅ CORRECT: Functional update for objects</span>
+  <span class="kw">const</span> <span class="fn">incrementAge</span> = () => {
+    <span class="fn">setUser</span>(prev => ({
+      ...prev,
+      <span class="prop">age</span>: prev.age + <span class="num">1</span>
+    }));
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{user.name}, {user.age}, {user.city}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={incrementAge}<span class="tag">&gt;</span>Birthday!<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--events); margin: 2rem 0 1rem;">📋 Updating Arrays in State</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Updating Array State</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">TodoList</span>() {
+  <span class="kw">const</span> [items, setItems] = <span class="fn">useState</span>([<span class="str">'Learn React'</span>, <span class="str">'Build Projects'</span>]);
+
+  <span class="cmt">// ✅ ADD item</span>
+  <span class="kw">const</span> <span class="fn">addItem</span> = (newItem) => {
+    <span class="fn">setItems</span>(prev => [...prev, newItem]);
+  };
+
+  <span class="cmt">// ✅ REMOVE item by index</span>
+  <span class="kw">const</span> <span class="fn">removeItem</span> = (index) => {
+    <span class="fn">setItems</span>(prev => prev.<span class="fn">filter</span>((_, i) => i !== index));
+  };
+
+  <span class="cmt">// ✅ UPDATE item at index</span>
+  <span class="kw">const</span> <span class="fn">updateItem</span> = (index, newValue) => {
+    <span class="fn">setItems</span>(prev => prev.<span class="fn">map</span>((item, i) => 
+      i === index ? newValue : item
+    ));
+  };
+
+  <span class="cmt">// ✅ INSERT at position</span>
+  <span class="kw">const</span> <span class="fn">insertAt</span> = (index, newItem) => {
+    <span class="fn">setItems</span>(prev => [
+      ...prev.<span class="fn">slice</span>(<span class="num">0</span>, index),
+      newItem,
+      ...prev.<span class="fn">slice</span>(index)
+    ]);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {items.<span class="fn">map</span>((item, index) => (
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={index}<span class="tag">&gt;</span>
+          {item}
+          <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">removeItem</span>(index)}<span class="tag">&gt;</span>×<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Never Mutate State Directly!</div>
+          <div class="warning-content">
+            <strong>Don't use:</strong> push, pop, splice, sort (on original)<br>
+            <strong>Do use:</strong> spread (...), filter, map, slice, concat
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Mood Tracker Project -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-mood">😊</div>
+        <div class="section-title">Project 2: Building the Mood Tracker</div>
+        <span class="section-badge badge-accent">Hands-On</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--accent); margin-bottom: 1rem;">😊 Track Your Daily Mood</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The Mood Tracker teaches you to work with different data types, arrays in state, 
+          and creating a more complex interactive experience.
+        </p>
+
+        <!-- Live Demo -->
+        <div class="demo-container">
+          <div class="demo-title">🎮 Live Demo: Try the Mood Tracker!</div>
+          <div class="mood-demo">
+            <div class="mood-label">How are you feeling?</div>
+            <div class="mood-display" id="mood-display">😊</div>
+            <div class="mood-label" id="mood-label">Happy</div>
+            <div class="mood-buttons">
+              <button class="mood-btn" onclick="setMood('😢', 'Sad')">😢</button>
+              <button class="mood-btn" onclick="setMood('😐', 'Neutral')">😐</button>
+              <button class="mood-btn active" onclick="setMood('😊', 'Happy')">😊</button>
+              <button class="mood-btn" onclick="setMood('😄', 'Excited')">😄</button>
+              <button class="mood-btn" onclick="setMood('😍', 'Loved')">😍</button>
+            </div>
+            <div class="mood-history">
+              <div class="mood-history-title">Today's History</div>
+              <div class="mood-history-items" id="mood-history">
+                <span class="mood-history-item">😊</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📝 Step 1: Basic Mood Selection</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; MoodTracker.jsx - Basic Version</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Define available moods</span>
+<span class="kw">const</span> MOODS = [
+  { <span class="prop">emoji</span>: <span class="str">'😢'</span>, <span class="prop">label</span>: <span class="str">'Sad'</span>, <span class="prop">color</span>: <span class="str">'#3b82f6'</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😐'</span>, <span class="prop">label</span>: <span class="str">'Neutral'</span>, <span class="prop">color</span>: <span class="str">'#94a3b8'</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😊'</span>, <span class="prop">label</span>: <span class="str">'Happy'</span>, <span class="prop">color</span>: <span class="str">'#22c55e'</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😄'</span>, <span class="prop">label</span>: <span class="str">'Excited'</span>, <span class="prop">color</span>: <span class="str">'#fbbf24'</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😍'</span>, <span class="prop">label</span>: <span class="str">'Loved'</span>, <span class="prop">color</span>: <span class="str">'#ec4899'</span> },
+];
+
+<span class="kw">function</span> <span class="fn">MoodTracker</span>() {
+  <span class="cmt">// State: Currently selected mood (index)</span>
+  <span class="kw">const</span> [selectedMood, setSelectedMood] = <span class="fn">useState</span>(<span class="num">2</span>); <span class="cmt">// Default: Happy (index 2)</span>
+
+  <span class="cmt">// Get current mood object</span>
+  <span class="kw">const</span> currentMood = MOODS[selectedMood];
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-tracker"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>How are you feeling?<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Display current mood */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-display"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"emoji"</span><span class="tag">&gt;</span>{currentMood.emoji}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span</span> 
+          <span class="attr">className</span>=<span class="str">"label"</span>
+          <span class="attr">style</span>={{ <span class="prop">color</span>: currentMood.color }}
+        <span class="tag">&gt;</span>
+          {currentMood.label}
+        <span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Mood selection buttons */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-buttons"</span><span class="tag">&gt;</span>
+        {MOODS.<span class="fn">map</span>((mood, index) => (
+          <span class="tag">&lt;button</span>
+            <span class="attr">key</span>={mood.label}
+            <span class="attr">className</span>={<span class="str">`mood-btn ${index === selectedMood ? 'active' : ''}`</span>}
+            <span class="attr">onClick</span>={() => <span class="fn">setSelectedMood</span>(index)}
+            <span class="attr">style</span>={{
+              <span class="prop">borderColor</span>: index === selectedMood ? mood.color : <span class="str">'transparent'</span>
+            }}
+          <span class="tag">&gt;</span>
+            {mood.emoji}
+          <span class="tag">&lt;/button&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> MoodTracker;</pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📝 Step 2: Add Mood History</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; MoodTracker.jsx - With History</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">const</span> MOODS = [
+  { <span class="prop">emoji</span>: <span class="str">'😢'</span>, <span class="prop">label</span>: <span class="str">'Sad'</span>, <span class="prop">color</span>: <span class="str">'#3b82f6'</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😐'</span>, <span class="prop">label</span>: <span class="str">'Neutral'</span>, <span class="prop">color</span>: <span class="str">'#94a3b8'</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😊'</span>, <span class="prop">label</span>: <span class="str">'Happy'</span>, <span class="prop">color</span>: <span class="str">'#22c55e'</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😄'</span>, <span class="prop">label</span>: <span class="str">'Excited'</span>, <span class="prop">color</span>: <span class="str">'#fbbf24'</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😍'</span>, <span class="prop">label</span>: <span class="str">'Loved'</span>, <span class="prop">color</span>: <span class="str">'#ec4899'</span> },
+];
+
+<span class="kw">function</span> <span class="fn">MoodTracker</span>() {
+  <span class="kw">const</span> [selectedMood, setSelectedMood] = <span class="fn">useState</span>(<span class="num">2</span>);
+  
+  <span class="cmt">// NEW: History state - array of mood entries</span>
+  <span class="kw">const</span> [history, setHistory] = <span class="fn">useState</span>([]);
+
+  <span class="kw">const</span> currentMood = MOODS[selectedMood];
+
+  <span class="cmt">// Handle mood selection</span>
+  <span class="kw">const</span> <span class="fn">handleMoodSelect</span> = (index) => {
+    <span class="fn">setSelectedMood</span>(index);
+    
+    <span class="cmt">// Add to history with timestamp</span>
+    <span class="kw">const</span> entry = {
+      <span class="prop">mood</span>: MOODS[index],
+      <span class="prop">timestamp</span>: <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toLocaleTimeString</span>(),
+      <span class="prop">id</span>: Date.<span class="fn">now</span>()  <span class="cmt">// Unique ID for key</span>
+    };
+    
+    <span class="fn">setHistory</span>(prev => [...prev, entry]);
+  };
+
+  <span class="cmt">// Clear history</span>
+  <span class="kw">const</span> <span class="fn">clearHistory</span> = () => {
+    <span class="fn">setHistory</span>([]);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-tracker"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>How are you feeling?<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Current mood display */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-display"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"emoji"</span><span class="tag">&gt;</span>{currentMood.emoji}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">style</span>={{ <span class="prop">color</span>: currentMood.color }}<span class="tag">&gt;</span>
+          {currentMood.label}
+        <span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Mood buttons */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-buttons"</span><span class="tag">&gt;</span>
+        {MOODS.<span class="fn">map</span>((mood, index) => (
+          <span class="tag">&lt;button</span>
+            <span class="attr">key</span>={mood.label}
+            <span class="attr">className</span>={<span class="str">`mood-btn ${index === selectedMood ? 'active' : ''}`</span>}
+            <span class="attr">onClick</span>={() => <span class="fn">handleMoodSelect</span>(index)}
+          <span class="tag">&gt;</span>
+            {mood.emoji}
+          <span class="tag">&lt;/button&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* History section */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"history-section"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"history-header"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;h3&gt;</span>Today's Mood History<span class="tag">&lt;/h3&gt;</span>
+          {history.length > <span class="num">0</span> && (
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>={clearHistory} <span class="attr">className</span>=<span class="str">"clear-btn"</span><span class="tag">&gt;</span>
+              Clear
+            <span class="tag">&lt;/button&gt;</span>
+          )}
+        <span class="tag">&lt;/div&gt;</span>
+        
+        {history.length === <span class="num">0</span> ? (
+          <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"empty-message"</span><span class="tag">&gt;</span>
+            Select a mood to start tracking!
+          <span class="tag">&lt;/p&gt;</span>
+        ) : (
+          <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"history-list"</span><span class="tag">&gt;</span>
+            {history.<span class="fn">map</span>(entry => (
+              <span class="tag">&lt;div</span> <span class="attr">key</span>={entry.id} <span class="attr">className</span>=<span class="str">"history-item"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"emoji"</span><span class="tag">&gt;</span>{entry.mood.emoji}<span class="tag">&lt;/span&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"time"</span><span class="tag">&gt;</span>{entry.timestamp}<span class="tag">&lt;/span&gt;</span>
+              <span class="tag">&lt;/div&gt;</span>
+            ))}
+          <span class="tag">&lt;/div&gt;</span>
+        )}
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">📝 Step 3: Add Statistics</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; MoodTracker.jsx - With Statistics</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">const</span> MOODS = [
+  { <span class="prop">emoji</span>: <span class="str">'😢'</span>, <span class="prop">label</span>: <span class="str">'Sad'</span>, <span class="prop">color</span>: <span class="str">'#3b82f6'</span>, <span class="prop">score</span>: <span class="num">1</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😐'</span>, <span class="prop">label</span>: <span class="str">'Neutral'</span>, <span class="prop">color</span>: <span class="str">'#94a3b8'</span>, <span class="prop">score</span>: <span class="num">2</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😊'</span>, <span class="prop">label</span>: <span class="str">'Happy'</span>, <span class="prop">color</span>: <span class="str">'#22c55e'</span>, <span class="prop">score</span>: <span class="num">3</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😄'</span>, <span class="prop">label</span>: <span class="str">'Excited'</span>, <span class="prop">color</span>: <span class="str">'#fbbf24'</span>, <span class="prop">score</span>: <span class="num">4</span> },
+  { <span class="prop">emoji</span>: <span class="str">'😍'</span>, <span class="prop">label</span>: <span class="str">'Loved'</span>, <span class="prop">color</span>: <span class="str">'#ec4899'</span>, <span class="prop">score</span>: <span class="num">5</span> },
+];
+
+<span class="kw">function</span> <span class="fn">MoodTracker</span>() {
+  <span class="kw">const</span> [selectedMood, setSelectedMood] = <span class="fn">useState</span>(<span class="num">2</span>);
+  <span class="kw">const</span> [history, setHistory] = <span class="fn">useState</span>([]);
+
+  <span class="kw">const</span> currentMood = MOODS[selectedMood];
+
+  <span class="kw">const</span> <span class="fn">handleMoodSelect</span> = (index) => {
+    <span class="fn">setSelectedMood</span>(index);
+    <span class="kw">const</span> entry = {
+      <span class="prop">mood</span>: MOODS[index],
+      <span class="prop">timestamp</span>: <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toLocaleTimeString</span>(),
+      <span class="prop">id</span>: Date.<span class="fn">now</span>()
+    };
+    <span class="fn">setHistory</span>(prev => [...prev, entry]);
+  };
+
+  <span class="cmt">// Calculate statistics</span>
+  <span class="kw">const</span> <span class="fn">getStats</span> = () => {
+    <span class="kw">if</span> (history.length === <span class="num">0</span>) <span class="kw">return null</span>;
+
+    <span class="cmt">// Count each mood</span>
+    <span class="kw">const</span> moodCounts = history.<span class="fn">reduce</span>((acc, entry) => {
+      <span class="kw">const</span> label = entry.mood.label;
+      acc[label] = (acc[label] || <span class="num">0</span>) + <span class="num">1</span>;
+      <span class="kw">return</span> acc;
+    }, {});
+
+    <span class="cmt">// Find most common mood</span>
+    <span class="kw">const</span> mostCommon = Object.<span class="fn">entries</span>(moodCounts)
+      .<span class="fn">sort</span>((a, b) => b[<span class="num">1</span>] - a[<span class="num">1</span>])[<span class="num">0</span>];
+
+    <span class="cmt">// Calculate average score</span>
+    <span class="kw">const</span> avgScore = history.<span class="fn">reduce</span>((sum, e) => sum + e.mood.score, <span class="num">0</span>) / history.length;
+
+    <span class="kw">return</span> {
+      <span class="prop">total</span>: history.length,
+      <span class="prop">mostCommon</span>: mostCommon[<span class="num">0</span>],
+      <span class="prop">mostCommonCount</span>: mostCommon[<span class="num">1</span>],
+      <span class="prop">avgScore</span>: avgScore.<span class="fn">toFixed</span>(<span class="num">1</span>),
+      <span class="prop">moodCounts</span>
+    };
+  };
+
+  <span class="kw">const</span> stats = <span class="fn">getStats</span>();
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-tracker"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>😊 Mood Tracker<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Current mood */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-display"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"emoji"</span><span class="tag">&gt;</span>{currentMood.emoji}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">style</span>={{ <span class="prop">color</span>: currentMood.color }}<span class="tag">&gt;</span>{currentMood.label}<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Mood buttons */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-buttons"</span><span class="tag">&gt;</span>
+        {MOODS.<span class="fn">map</span>((mood, index) => (
+          <span class="tag">&lt;button</span>
+            <span class="attr">key</span>={mood.label}
+            <span class="attr">className</span>={<span class="str">`mood-btn ${index === selectedMood ? 'active' : ''}`</span>}
+            <span class="attr">onClick</span>={() => <span class="fn">handleMoodSelect</span>(index)}
+          <span class="tag">&gt;</span>
+            {mood.emoji}
+          <span class="tag">&lt;/button&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Statistics */}</span>
+      {stats && (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stats-section"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;h3&gt;</span>📊 Today's Stats<span class="tag">&lt;/h3&gt;</span>
+          <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stats-grid"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stat-card"</span><span class="tag">&gt;</span>
+              <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-value"</span><span class="tag">&gt;</span>{stats.total}<span class="tag">&lt;/span&gt;</span>
+              <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-label"</span><span class="tag">&gt;</span>Total Entries<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stat-card"</span><span class="tag">&gt;</span>
+              <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-value"</span><span class="tag">&gt;</span>{stats.mostCommon}<span class="tag">&lt;/span&gt;</span>
+              <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-label"</span><span class="tag">&gt;</span>Most Common<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stat-card"</span><span class="tag">&gt;</span>
+              <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-value"</span><span class="tag">&gt;</span>{stats.avgScore}/5<span class="tag">&lt;/span&gt;</span>
+              <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-label"</span><span class="tag">&gt;</span>Avg Score<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+          
+          <span class="cmt">{/* Mood distribution bar */}</span>
+          <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"mood-distribution"</span><span class="tag">&gt;</span>
+            {MOODS.<span class="fn">map</span>(mood => {
+              <span class="kw">const</span> count = stats.moodCounts[mood.label] || <span class="num">0</span>;
+              <span class="kw">const</span> percent = (count / stats.total) * <span class="num">100</span>;
+              <span class="kw">return</span> (
+                <span class="tag">&lt;div</span>
+                  <span class="attr">key</span>={mood.label}
+                  <span class="attr">className</span>=<span class="str">"distribution-bar"</span>
+                  <span class="attr">style</span>={{
+                    <span class="prop">width</span>: <span class="str">`${percent}%`</span>,
+                    <span class="prop">backgroundColor</span>: mood.color
+                  }}
+                  <span class="attr">title</span>={<span class="str">`${mood.label}: ${count}`</span>}
+                <span class="tag">/&gt;</span>
+              );
+            })}
+          <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+      
+      <span class="cmt">{/* History */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"history-section"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h3&gt;</span>📜 History<span class="tag">&lt;/h3&gt;</span>
+        {history.length === <span class="num">0</span> ? (
+          <span class="tag">&lt;p&gt;</span>No entries yet. Click a mood!<span class="tag">&lt;/p&gt;</span>
+        ) : (
+          <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"history-list"</span><span class="tag">&gt;</span>
+            {history.<span class="fn">slice</span>().<span class="fn">reverse</span>().<span class="fn">map</span>(entry => (
+              <span class="tag">&lt;div</span> <span class="attr">key</span>={entry.id} <span class="attr">className</span>=<span class="str">"history-item"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;span&gt;</span>{entry.mood.emoji}<span class="tag">&lt;/span&gt;</span>
+                <span class="tag">&lt;span&gt;</span>{entry.mood.label}<span class="tag">&lt;/span&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"time"</span><span class="tag">&gt;</span>{entry.timestamp}<span class="tag">&lt;/span&gt;</span>
+              <span class="tag">&lt;/div&gt;</span>
+            ))}
+          <span class="tag">&lt;/div&gt;</span>
+        )}
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> MoodTracker;</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Concepts Learned</div>
+          <div class="tip-content">
+            ✅ <strong>Object arrays</strong> for storing mood data<br>
+            ✅ <strong>Array mapping</strong> to render mood buttons<br>
+            ✅ <strong>Functional updates</strong> for adding to history<br>
+            ✅ <strong>Derived state</strong> (statistics calculated from history)<br>
+            ✅ <strong>Conditional rendering</strong> for empty states<br>
+            ✅ <strong>Array methods</strong>: reduce, slice, reverse
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Best Practices -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-best">✨</div>
+        <div class="section-title">Best Practices & Common Patterns</div>
+        <span class="section-badge badge-primary">Essential</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">✨ State & Events Best Practices</h2>
+        
+        <h3 style="color: var(--accent);">✅ Do's</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">1. Use Functional Updates</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// When new state depends on old state</span>
+<span class="fn">setCount</span>(prev => prev + <span class="num">1</span>);
+<span class="fn">setItems</span>(prev => [...prev, newItem]);</pre></div>
+            </div>
+          </div>
+          
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">2. Name Handlers Clearly</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// Good naming convention</span>
+<span class="kw">const</span> handleClick = () => {};
+<span class="kw">const</span> handleSubmit = () => {};
+<span class="kw">const</span> handleInputChange = () => {};</pre></div>
+            </div>
+          </div>
+          
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">3. Keep State Minimal</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// Store only what you need</span>
+<span class="cmt">// Calculate derived values</span>
+<span class="kw">const</span> total = items.length; <span class="cmt">// ✅</span>
+<span class="cmt">// Don't store: const [total, setTotal]</span></pre></div>
+            </div>
+          </div>
+          
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">4. Initialize State Properly</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+<span class="kw">const</span> [name, setName] = <span class="fn">useState</span>(<span class="str">''</span>);
+<span class="kw">const</span> [items, setItems] = <span class="fn">useState</span>([]);
+<span class="kw">const</span> [user, setUser] = <span class="fn">useState</span>(<span class="kw">null</span>);</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--danger); margin: 2rem 0 1rem;">❌ Don'ts</h3>
+        <div class="grid-2">
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">1. Don't Mutate State</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ WRONG</span>
+state.push(newItem);
+state.count = <span class="num">5</span>;
+
+<span class="cmt">// ✅ RIGHT</span>
+<span class="fn">setState</span>([...state, newItem]);
+<span class="fn">setState</span>({...state, <span class="prop">count</span>: <span class="num">5</span>});</pre></div>
+            </div>
+          </div>
+          
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">2. Don't Call Functions</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ WRONG - calls immediately!</span>
+<span class="attr">onClick</span>={<span class="fn">handleClick</span>()}
+
+<span class="cmt">// ✅ RIGHT - pass reference</span>
+<span class="attr">onClick</span>={handleClick}
+<span class="attr">onClick</span>={() => <span class="fn">handleClick</span>(arg)}</pre></div>
+            </div>
+          </div>
+          
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">3. Don't Use Index as Key (Dynamic)</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ WRONG for dynamic lists</span>
+items.<span class="fn">map</span>((item, i) => <span class="tag">&lt;div</span> <span class="attr">key</span>={i}<span class="tag">&gt;</span>)
+
+<span class="cmt">// ✅ RIGHT - use unique ID</span>
+items.<span class="fn">map</span>(item => <span class="tag">&lt;div</span> <span class="attr">key</span>={item.id}<span class="tag">&gt;</span>)</pre></div>
+            </div>
+          </div>
+          
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">4. Don't Read State After Setting</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ WRONG - state not updated yet</span>
+<span class="fn">setCount</span>(<span class="num">5</span>);
+console.<span class="fn">log</span>(count); <span class="cmt">// Still old value!</span>
+
+<span class="cmt">// ✅ Use useEffect for side effects</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🎯 Quick Reference: Event Handlers</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Element</th>
+              <th>Common Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>onClick</code></td>
+              <td>button, div, etc.</td>
+              <td>Button clicks, card selection</td>
+            </tr>
+            <tr>
+              <td><code>onChange</code></td>
+              <td>input, select, textarea</td>
+              <td>Form inputs, filters</td>
+            </tr>
+            <tr>
+              <td><code>onSubmit</code></td>
+              <td>form</td>
+              <td>Form submission</td>
+            </tr>
+            <tr>
+              <td><code>onKeyDown</code></td>
+              <td>input, textarea</td>
+              <td>Keyboard shortcuts</td>
+            </tr>
+            <tr>
+              <td><code>onFocus/onBlur</code></td>
+              <td>input</td>
+              <td>Input focus states</td>
+            </tr>
+            <tr>
+              <td><code>onMouseEnter/Leave</code></td>
+              <td>any</td>
+              <td>Hover effects</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 7: Exercises -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-project">🚀</div>
+        <div class="section-title">Practice Exercises & Challenges</div>
+        <span class="section-badge badge-primary">Practice</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--react); margin-bottom: 1rem;">🚀 Time to Practice!</h2>
+        
+        <div class="grid-2">
+          <!-- Exercise 1 -->
+          <div class="card card-highlight">
+            <h4 style="color: var(--primary);">Exercise 1: Enhanced Counter</h4>
+            <span class="badge badge-primary">Easy</span>
+            <p style="color: var(--muted); margin: 0.75rem 0;">Add these features to your counter:</p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Double and half buttons</li>
+              <li>Custom input for any value</li>
+              <li>Undo last action</li>
+              <li>Dark/light theme toggle</li>
+            </ul>
+          </div>
+          
+          <!-- Exercise 2 -->
+          <div class="card card-secondary">
+            <h4 style="color: var(--secondary);">Exercise 2: Mood Notes</h4>
+            <span class="badge badge-secondary">Medium</span>
+            <p style="color: var(--muted); margin: 0.75rem 0;">Enhance mood tracker with:</p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Text notes with each mood</li>
+              <li>Delete individual entries</li>
+              <li>Filter by mood type</li>
+              <li>Export data as JSON</li>
+            </ul>
+          </div>
+          
+          <!-- Exercise 3 -->
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Exercise 3: Quiz Game</h4>
+            <span class="badge badge-accent">Medium</span>
+            <p style="color: var(--muted); margin: 0.75rem 0;">Build a simple quiz:</p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Multiple choice questions</li>
+              <li>Track score</li>
+              <li>Show correct/incorrect</li>
+              <li>Final results summary</li>
+            </ul>
+          </div>
+          
+          <!-- Exercise 4 -->
+          <div class="card card-warning">
+            <h4 style="color: var(--warning);">Exercise 4: Shopping Cart</h4>
+            <span class="badge badge-warning">Hard</span>
+            <p style="color: var(--muted); margin: 0.75rem 0;">Build a mini shopping cart:</p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Add/remove items</li>
+              <li>Quantity controls</li>
+              <li>Calculate total price</li>
+              <li>Apply discount code</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="note" style="margin-top: 2rem;">
+          <div class="note-title">📝 Challenge Yourself!</div>
+          <div class="note-content">
+            Try building each exercise without looking at solutions first. 
+            Struggling is part of learning! When stuck, break the problem into smaller parts.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon" style="background: linear-gradient(135deg, var(--state), var(--events));">📋</div>
+        <div class="section-title">Module Summary & Cheat Sheet</div>
+        <span class="section-badge badge-primary">Summary</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">📋 Quick Reference Cheat Sheet</h2>
+        
+        <div class="grid-2">
+          <div class="card card-state">
+            <h4 style="color: var(--state);">🔄 State Patterns</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// Basic state</span>
+<span class="kw">const</span> [value, setValue] = <span class="fn">useState</span>(initial);
+
+<span class="cmt">// Functional update</span>
+<span class="fn">setValue</span>(prev => prev + <span class="num">1</span>);
+
+<span class="cmt">// Object update</span>
+<span class="fn">setObj</span>(prev => ({...prev, <span class="prop">key</span>: newVal}));
+
+<span class="cmt">// Array add</span>
+<span class="fn">setArr</span>(prev => [...prev, newItem]);
+
+<span class="cmt">// Array remove</span>
+<span class="fn">setArr</span>(prev => prev.<span class="fn">filter</span>(x => x.id !== id));
+
+<span class="cmt">// Array update</span>
+<span class="fn">setArr</span>(prev => prev.<span class="fn">map</span>(x => 
+  x.id === id ? {...x, <span class="prop">val</span>: newVal} : x
+));</pre></div>
+            </div>
+          </div>
+          
+          <div class="card card-events">
+            <h4 style="color: var(--events);">⚡ Event Patterns</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// Button click</span>
+<span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>
+
+<span class="cmt">// With argument</span>
+<span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">handleClick</span>(id)}<span class="tag">&gt;</span>
+
+<span class="cmt">// Input change</span>
+<span class="tag">&lt;input</span> <span class="attr">onChange</span>={e => <span class="fn">setValue</span>(e.target.value)} <span class="tag">/&gt;</span>
+
+<span class="cmt">// Form submit</span>
+<span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit}<span class="tag">&gt;</span>
+
+<span class="cmt">// Prevent default</span>
+<span class="kw">const</span> <span class="fn">handleSubmit</span> = (e) => {
+  e.<span class="fn">preventDefault</span>();
+  <span class="cmt">// handle form...</span>
+};</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🎯 What You Learned</h3>
+        <div class="grid-3">
+          <div class="concept-card">
+            <div class="concept-icon">🔄</div>
+            <div class="concept-name">State Management</div>
+            <div class="concept-desc">useState hook, updates, patterns</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚡</div>
+            <div class="concept-name">Event Handling</div>
+            <div class="concept-desc">onClick, onChange, onSubmit</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔢</div>
+            <div class="concept-name">Counter App</div>
+            <div class="concept-desc">Basic interactivity</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">😊</div>
+            <div class="concept-name">Mood Tracker</div>
+            <div class="concept-desc">Arrays & history</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📊</div>
+            <div class="concept-name">Derived State</div>
+            <div class="concept-desc">Calculations from state</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">✨</div>
+            <div class="concept-name">Best Practices</div>
+            <div class="concept-desc">Do's and don'ts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <h3 style="color: var(--state); margin-bottom: 0.5rem;">🎉 Module 3 Complete!</h3>
+      <p style="color: var(--muted); margin-bottom: 1rem;">You've mastered State & Events - the heart of React interactivity!</p>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+        <span class="badge badge-secondary">useState</span>
+        <span class="badge" style="background: rgba(244,114,182,0.2); color: var(--state);">State Updates</span>
+        <span class="badge" style="background: rgba(251,146,60,0.2); color: var(--events);">Event Handlers</span>
+        <span class="badge badge-primary">Counter App</span>
+        <span class="badge badge-accent">Mood Tracker</span>
+      </div>
+      <p style="color: var(--muted); margin-top: 1.5rem; font-size: 0.9rem;">
+        <strong>Next Up:</strong> Module 4 - Forms & User Input 📝
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Toggle sections
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Counter Demo
+    let counterValue = 0;
+    function updateCounter(change) {
+      counterValue += change;
+      document.getElementById('counter-display').textContent = counterValue;
+    }
+    function resetCounter() {
+      counterValue = 0;
+      document.getElementById('counter-display').textContent = counterValue;
+    }
+
+    // Mood Tracker Demo
+    let moodHistory = ['😊'];
+    function setMood(emoji, label) {
+      document.getElementById('mood-display').textContent = emoji;
+      document.getElementById('mood-label').textContent = label;
+      
+      // Update active button
+      document.querySelectorAll('.mood-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent === emoji) {
+          btn.classList.add('active');
+        }
+      });
+      
+      // Add to history
+      moodHistory.push(emoji);
+      if (moodHistory.length > 8) moodHistory.shift();
+      
+      document.getElementById('mood-history').innerHTML = 
+        moodHistory.map(m => `<span class="mood-history-item">${m}</span>`).join('');
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

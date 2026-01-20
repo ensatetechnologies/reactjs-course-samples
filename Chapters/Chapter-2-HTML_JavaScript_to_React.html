@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML & JavaScript to React - The Complete Journey</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1150px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(34,211,238,0.1) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(97,218,251,0.1) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--primary), var(--react)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-html { background: #e34c26; color: white; }
+    .badge-js { background: #f7df1e; color: black; }
+    .badge-react { background: #20232a; color: var(--react); }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .icon-html { background: linear-gradient(135deg, #e34c26, #f06529); }
+    .icon-js { background: linear-gradient(135deg, #f7df1e, #e8d44d); color: #000; }
+    .icon-pain { background: linear-gradient(135deg, var(--danger), #dc2626); }
+    .icon-react { background: linear-gradient(135deg, #20232a, #282c34); color: var(--react); }
+    .icon-compare { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    
+    .demo-area { background: var(--surface2); border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; min-height: 120px; }
+    .demo-area.active { border-color: var(--primary); border-style: solid; }
+    
+    .btn { padding: 0.6rem 1.25rem; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: var(--bg); }
+    .btn-primary:hover { background: #06b6d4; transform: translateY(-2px); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0; }
+    
+    .input { padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); font-family: inherit; font-size: 0.9rem; width: 100%; }
+    .input:focus { outline: none; border-color: var(--primary); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .pain-point { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
+    .pain-point h4 { color: var(--danger); margin-bottom: 0.5rem; }
+    
+    .solution { background: rgba(34,211,153,0.05); border: 1px solid rgba(34,211,153,0.3); border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
+    .solution h4 { color: var(--accent); margin-bottom: 0.5rem; }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; }
+    .flow-box.highlight { border-color: var(--primary); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    .timeline { position: relative; padding-left: 2rem; margin: 1.5rem 0; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, #e34c26, #f7df1e, var(--react)); border-radius: 3px; }
+    .timeline-item { position: relative; padding: 1rem 0 1.5rem 1.5rem; }
+    .timeline-item::before { content: ''; position: absolute; left: -2rem; top: 1.25rem; width: 12px; height: 12px; background: var(--text); border-radius: 50%; transform: translateX(-4.5px); }
+    .timeline-item:nth-child(1)::before { background: #e34c26; }
+    .timeline-item:nth-child(2)::before { background: #f7df1e; }
+    .timeline-item:nth-child(3)::before { background: var(--react); }
+    
+    .counter-demo { text-align: center; padding: 2rem; }
+    .counter-value { font-size: 4rem; font-weight: 700; color: var(--primary); margin: 1rem 0; font-family: 'JetBrains Mono', monospace; }
+    
+    .lines-indicator { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+    .lines-bar { height: 8px; border-radius: 4px; transition: width 0.3s; }
+    .lines-count { font-size: 0.85rem; color: var(--muted); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-success { background: rgba(34,197,94,0.2); color: #22c55e; }
+    .badge-danger { background: rgba(239,68,68,0.2); color: #ef4444; }
+    .badge-warning { background: rgba(251,191,36,0.2); color: #fbbf24; }
+    
+    .emoji-list { list-style: none; padding: 0; }
+    .emoji-list li { padding: 0.5rem 0; padding-left: 2rem; position: relative; }
+    .emoji-list li::before { position: absolute; left: 0; }
+    
+    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: start; margin: 1.5rem 0; }
+    .vs-divider { display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--warning); font-size: 1.5rem; padding-top: 2rem; }
+    @media (max-width: 900px) { .vs-container { grid-template-columns: 1fr; } .vs-divider { padding: 1rem 0; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-html">HTML5</span>
+        <span class="hero-badge badge-js">JavaScript</span>
+        <span class="hero-badge badge-react">⚛ React</span>
+      </div>
+      <h1>From HTML & JavaScript to React</h1>
+      <p>Understanding the foundation and why modern frameworks exist</p>
+    </div>
+
+    <!-- Part 1: HTML Introduction -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-html">📄</div>
+        <div class="section-title">Part 1: Introduction to HTML</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: #e34c26; margin-bottom: 1rem;">What is HTML?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>HTML (HyperText Markup Language)</strong> is the skeleton of every web page. 
+          It defines the <em>structure</em> and <em>content</em> of a webpage using <strong>tags</strong>.
+        </p>
+
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 2rem;">📝</div>
+            <div style="font-weight: 600;">HTML</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Structure</div>
+          </div>
+          <span class="flow-arrow">+</span>
+          <div class="flow-box">
+            <div style="font-size: 2rem;">🎨</div>
+            <div style="font-weight: 600;">CSS</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Style</div>
+          </div>
+          <span class="flow-arrow">+</span>
+          <div class="flow-box">
+            <div style="font-size: 2rem;">⚡</div>
+            <div style="font-weight: 600;">JavaScript</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Behavior</div>
+          </div>
+          <span class="flow-arrow">=</span>
+          <div class="flow-box highlight">
+            <div style="font-size: 2rem;">🌐</div>
+            <div style="font-weight: 600; color: var(--primary);">Web Page</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Complete</div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📋 Basic HTML Structure</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; index.html</div>
+            <div class="code-body"><pre><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="val">"en"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="val">"UTF-8"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="val">"viewport"</span> <span class="attr">content</span>=<span class="val">"width=device-width"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;title&gt;</span>My First Page<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;header&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>Welcome!<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;nav&gt;</span>
+      <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"#home"</span><span class="tag">&gt;</span>Home<span class="tag">&lt;/a&gt;</span>
+      <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"#about"</span><span class="tag">&gt;</span>About<span class="tag">&lt;/a&gt;</span>
+    <span class="tag">&lt;/nav&gt;</span>
+  <span class="tag">&lt;/header&gt;</span>
+  
+  <span class="tag">&lt;main&gt;</span>
+    <span class="tag">&lt;section</span> <span class="attr">id</span>=<span class="val">"home"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>Home Section<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;p&gt;</span>This is a paragraph.<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button&gt;</span>Click Me<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/section&gt;</span>
+  <span class="tag">&lt;/main&gt;</span>
+  
+  <span class="tag">&lt;footer&gt;</span>
+    <span class="tag">&lt;p&gt;</span>&copy; 2024 My Website<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/footer&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></pre></div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom: 1rem;">
+              <h4 style="color: #e34c26; margin-bottom: 0.75rem;">🏗️ Document Structure</h4>
+              <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.95rem;">
+                <li><code>&lt;!DOCTYPE html&gt;</code> - Declares HTML5</li>
+                <li><code>&lt;html&gt;</code> - Root element</li>
+                <li><code>&lt;head&gt;</code> - Metadata (not visible)</li>
+                <li><code>&lt;body&gt;</code> - Visible content</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4 style="color: var(--accent); margin-bottom: 0.75rem;">📦 Semantic Elements</h4>
+              <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.95rem;">
+                <li><code>&lt;header&gt;</code> - Page/section header</li>
+                <li><code>&lt;nav&gt;</code> - Navigation links</li>
+                <li><code>&lt;main&gt;</code> - Main content</li>
+                <li><code>&lt;section&gt;</code> - Content section</li>
+                <li><code>&lt;footer&gt;</code> - Page/section footer</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🏷️ Common HTML Tags</h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Text Content</h4>
+            <code style="display: block; color: var(--muted); font-size: 0.85rem; line-height: 1.8;">
+              &lt;h1&gt; to &lt;h6&gt; - Headings<br>
+              &lt;p&gt; - Paragraph<br>
+              &lt;span&gt; - Inline text<br>
+              &lt;strong&gt; - Bold<br>
+              &lt;em&gt; - Italic
+            </code>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Lists & Links</h4>
+            <code style="display: block; color: var(--muted); font-size: 0.85rem; line-height: 1.8;">
+              &lt;ul&gt; - Unordered list<br>
+              &lt;ol&gt; - Ordered list<br>
+              &lt;li&gt; - List item<br>
+              &lt;a href=""&gt; - Link<br>
+              &lt;img src=""&gt; - Image
+            </code>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Forms & Input</h4>
+            <code style="display: block; color: var(--muted); font-size: 0.85rem; line-height: 1.8;">
+              &lt;form&gt; - Form container<br>
+              &lt;input&gt; - Input field<br>
+              &lt;button&gt; - Button<br>
+              &lt;select&gt; - Dropdown<br>
+              &lt;textarea&gt; - Multi-line
+            </code>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 HTML is Static</div>
+          <div class="tip-content">
+            HTML alone can only display static content. To make pages interactive (respond to clicks, update content dynamically), we need <strong>JavaScript</strong>!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Part 2: JavaScript Introduction -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-js">JS</div>
+        <div class="section-title">Part 2: Introduction to Vanilla JavaScript</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: #f7df1e; margin-bottom: 1rem;">What is JavaScript?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>JavaScript</strong> is a programming language that brings web pages to life. 
+          It can respond to user actions, manipulate the DOM, fetch data, and much more!
+        </p>
+
+        <h3 style="color: var(--primary); margin: 1.5rem 0 1rem;">📦 JavaScript Basics</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; basics.js</div>
+          <div class="code-body"><pre><span class="cmt">// Variables</span>
+<span class="kw">let</span> name = <span class="str">"John"</span>           <span class="cmt">// Can be reassigned</span>
+<span class="kw">const</span> age = <span class="num">25</span>              <span class="cmt">// Cannot be reassigned</span>
+<span class="kw">var</span> oldWay = <span class="str">"avoid this"</span>   <span class="cmt">// Old syntax (avoid)</span>
+
+<span class="cmt">// Data Types</span>
+<span class="kw">const</span> string = <span class="str">"Hello"</span>
+<span class="kw">const</span> number = <span class="num">42</span>
+<span class="kw">const</span> boolean = <span class="kw">true</span>
+<span class="kw">const</span> array = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+<span class="kw">const</span> object = { name: <span class="str">"John"</span>, age: <span class="num">25</span> }
+
+<span class="cmt">// Functions</span>
+<span class="kw">function</span> <span class="fn">greet</span>(name) {
+  <span class="kw">return</span> <span class="str">`Hello, ${name}!`</span>
+}
+
+<span class="cmt">// Arrow Functions (modern)</span>
+<span class="kw">const</span> <span class="fn">greetArrow</span> = (name) => <span class="str">`Hello, ${name}!`</span>
+
+<span class="cmt">// Conditionals</span>
+<span class="kw">if</span> (age >= <span class="num">18</span>) {
+  console.<span class="fn">log</span>(<span class="str">"Adult"</span>)
+} <span class="kw">else</span> {
+  console.<span class="fn">log</span>(<span class="str">"Minor"</span>)
+}
+
+<span class="cmt">// Loops</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i < <span class="num">5</span>; i++) {
+  console.<span class="fn">log</span>(i)
+}
+
+array.<span class="fn">forEach</span>(item => console.<span class="fn">log</span>(item))</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🔗 Connecting JavaScript to HTML</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; index.html</div>
+            <div class="code-body"><pre><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;title&gt;</span>JS Demo<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;h1</span> <span class="attr">id</span>=<span class="val">"title"</span><span class="tag">&gt;</span>Hello<span class="tag">&lt;/h1&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">id</span>=<span class="val">"btn"</span><span class="tag">&gt;</span>Click Me<span class="tag">&lt;/button&gt;</span>
+  <span class="tag">&lt;p</span> <span class="attr">id</span>=<span class="val">"output"</span><span class="tag">&gt;&lt;/p&gt;</span>
+  
+  <span class="cmt">&lt;!-- Method 1: External file (recommended) --&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"script.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+  
+  <span class="cmt">&lt;!-- Method 2: Inline script --&gt;</span>
+  <span class="tag">&lt;script&gt;</span>
+    console.<span class="fn">log</span>(<span class="str">"Hello from inline!"</span>)
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; script.js</div>
+            <div class="code-body"><pre><span class="cmt">// Select elements</span>
+<span class="kw">const</span> title = document.<span class="fn">getElementById</span>(<span class="str">'title'</span>)
+<span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">'btn'</span>)
+<span class="kw">const</span> output = document.<span class="fn">getElementById</span>(<span class="str">'output'</span>)
+
+<span class="cmt">// Add event listener</span>
+btn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () => {
+  <span class="cmt">// Change content</span>
+  title.textContent = <span class="str">'Button Clicked!'</span>
+  
+  <span class="cmt">// Change style</span>
+  title.style.color = <span class="str">'#22d3ee'</span>
+  
+  <span class="cmt">// Add new content</span>
+  output.innerHTML = <span class="str">'&lt;strong&gt;It works!&lt;/strong&gt;'</span>
+})</pre></div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">🎮 Interactive Demo: Counter</h3>
+        <div class="demo-area">
+          <div class="counter-demo">
+            <h3>Simple Counter</h3>
+            <div class="counter-value" id="counter-value">0</div>
+            <div class="btn-group" style="justify-content: center;">
+              <button class="btn btn-danger" onclick="updateCounter(-1)">- Decrease</button>
+              <button class="btn btn-secondary" onclick="resetCounter()">Reset</button>
+              <button class="btn btn-primary" onclick="updateCounter(1)">+ Increase</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; counter.js - Vanilla JavaScript</div>
+          <div class="code-body"><pre><span class="cmt">// State</span>
+<span class="kw">let</span> count = <span class="num">0</span>
+
+<span class="cmt">// Get DOM element</span>
+<span class="kw">const</span> counterDisplay = document.<span class="fn">getElementById</span>(<span class="str">'counter-value'</span>)
+
+<span class="cmt">// Update function</span>
+<span class="kw">function</span> <span class="fn">updateCounter</span>(change) {
+  count += change
+  counterDisplay.textContent = count  <span class="cmt">// Manually update DOM</span>
+}
+
+<span class="kw">function</span> <span class="fn">resetCounter</span>() {
+  count = <span class="num">0</span>
+  counterDisplay.textContent = count  <span class="cmt">// Manually update DOM</span>
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">🔑 Key Takeaway</div>
+          <div class="tip-content">
+            Notice how we must <strong>manually update the DOM</strong> every time our data (count) changes. 
+            This becomes a major pain point as applications grow larger!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Part 3: The Pain Points -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-pain">😰</div>
+        <div class="section-title">Part 3: The Pain Points of Vanilla JavaScript</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          As web applications became more complex, developers faced significant challenges with vanilla JavaScript. 
+          Let's explore these <strong>pain points</strong> that led to the creation of React.
+        </p>
+
+        <!-- Pain Point 1 -->
+        <div class="pain-point">
+          <h4>😤 Pain Point #1: Manual DOM Manipulation</h4>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Every state change requires manually finding and updating DOM elements.</p>
+          
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Vanilla JS - Todo List (Complex!)</div>
+            <div class="code-body"><pre><span class="cmt">// State</span>
+<span class="kw">let</span> todos = []
+
+<span class="cmt">// Add a todo</span>
+<span class="kw">function</span> <span class="fn">addTodo</span>(text) {
+  <span class="cmt">// 1. Update state</span>
+  <span class="kw">const</span> todo = { id: Date.<span class="fn">now</span>(), text, completed: <span class="kw">false</span> }
+  todos.<span class="fn">push</span>(todo)
+  
+  <span class="cmt">// 2. Manually create DOM elements</span>
+  <span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">'li'</span>)
+  li.id = <span class="str">`todo-${todo.id}`</span>
+  li.className = <span class="str">'todo-item'</span>
+  
+  <span class="kw">const</span> checkbox = document.<span class="fn">createElement</span>(<span class="str">'input'</span>)
+  checkbox.type = <span class="str">'checkbox'</span>
+  checkbox.<span class="fn">addEventListener</span>(<span class="str">'change'</span>, () => <span class="fn">toggleTodo</span>(todo.id))
+  
+  <span class="kw">const</span> span = document.<span class="fn">createElement</span>(<span class="str">'span'</span>)
+  span.textContent = text
+  
+  <span class="kw">const</span> deleteBtn = document.<span class="fn">createElement</span>(<span class="str">'button'</span>)
+  deleteBtn.textContent = <span class="str">'Delete'</span>
+  deleteBtn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () => <span class="fn">deleteTodo</span>(todo.id))
+  
+  li.<span class="fn">appendChild</span>(checkbox)
+  li.<span class="fn">appendChild</span>(span)
+  li.<span class="fn">appendChild</span>(deleteBtn)
+  
+  <span class="cmt">// 3. Add to DOM</span>
+  document.<span class="fn">getElementById</span>(<span class="str">'todo-list'</span>).<span class="fn">appendChild</span>(li)
+  
+  <span class="cmt">// 4. Update counter manually</span>
+  <span class="fn">updateCounter</span>()
+}
+
+<span class="cmt">// Toggle todo completion</span>
+<span class="kw">function</span> <span class="fn">toggleTodo</span>(id) {
+  <span class="cmt">// 1. Find and update state</span>
+  <span class="kw">const</span> todo = todos.<span class="fn">find</span>(t => t.id === id)
+  todo.completed = !todo.completed
+  
+  <span class="cmt">// 2. Find and update DOM element</span>
+  <span class="kw">const</span> li = document.<span class="fn">getElementById</span>(<span class="str">`todo-${id}`</span>)
+  li.classList.<span class="fn">toggle</span>(<span class="str">'completed'</span>)
+  
+  <span class="cmt">// 3. Update counter manually</span>
+  <span class="fn">updateCounter</span>()
+}
+
+<span class="cmt">// Delete todo</span>
+<span class="kw">function</span> <span class="fn">deleteTodo</span>(id) {
+  <span class="cmt">// 1. Update state</span>
+  todos = todos.<span class="fn">filter</span>(t => t.id !== id)
+  
+  <span class="cmt">// 2. Remove from DOM</span>
+  <span class="kw">const</span> li = document.<span class="fn">getElementById</span>(<span class="str">`todo-${id}`</span>)
+  li.<span class="fn">remove</span>()
+  
+  <span class="cmt">// 3. Update counter manually</span>
+  <span class="fn">updateCounter</span>()
+}
+
+<span class="cmt">// Update counter display</span>
+<span class="kw">function</span> <span class="fn">updateCounter</span>() {
+  <span class="kw">const</span> total = todos.length
+  <span class="kw">const</span> completed = todos.<span class="fn">filter</span>(t => t.completed).length
+  document.<span class="fn">getElementById</span>(<span class="str">'counter'</span>).textContent = <span class="str">`${completed}/${total}`</span>
+}</pre></div>
+          </div>
+          <div class="lines-indicator">
+            <div class="lines-bar" style="width: 100%; background: var(--danger);"></div>
+            <span class="lines-count">~50+ lines just for basic CRUD!</span>
+          </div>
+        </div>
+
+        <!-- Pain Point 2 -->
+        <div class="pain-point">
+          <h4>😤 Pain Point #2: State & DOM Out of Sync</h4>
+          <p style="color: var(--muted); margin-bottom: 1rem;">It's easy for your JavaScript state and DOM to become inconsistent.</p>
+          
+          <div class="code-block">
+            <div class="code-body"><pre><span class="cmt">// Bug: Forgot to update DOM after state change!</span>
+<span class="kw">function</span> <span class="fn">updateUserName</span>(newName) {
+  user.name = newName  <span class="cmt">// State updated ✓</span>
+  <span class="cmt">// Oops! Forgot to update the DOM element showing the name</span>
+  <span class="cmt">// document.getElementById('user-name').textContent = newName</span>
+}
+
+<span class="cmt">// Now state says "John" but DOM still shows "Jane"!</span>
+<span class="cmt">// This leads to confusing bugs that are hard to track down.</span></pre></div>
+          </div>
+        </div>
+
+        <!-- Pain Point 3 -->
+        <div class="pain-point">
+          <h4>😤 Pain Point #3: No Component Reusability</h4>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Need the same UI in multiple places? Copy-paste code everywhere!</p>
+          
+          <div class="grid-2">
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; page1.html</div>
+              <div class="code-body"><pre><span class="cmt">&lt;!-- User card on page 1 --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"user-card"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"avatar.png"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>John Doe<span class="tag">&lt;/h3&gt;</span>
+  <span class="tag">&lt;p&gt;</span>Developer<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;button&gt;</span>Follow<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre></div>
+            </div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; page2.html</div>
+              <div class="code-body"><pre><span class="cmt">&lt;!-- Same user card copy-pasted! --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"user-card"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"avatar.png"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>Jane Smith<span class="tag">&lt;/h3&gt;</span>
+  <span class="tag">&lt;p&gt;</span>Designer<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;button&gt;</span>Follow<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="cmt">&lt;!-- Need to change style? Update EVERY file! --&gt;</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pain Point 4 -->
+        <div class="pain-point">
+          <h4>😤 Pain Point #4: Callback Hell & Event Spaghetti</h4>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Complex interactions lead to deeply nested callbacks and scattered event handlers.</p>
+          
+          <div class="code-block">
+            <div class="code-body"><pre><span class="cmt">// Callback hell - deeply nested code</span>
+document.<span class="fn">getElementById</span>(<span class="str">'btn1'</span>).<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () => {
+  <span class="fn">fetchUser</span>(userId, (user) => {
+    <span class="fn">fetchPosts</span>(user.id, (posts) => {
+      <span class="fn">fetchComments</span>(posts[<span class="num">0</span>].id, (comments) => {
+        <span class="fn">renderComments</span>(comments, () => {
+          <span class="fn">updateUI</span>(() => {
+            <span class="cmt">// 😱 Nightmare to debug and maintain!</span>
+          })
+        })
+      })
+    })
+  })
+})</pre></div>
+          </div>
+        </div>
+
+        <!-- Pain Point 5 -->
+        <div class="pain-point">
+          <h4>😤 Pain Point #5: Performance Issues</h4>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Direct DOM manipulation is slow, especially when updating many elements.</p>
+          
+          <div class="code-block">
+            <div class="code-body"><pre><span class="cmt">// Inefficient: Multiple DOM updates cause multiple reflows</span>
+<span class="kw">function</span> <span class="fn">updateList</span>(items) {
+  <span class="kw">const</span> list = document.<span class="fn">getElementById</span>(<span class="str">'list'</span>)
+  list.innerHTML = <span class="str">''</span>  <span class="cmt">// Clear - triggers reflow</span>
+  
+  items.<span class="fn">forEach</span>(item => {
+    <span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">'li'</span>)
+    li.textContent = item
+    list.<span class="fn">appendChild</span>(li)  <span class="cmt">// Each append triggers reflow!</span>
+  })
+  <span class="cmt">// With 1000 items = 1000+ reflows = SLOW! 🐌</span>
+}</pre></div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📊 The Complexity Problem Visualized</h3>
+        <div class="demo-area" id="complexity-demo">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <h4>Code Complexity vs App Size</h4>
+          </div>
+          <div style="display: flex; justify-content: space-around; align-items: flex-end; height: 200px; padding: 0 2rem;">
+            <div style="text-align: center;">
+              <div style="background: linear-gradient(to top, #22c55e, #86efac); width: 60px; height: 40px; border-radius: 4px 4px 0 0;"></div>
+              <div style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--muted);">Small App</div>
+              <div style="font-size: 0.75rem; color: var(--accent);">Manageable</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="background: linear-gradient(to top, #fbbf24, #fde047); width: 60px; height: 100px; border-radius: 4px 4px 0 0;"></div>
+              <div style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--muted);">Medium App</div>
+              <div style="font-size: 0.75rem; color: var(--warning);">Getting Messy</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="background: linear-gradient(to top, #ef4444, #fca5a5); width: 60px; height: 180px; border-radius: 4px 4px 0 0;"></div>
+              <div style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--muted);">Large App</div>
+              <div style="font-size: 0.75rem; color: var(--danger);">CHAOS! 🔥</div>
+            </div>
+          </div>
+          <p style="text-align: center; color: var(--muted); margin-top: 1rem; font-size: 0.9rem;">
+            Vanilla JS complexity grows <strong>exponentially</strong> with app size
+          </p>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">🚨 Real-World Impact</div>
+          <div class="warning-content">
+            Facebook faced these exact problems in the early 2010s. Their codebase became so complex and bug-prone that they created <strong>React</strong> to solve these issues!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Part 4: Enter React -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-react">⚛</div>
+        <div class="section-title">Part 4: Enter React - The Solution</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--react); margin-bottom: 1rem;">Why React Was Created</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          React was created by Facebook in 2013 to solve the exact problems we just discussed. 
+          It introduced revolutionary concepts that changed frontend development forever.
+        </p>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <h4 style="color: #e34c26;">1990s-2000s: HTML & Basic JS</h4>
+            <p style="color: var(--muted);">Static pages with simple interactions. jQuery dominates for DOM manipulation.</p>
+          </div>
+          <div class="timeline-item">
+            <h4 style="color: #f7df1e;">2000s-2010s: Complex Web Apps</h4>
+            <p style="color: var(--muted);">Gmail, Facebook, Twitter push limits. Vanilla JS becomes unmanageable at scale.</p>
+          </div>
+          <div class="timeline-item">
+            <h4 style="color: var(--react);">2013: React Released</h4>
+            <p style="color: var(--muted);">Facebook open-sources React. Component-based architecture changes everything.</p>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">🎯 How React Solves Each Pain Point</h3>
+
+        <!-- Solution 1 -->
+        <div class="solution">
+          <h4>✅ Solution #1: Declarative UI (No Manual DOM Manipulation!)</h4>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Just describe WHAT you want, React handles HOW to update the DOM.</p>
+          
+          <div class="vs-container">
+            <div>
+              <h5 style="color: var(--danger); margin-bottom: 0.5rem;">❌ Vanilla JS (Imperative)</h5>
+              <div class="code-block">
+                <div class="code-body"><pre><span class="cmt">// Tell browser exactly HOW to update</span>
+<span class="kw">const</span> el = document.<span class="fn">getElementById</span>(<span class="str">'count'</span>)
+el.textContent = count
+el.style.color = count > <span class="num">10</span> ? <span class="str">'red'</span> : <span class="str">'green'</span></pre></div>
+              </div>
+            </div>
+            <div class="vs-divider">VS</div>
+            <div>
+              <h5 style="color: var(--accent); margin-bottom: 0.5rem;">✅ React (Declarative)</h5>
+              <div class="code-block">
+                <div class="code-body"><pre><span class="cmt">// Just describe WHAT you want</span>
+<span class="tag">&lt;span</span> <span class="attr">style</span>={{ color: count > <span class="num">10</span> ? <span class="str">'red'</span> : <span class="str">'green'</span> }}<span class="tag">&gt;</span>
+  {count}
+<span class="tag">&lt;/span&gt;</span></pre></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Solution 2 -->
+        <div class="solution">
+          <h4>✅ Solution #2: Automatic State → UI Sync</h4>
+          <p style="color: var(--muted); margin-bottom: 1rem;">When state changes, React automatically re-renders the UI. No manual updates!</p>
+          
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; React - Auto-updating UI</div>
+            <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>)  <span class="cmt">// State</span>
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>{count}<span class="tag">&lt;/h1&gt;</span>  <span class="cmt">{/* Always in sync with state! */}</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(count + <span class="num">1</span>)}<span class="tag">&gt;</span>
+        Increment
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+<span class="cmt">// Change state → UI updates automatically! 🎉</span></pre></div>
+          </div>
+        </div>
+
+        <!-- Solution 3 -->
+        <div class="solution">
+          <h4>✅ Solution #3: Reusable Components</h4>
+          <p style="color: var(--muted); margin-bottom: 1rem;">Build once, use everywhere. Like LEGO blocks for UI!</p>
+          
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; React - Reusable Component</div>
+            <div class="code-body"><pre><span class="cmt">// Define component ONCE</span>
+<span class="kw">function</span> <span class="fn">UserCard</span>({ name, role, avatar }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"user-card"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>={avatar} <span class="attr">alt</span>={name} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{name}<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{role}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button&gt;</span>Follow<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="cmt">// Use ANYWHERE with different data!</span>
+<span class="tag">&lt;UserCard</span> <span class="attr">name</span>=<span class="str">"John"</span> <span class="attr">role</span>=<span class="str">"Developer"</span> <span class="attr">avatar</span>=<span class="str">"/john.png"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;UserCard</span> <span class="attr">name</span>=<span class="str">"Jane"</span> <span class="attr">role</span>=<span class="str">"Designer"</span> <span class="attr">avatar</span>=<span class="str">"/jane.png"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;UserCard</span> <span class="attr">name</span>=<span class="str">"Bob"</span> <span class="attr">role</span>=<span class="str">"Manager"</span> <span class="attr">avatar</span>=<span class="str">"/bob.png"</span> <span class="tag">/&gt;</span></pre></div>
+          </div>
+        </div>
+
+        <!-- Solution 4 -->
+        <div class="solution">
+          <h4>✅ Solution #4: Virtual DOM (Performance)</h4>
+          <p style="color: var(--muted); margin-bottom: 1rem;">React uses a "Virtual DOM" to minimize actual DOM updates.</p>
+          
+          <div class="flow-diagram">
+            <div class="flow-box">
+              <div style="font-size: 1.5rem;">📝</div>
+              <div style="font-weight: 600;">State Change</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box highlight">
+              <div style="font-size: 1.5rem;">🔄</div>
+              <div style="font-weight: 600; color: var(--react);">Virtual DOM</div>
+              <div style="font-size: 0.75rem; color: var(--muted);">In memory comparison</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box">
+              <div style="font-size: 1.5rem;">📊</div>
+              <div style="font-weight: 600;">Diff Algorithm</div>
+              <div style="font-size: 0.75rem; color: var(--muted);">Find minimal changes</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box">
+              <div style="font-size: 1.5rem;">⚡</div>
+              <div style="font-weight: 600;">Real DOM</div>
+              <div style="font-size: 0.75rem; color: var(--muted);">Only update what changed</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">📊 The Same Todo List in React</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; TodoList.jsx - React (Clean & Simple!)</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="fn">TodoList</span>() {
+  <span class="kw">const</span> [todos, setTodos] = <span class="fn">useState</span>([])
+  <span class="kw">const</span> [input, setInput] = <span class="fn">useState</span>(<span class="str">''</span>)
+
+  <span class="kw">const</span> <span class="fn">addTodo</span> = () => {
+    <span class="kw">if</span> (!input.trim()) <span class="kw">return</span>
+    <span class="fn">setTodos</span>([...todos, { id: Date.<span class="fn">now</span>(), text: input, completed: <span class="kw">false</span> }])
+    <span class="fn">setInput</span>(<span class="str">''</span>)
+  }
+
+  <span class="kw">const</span> <span class="fn">toggleTodo</span> = (id) => {
+    <span class="fn">setTodos</span>(todos.<span class="fn">map</span>(t => t.id === id ? { ...t, completed: !t.completed } : t))
+  }
+
+  <span class="kw">const</span> <span class="fn">deleteTodo</span> = (id) => {
+    <span class="fn">setTodos</span>(todos.<span class="fn">filter</span>(t => t.id !== id))
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">value</span>={input} <span class="attr">onChange</span>={(e) => <span class="fn">setInput</span>(e.target.value)} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={addTodo}<span class="tag">&gt;</span>Add<span class="tag">&lt;/button&gt;</span>
+      
+      <span class="tag">&lt;p&gt;</span>{todos.<span class="fn">filter</span>(t => t.completed).length}/{todos.length} completed<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="tag">&lt;ul&gt;</span>
+        {todos.<span class="fn">map</span>(todo => (
+          <span class="tag">&lt;li</span> <span class="attr">key</span>={todo.id} <span class="attr">className</span>={todo.completed ? <span class="str">'completed'</span> : <span class="str">''</span>}<span class="tag">&gt;</span>
+            <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"checkbox"</span> <span class="attr">checked</span>={todo.completed} <span class="attr">onChange</span>={() => <span class="fn">toggleTodo</span>(todo.id)} <span class="tag">/&gt;</span>
+            <span class="tag">&lt;span&gt;</span>{todo.text}<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">deleteTodo</span>(todo.id)}<span class="tag">&gt;</span>Delete<span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;/li&gt;</span>
+        ))}
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}</pre></div>
+        </div>
+        <div class="lines-indicator">
+          <div class="lines-bar" style="width: 50%; background: var(--accent);"></div>
+          <span class="lines-count">~30 lines - 40% less code, 100% more readable!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Part 5: Comparison -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-compare">⚖️</div>
+        <div class="section-title">Part 5: Final Comparison - Vanilla JS vs React</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th style="color: #f7df1e;">Vanilla JavaScript</th>
+              <th style="color: var(--react);">React</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>DOM Updates</strong></td>
+              <td>Manual - You write the code <span class="badge badge-danger">Tedious</span></td>
+              <td>Automatic - React handles it <span class="badge badge-success">Easy</span></td>
+            </tr>
+            <tr>
+              <td><strong>State Management</strong></td>
+              <td>Variables scattered everywhere</td>
+              <td>useState, useReducer, Context</td>
+            </tr>
+            <tr>
+              <td><strong>Component Reuse</strong></td>
+              <td>Copy-paste HTML/JS <span class="badge badge-warning">Messy</span></td>
+              <td>Import & use components <span class="badge badge-success">Clean</span></td>
+            </tr>
+            <tr>
+              <td><strong>Performance</strong></td>
+              <td>Direct DOM manipulation (slow)</td>
+              <td>Virtual DOM (optimized)</td>
+            </tr>
+            <tr>
+              <td><strong>Code Organization</strong></td>
+              <td>HTML, CSS, JS in separate files</td>
+              <td>Components (all logic together)</td>
+            </tr>
+            <tr>
+              <td><strong>Learning Curve</strong></td>
+              <td>Lower initial barrier</td>
+              <td>Higher initial, easier long-term</td>
+            </tr>
+            <tr>
+              <td><strong>Best For</strong></td>
+              <td>Simple pages, small projects</td>
+              <td>Complex apps, large teams</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">🎯 When to Use What?</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: #f7df1e; margin-bottom: 0.75rem;">Use Vanilla JS When:</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem;">
+              <li>Building simple static websites</li>
+              <li>Adding small interactive features</li>
+              <li>Learning fundamentals (do this first!)</li>
+              <li>Performance-critical tiny widgets</li>
+              <li>No build step needed</li>
+            </ul>
+          </div>
+          <div class="card card-highlight">
+            <h4 style="color: var(--react); margin-bottom: 0.75rem;">Use React When:</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem;">
+              <li>Building complex web applications</li>
+              <li>UI changes frequently based on data</li>
+              <li>Working with a team</li>
+              <li>Need reusable components</li>
+              <li>Building Single Page Applications (SPAs)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip" style="margin-top: 2rem;">
+          <div class="tip-title">🎓 Learning Path Recommendation</div>
+          <div class="tip-content">
+            <strong>1.</strong> Learn HTML & CSS basics first<br>
+            <strong>2.</strong> Master Vanilla JavaScript (variables, functions, DOM, events)<br>
+            <strong>3.</strong> Build 2-3 small projects with vanilla JS<br>
+            <strong>4.</strong> Learn React once you feel the pain points yourself!<br><br>
+            Understanding vanilla JS makes you a <strong>better</strong> React developer!
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(97,218,251,0.1)); border-radius: 16px;">
+          <h3 style="margin-bottom: 0.5rem;">🚀 Ready to Start Your Journey?</h3>
+          <p style="color: var(--muted); margin-bottom: 1rem;">You now understand WHY modern frameworks like React exist!</p>
+          <div class="btn-group" style="justify-content: center;">
+            <span class="badge badge-html" style="font-size: 1rem; padding: 0.5rem 1rem;">HTML ✓</span>
+            <span class="badge badge-js" style="font-size: 1rem; padding: 0.5rem 1rem;">JavaScript ✓</span>
+            <span class="badge badge-react" style="font-size: 1rem; padding: 0.5rem 1rem;">→ React Next!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Toggle sections
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    // Counter demo
+    let count = 0;
+    function updateCounter(change) {
+      count += change;
+      document.getElementById('counter-value').textContent = count;
+    }
+    function resetCounter() {
+      count = 0;
+      document.getElementById('counter-value').textContent = count;
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

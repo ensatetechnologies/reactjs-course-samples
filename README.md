@@ -11,8 +11,9 @@ A comprehensive collection of sample applications demonstrating the journey from
 | **Chapter 3.1** | DOM Reflow & Performance | 5 apps |
 | **Chapter 5** | JavaScript vs TypeScript | 5 apps |
 | **Spread Operator** | Arrays, Objects, React State | 3 apps |
+| **Chapter 17** | Async/Await Complete Guide | 8 apps |
 
-**Total: 27 Sample Applications**
+**Total: 35 Sample Applications**
 
 ## 🎯 Quick Start
 
@@ -67,7 +68,13 @@ reactjs-course-samples/
 │   │
 │   │   # Spread Operator Chapter
 │   ├── 13-spread-arrays/
-│   └── 14-spread-objects/
+│   ├── 14-spread-objects/
+│   │
+│   │   # Chapter 17: Async/Await
+│   ├── 17-async-basics/
+│   ├── 17-callbacks-promises/
+│   ├── 17-promise-methods/
+│   └── 17-fetch-api/
 │
 └── react-apps/
     │
@@ -84,7 +91,13 @@ reactjs-course-samples/
     ├── 12-usercard-typescript/  # UserCard in TypeScript
     │
     │   # Spread Operator Chapter
-    └── 15-task-manager-spread/  # Full Task Manager demo
+    ├── 15-task-manager-spread/  # Full Task Manager demo
+    │
+    │   # Chapter 17: Async/Await
+    ├── 17-basic-fetch/          # useEffect + async pattern
+    ├── 17-search-users/         # Fetch on user action
+    ├── 17-use-fetch-hook/       # Custom useFetch hook
+    └── 17-user-directory/       # Complete CRUD app
 ```
 
 ## 🎓 Learning Path
@@ -121,12 +134,22 @@ Understand the differences between JS and TS in React:
 - **UserCard (JS)** - Component props without types
 - **UserCard (TS)** - Component props with interfaces
 
-### Spread Operator Chapter 🆕
+### Spread Operator Chapter
 Master the three magical dots (...) for immutable operations:
 - **Array Spread** - Copy, merge, add elements, function arguments
 - **Object Spread** - Copy, update, merge, remove properties
 - **React State** - Immutable state updates with spread
 - **Task Manager** - Complete app using all spread patterns
+
+### Chapter 17: Async/Await Complete Guide 🆕
+Master asynchronous programming in JavaScript and React:
+- **Sync vs Async** - Understanding non-blocking execution
+- **Callbacks to Promises** - Evolution of async patterns
+- **Promise Methods** - Promise.all, race, allSettled
+- **Fetch API** - GET, POST, PUT, DELETE requests
+- **React Patterns** - useEffect + async, event handlers
+- **Custom Hooks** - Reusable useFetch with cleanup
+- **User Directory** - Complete CRUD app with all patterns
 
 ## 🟨🟦 JavaScript vs TypeScript
 
@@ -179,6 +202,42 @@ setTasks(tasks.map(t =>
 ))
 ```
 
+## ⏳ Async/Await Patterns
+
+| Pattern | Use Case | Example |
+|---------|----------|---------|
+| `useEffect + async` | Initial data load | Define async function inside useEffect |
+| `async event handler` | User action (search, submit) | Handler can be async directly |
+| `Promise.all` | Parallel independent requests | `await Promise.all([fetch1, fetch2])` |
+| `Promise.allSettled` | Get all results even if some fail | Never rejects |
+| `try/catch` | Error handling | Always wrap async code |
+
+```javascript
+// React data fetching pattern
+useEffect(() => {
+  async function fetchData() {
+    try {
+      setLoading(true);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed');
+      const data = await response.json();
+      setData(data);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+  fetchData();
+}, []);
+
+// Parallel fetching
+const [user, posts] = await Promise.all([
+  fetch('/api/user').then(r => r.json()),
+  fetch('/api/posts').then(r => r.json())
+]);
+```
+
 ## 🛠️ Technologies Used
 
 - **HTML5** - Semantic markup
@@ -196,6 +255,7 @@ setTasks(tasks.map(t =>
 4. **Deep dive into DOM (Ch 3)** - Understand what React abstracts
 5. **Learn about Reflows (Ch 3.1)** - Appreciate Virtual DOM
 6. **Compare JS vs TS (Ch 5)** - Choose the right tool
+7. **Master Async/Await (Ch 17)** - Handle async operations in React
 
 ## 🎨 Sample App Features
 

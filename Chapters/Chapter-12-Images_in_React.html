@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Using Images in React - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb; --html: #e34c26; --js: #f7df1e;
+      --image: #10b981; --svg: #ff6b6b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(16,185,129,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(97,218,251,0.1) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--image), var(--react)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-image { background: var(--image); color: white; }
+    .badge-svg { background: var(--svg); color: white; }
+    .badge-react { background: #20232a; color: var(--react); }
+    .badge-html { background: var(--html); color: white; }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; }
+    .icon-basics { background: linear-gradient(135deg, var(--html), #dc2626); color: white; }
+    .icon-import { background: linear-gradient(135deg, var(--react), #0891b2); color: #000; }
+    .icon-public { background: linear-gradient(135deg, var(--warning), #d97706); color: white; }
+    .icon-dynamic { background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; }
+    .icon-background { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    .icon-svg { background: linear-gradient(135deg, var(--svg), #dc2626); color: white; }
+    .icon-optimize { background: linear-gradient(135deg, var(--primary), #0891b2); color: #000; }
+    .icon-lazy { background: linear-gradient(135deg, #818cf8, #4f46e5); color: white; }
+    .icon-responsive { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
+    .icon-errors { background: linear-gradient(135deg, var(--danger), #b91c1c); color: white; }
+    .icon-project { background: linear-gradient(135deg, var(--image), #059669); color: white; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-badge { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .prop { color: #e5c07b; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+    .card-react { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.08), transparent); }
+    .card-image { border-color: var(--image); background: linear-gradient(135deg, rgba(16,185,129,0.08), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--image); box-shadow: 0 0 20px rgba(16,185,129,0.2); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    .highlight-box { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(97,218,251,0.05)); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    
+    .visual-demo { background: var(--surface2); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+    .visual-demo-title { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+    
+    .file-tree { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+    .file-tree-item { padding: 0.25rem 0; color: var(--muted); }
+    .file-tree-item.folder { color: var(--warning); }
+    .file-tree-item.file { color: var(--text); }
+    .file-tree-item.image { color: var(--image); }
+    
+    .image-placeholder { background: linear-gradient(135deg, #1f2937, #374151); border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.9rem; }
+    
+    h2 { color: var(--image); margin-bottom: 1rem; }
+    h3 { color: var(--primary); margin: 1.5rem 0 1rem; }
+    
+    .method-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; transition: all 0.3s; }
+    .method-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .method-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .method-name { font-weight: 600; margin-bottom: 0.25rem; }
+    .method-desc { color: var(--muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-image">🖼️ Images</span>
+        <span class="hero-badge badge-svg">🎨 SVG</span>
+        <span class="hero-badge badge-react">⚛️ React</span>
+        <span class="hero-badge badge-html">📄 HTML</span>
+      </div>
+      <h1>Using Images in React</h1>
+      <p>Complete Guide: From Basic to Advanced Image Handling</p>
+    </div>
+
+    <!-- Section 1: Images in HTML (Basics) -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-basics">📄</div>
+        <div class="section-title">Part 1: Images in HTML (Quick Review)</div>
+        <span class="section-badge" style="background: rgba(227,76,38,0.2); color: var(--html);">HTML Basics</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>The Traditional HTML Way</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Before diving into React, let's review how images work in plain HTML.
+          This foundation helps understand what React does differently.
+        </p>
+
+        <h3>📝 Basic Image Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; index.html</div>
+          <div class="code-body"><pre><span class="cmt">&lt;!-- Basic image with required attributes --&gt;</span>
+<span class="tag">&lt;img</span> 
+  <span class="attr">src</span>=<span class="val">"images/photo.jpg"</span>
+  <span class="attr">alt</span>=<span class="val">"Description of the image"</span>
+<span class="tag">/&gt;</span>
+
+<span class="cmt">&lt;!-- With dimensions (recommended for layout stability) --&gt;</span>
+<span class="tag">&lt;img</span> 
+  <span class="attr">src</span>=<span class="val">"images/photo.jpg"</span>
+  <span class="attr">alt</span>=<span class="val">"A beautiful sunset"</span>
+  <span class="attr">width</span>=<span class="val">"800"</span>
+  <span class="attr">height</span>=<span class="val">"600"</span>
+<span class="tag">/&gt;</span>
+
+<span class="cmt">&lt;!-- External URL --&gt;</span>
+<span class="tag">&lt;img</span> 
+  <span class="attr">src</span>=<span class="val">"https://example.com/image.png"</span>
+  <span class="attr">alt</span>=<span class="val">"External image"</span>
+<span class="tag">/&gt;</span>
+
+<span class="cmt">&lt;!-- Relative paths --&gt;</span>
+<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"photo.jpg"</span> <span class="attr">alt</span>=<span class="val">"..."</span><span class="tag">/&gt;</span>         <span class="cmt">&lt;!-- Same folder --&gt;</span>
+<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"./images/photo.jpg"</span> <span class="attr">alt</span>=<span class="val">"..."</span><span class="tag">/&gt;</span> <span class="cmt">&lt;!-- Subfolder --&gt;</span>
+<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"../photo.jpg"</span> <span class="attr">alt</span>=<span class="val">"..."</span><span class="tag">/&gt;</span>      <span class="cmt">&lt;!-- Parent folder --&gt;</span>
+<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"/images/photo.jpg"</span> <span class="attr">alt</span>=<span class="val">"..."</span><span class="tag">/&gt;</span>  <span class="cmt">&lt;!-- Root folder --&gt;</span></pre></div>
+        </div>
+
+        <h3>🖼️ Common Image Attributes</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">Required Attributes</h4>
+            <ul style="color: var(--muted); padding-left: 1rem; font-size: 0.9rem;">
+              <li><code>src</code> - Path to the image</li>
+              <li><code>alt</code> - Alternative text (accessibility!)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--warning); margin-bottom: 0.75rem;">Optional Attributes</h4>
+            <ul style="color: var(--muted); padding-left: 1rem; font-size: 0.9rem;">
+              <li><code>width</code> / <code>height</code> - Dimensions</li>
+              <li><code>loading</code> - "lazy" or "eager"</li>
+              <li><code>decoding</code> - "async" or "sync"</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>📂 Typical HTML Project Structure</h3>
+        <div class="file-tree">
+          <div class="file-tree-item folder">📁 my-website/</div>
+          <div class="file-tree-item file" style="padding-left: 1.5rem;">📄 index.html</div>
+          <div class="file-tree-item file" style="padding-left: 1.5rem;">📄 styles.css</div>
+          <div class="file-tree-item folder" style="padding-left: 1.5rem;">📁 images/</div>
+          <div class="file-tree-item image" style="padding-left: 3rem;">🖼️ logo.png</div>
+          <div class="file-tree-item image" style="padding-left: 3rem;">🖼️ hero-banner.jpg</div>
+          <div class="file-tree-item image" style="padding-left: 3rem;">🖼️ profile.webp</div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Difference in React</div>
+          <div class="tip-content">
+            In HTML, you just reference image paths directly. In React, images can be <strong>imported as modules</strong>,
+            which enables bundling, optimization, and cache-busting automatically!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Importing Images in React -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-import">⚛️</div>
+        <div class="section-title">Part 2: Importing Images in React (Recommended)</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>The React Way: Import as Module</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          When you <strong>import</strong> an image in React, the build tool (Vite/Webpack) processes it,
+          optimizes it, and gives you a URL that includes a content hash for cache-busting.
+        </p>
+
+        <h3>📦 Basic Import Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx</div>
+          <div class="code-body"><pre><span class="cmt">// Import the image like a module</span>
+<span class="kw">import</span> profileImage <span class="kw">from</span> <span class="str">'./assets/profile.jpg'</span>;
+<span class="kw">import</span> logoImage <span class="kw">from</span> <span class="str">'./assets/logo.png'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card"</span><span class="tag">&gt;</span>
+      <span class="cmt">{/* Use the imported image as src */}</span>
+      <span class="tag">&lt;img</span> 
+        <span class="attr">src</span>={profileImage}
+        <span class="attr">alt</span>=<span class="str">"Student profile"</span>
+        <span class="attr">className</span>=<span class="str">"profile-img"</span>
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>={logoImage} <span class="attr">alt</span>=<span class="str">"School logo"</span> <span class="attr">className</span>=<span class="str">"logo"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentCard;</pre></div>
+        </div>
+
+        <h3>📂 Project Structure for Imports</h3>
+        <div class="grid-2">
+          <div class="file-tree">
+            <div class="file-tree-item folder">📁 src/</div>
+            <div class="file-tree-item folder" style="padding-left: 1.5rem;">📁 components/</div>
+            <div class="file-tree-item file" style="padding-left: 3rem;">📄 StudentCard.jsx</div>
+            <div class="file-tree-item file" style="padding-left: 3rem;">📄 Header.jsx</div>
+            <div class="file-tree-item folder" style="padding-left: 1.5rem;">📁 assets/</div>
+            <div class="file-tree-item image" style="padding-left: 3rem;">🖼️ profile.jpg</div>
+            <div class="file-tree-item image" style="padding-left: 3rem;">🖼️ logo.png</div>
+            <div class="file-tree-item image" style="padding-left: 3rem;">🖼️ background.webp</div>
+            <div class="file-tree-item file" style="padding-left: 1.5rem;">📄 App.jsx</div>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ Benefits of Importing</h4>
+            <ul style="color: var(--muted); padding-left: 1rem; font-size: 0.9rem;">
+              <li><strong>Build-time optimization</strong> - Images are processed</li>
+              <li><strong>Cache-busting</strong> - Hash in filename</li>
+              <li><strong>Error detection</strong> - Broken paths caught at build</li>
+              <li><strong>Tree shaking</strong> - Unused images excluded</li>
+              <li><strong>Small images inlined</strong> - As base64 data URLs</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>🔍 What Happens When You Import?</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📝</div>
+            <div style="font-weight: 600;">Your Code</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">import img from './photo.jpg'</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">⚙️</div>
+            <div style="font-weight: 600;">Build Tool</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Vite / Webpack</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">🔗</div>
+            <div style="font-weight: 600; color: var(--image);">Hashed URL</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">/assets/photo.a1b2c3.jpg</div>
+          </div>
+        </div>
+
+        <h3>📏 Supported Image Formats</h3>
+        <div class="grid-4">
+          <div class="method-card">
+            <div class="method-icon">🖼️</div>
+            <div class="method-name">.jpg / .jpeg</div>
+            <div class="method-desc">Photos, complex images</div>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">🎨</div>
+            <div class="method-name">.png</div>
+            <div class="method-desc">Transparency, graphics</div>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">✨</div>
+            <div class="method-name">.webp</div>
+            <div class="method-desc">Modern, smaller size</div>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">🎭</div>
+            <div class="method-name">.gif</div>
+            <div class="method-desc">Animated images</div>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Import Path Must Be Static</div>
+          <div class="warning-content">
+            The import path must be a <strong>static string</strong>, not a variable.
+            For dynamic paths, see the next sections on Public folder or dynamic imports.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Public Folder Images -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-public">📂</div>
+        <div class="section-title">Part 3: Public Folder Images</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Using the Public Folder</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Images in the <strong>public</strong> folder are served as-is, without processing.
+          They're accessible via absolute paths from the root URL.
+        </p>
+
+        <h3>📂 Public Folder Structure</h3>
+        <div class="grid-2">
+          <div class="file-tree">
+            <div class="file-tree-item folder">📁 my-react-app/</div>
+            <div class="file-tree-item folder" style="padding-left: 1.5rem;">📁 public/</div>
+            <div class="file-tree-item file" style="padding-left: 3rem;">📄 index.html</div>
+            <div class="file-tree-item image" style="padding-left: 3rem;">🖼️ favicon.ico</div>
+            <div class="file-tree-item folder" style="padding-left: 3rem;">📁 images/</div>
+            <div class="file-tree-item image" style="padding-left: 4.5rem;">🖼️ logo.png</div>
+            <div class="file-tree-item image" style="padding-left: 4.5rem;">🖼️ hero.jpg</div>
+            <div class="file-tree-item folder" style="padding-left: 1.5rem;">📁 src/</div>
+            <div class="file-tree-item file" style="padding-left: 3rem;">📄 App.jsx</div>
+          </div>
+          <div class="card card-warning">
+            <h4 style="color: var(--warning); margin-bottom: 0.75rem;">⚠️ When to Use Public Folder</h4>
+            <ul style="color: var(--muted); padding-left: 1rem; font-size: 0.9rem;">
+              <li>Dynamic image paths (user-selected)</li>
+              <li>Many images (100+)</li>
+              <li>Images referenced in HTML directly</li>
+              <li>Files that must keep exact names</li>
+              <li>Large files you don't want bundled</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>📝 Using Public Folder Images</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Using Public Folder Images</div>
+          <div class="code-body"><pre><span class="cmt">// Images in public folder - use absolute path from root</span>
+<span class="cmt">// NO import needed!</span>
+
+<span class="kw">function</span> <span class="fn">Header</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;header&gt;</span>
+      <span class="cmt">{/* Direct path from public folder */}</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="str">"/images/logo.png"</span> <span class="attr">alt</span>=<span class="str">"Logo"</span> <span class="tag">/&gt;</span>
+      
+      <span class="cmt">{/* With process.env.PUBLIC_URL for subdirectory deployment */}</span>
+      <span class="tag">&lt;img</span> 
+        <span class="attr">src</span>={<span class="str">`${process.env.PUBLIC_URL}/images/logo.png`</span>}
+        <span class="attr">alt</span>=<span class="str">"Logo"</span> 
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/header&gt;</span>
+  );
+}
+
+<span class="cmt">// Dynamic path example</span>
+<span class="kw">function</span> <span class="fn">ProductImage</span>({ productId }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span> 
+      <span class="attr">src</span>={<span class="str">`/images/products/${productId}.jpg`</span>}
+      <span class="attr">alt</span>=<span class="str">"Product"</span>
+    <span class="tag">/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>⚖️ Import vs Public Folder</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>Import (src/assets)</th>
+              <th>Public Folder</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Processing</strong></td>
+              <td>✅ Optimized & bundled</td>
+              <td>❌ Served as-is</td>
+            </tr>
+            <tr>
+              <td><strong>Cache-busting</strong></td>
+              <td>✅ Auto hash in filename</td>
+              <td>❌ Manual versioning</td>
+            </tr>
+            <tr>
+              <td><strong>Error detection</strong></td>
+              <td>✅ Build fails if missing</td>
+              <td>❌ 404 at runtime</td>
+            </tr>
+            <tr>
+              <td><strong>Dynamic paths</strong></td>
+              <td>❌ Must be static</td>
+              <td>✅ Can use variables</td>
+            </tr>
+            <tr>
+              <td><strong>Best for</strong></td>
+              <td>Component images</td>
+              <td>Dynamic/many images</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 Rule of Thumb</div>
+          <div class="tip-content">
+            <strong>Default:</strong> Import images (better optimization)<br>
+            <strong>Exception:</strong> Use public folder for dynamic paths or many images
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Dynamic Images -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-dynamic">🔄</div>
+        <div class="section-title">Part 4: Dynamic Images (Based on Props/State)</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Loading Images Dynamically</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Sometimes you need to load different images based on props, state, or user input.
+          Here are several approaches to handle dynamic image loading.
+        </p>
+
+        <h3>🎯 Method 1: Object Map (Best for Known Images)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; ImageMap Approach</div>
+          <div class="code-body"><pre><span class="cmt">// Import all possible images</span>
+<span class="kw">import</span> gradeA <span class="kw">from</span> <span class="str">'./assets/grades/grade-a.png'</span>;
+<span class="kw">import</span> gradeB <span class="kw">from</span> <span class="str">'./assets/grades/grade-b.png'</span>;
+<span class="kw">import</span> gradeC <span class="kw">from</span> <span class="str">'./assets/grades/grade-c.png'</span>;
+<span class="kw">import</span> gradeD <span class="kw">from</span> <span class="str">'./assets/grades/grade-d.png'</span>;
+<span class="kw">import</span> gradeF <span class="kw">from</span> <span class="str">'./assets/grades/grade-f.png'</span>;
+
+<span class="cmt">// Create a map</span>
+<span class="kw">const</span> gradeImages = {
+  <span class="str">'A'</span>: gradeA,
+  <span class="str">'B'</span>: gradeB,
+  <span class="str">'C'</span>: gradeC,
+  <span class="str">'D'</span>: gradeD,
+  <span class="str">'F'</span>: gradeF,
+};
+
+<span class="kw">function</span> <span class="fn">GradeBadge</span>({ grade }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span> 
+      <span class="attr">src</span>={gradeImages[grade]}
+      <span class="attr">alt</span>={<span class="str">`Grade ${grade}`</span>}
+      <span class="attr">className</span>=<span class="str">"grade-badge"</span>
+    <span class="tag">/&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;GradeBadge</span> <span class="attr">grade</span>=<span class="str">"A"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;GradeBadge</span> <span class="attr">grade</span>=<span class="str">"B"</span> <span class="tag">/&gt;</span></pre></div>
+        </div>
+
+        <h3>🎯 Method 2: Vite's import.meta.glob (Vite Projects)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Vite Glob Import</div>
+          <div class="code-body"><pre><span class="cmt">// Import all images from a folder at once!</span>
+<span class="kw">const</span> images = <span class="kw">import</span>.meta.<span class="fn">glob</span>(<span class="str">'./assets/products/*.{png,jpg,jpeg,webp}'</span>, {
+  eager: <span class="kw">true</span>,
+  query: <span class="str">'?url'</span>,
+  import: <span class="str">'default'</span>
+});
+
+<span class="cmt">// images is an object like:</span>
+<span class="cmt">// {</span>
+<span class="cmt">//   './assets/products/product-1.jpg': '/src/assets/products/product-1.jpg',</span>
+<span class="cmt">//   './assets/products/product-2.jpg': '/src/assets/products/product-2.jpg',</span>
+<span class="cmt">// }</span>
+
+<span class="kw">function</span> <span class="fn">ProductImage</span>({ productId }) {
+  <span class="kw">const</span> imagePath = <span class="str">`./assets/products/product-${productId}.jpg`</span>;
+  <span class="kw">const</span> imageUrl = images[imagePath];
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span> 
+      <span class="attr">src</span>={imageUrl}
+      <span class="attr">alt</span>={<span class="str">`Product ${productId}`</span>}
+    <span class="tag">/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Method 3: Public Folder (Dynamic Paths)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Public Folder Dynamic</div>
+          <div class="code-body"><pre><span class="cmt">// For truly dynamic images (e.g., from database, API)</span>
+
+<span class="kw">function</span> <span class="fn">StudentAvatar</span>({ studentId }) {
+  <span class="cmt">// Images stored in: public/avatars/student-{id}.jpg</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span> 
+      <span class="attr">src</span>={<span class="str">`/avatars/student-${studentId}.jpg`</span>}
+      <span class="attr">alt</span>=<span class="str">"Student avatar"</span>
+      <span class="attr">onError</span>={(e) => {
+        e.target.src = <span class="str">'/avatars/default.jpg'</span>; <span class="cmt">// Fallback</span>
+      }}
+    <span class="tag">/&gt;</span>
+  );
+}
+
+<span class="cmt">// API-provided image URLs</span>
+<span class="kw">function</span> <span class="fn">UserProfile</span>({ user }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span> 
+      <span class="attr">src</span>={user.avatarUrl || <span class="str">'/default-avatar.png'</span>}
+      <span class="attr">alt</span>={user.name}
+    <span class="tag">/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Method 4: Dynamic Import (Code Splitting)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Lazy Image Loading</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">DynamicImage</span>({ imageName }) {
+  <span class="kw">const</span> [imageSrc, setImageSrc] = <span class="fn">useState</span>(<span class="kw">null</span>);
+
+  <span class="fn">useEffect</span>(() => {
+    <span class="cmt">// Dynamically import the image</span>
+    <span class="kw">import</span>(<span class="str">`./assets/${imageName}.jpg`</span>)
+      .<span class="fn">then</span>((module) => {
+        <span class="fn">setImageSrc</span>(module.default);
+      })
+      .<span class="fn">catch</span>((err) => {
+        console.<span class="fn">error</span>(<span class="str">'Failed to load image'</span>, err);
+      });
+  }, [imageName]);
+
+  <span class="kw">if</span> (!imageSrc) <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>Loading...<span class="tag">&lt;/div&gt;</span>;
+
+  <span class="kw">return</span> <span class="tag">&lt;img</span> <span class="attr">src</span>={imageSrc} <span class="attr">alt</span>={imageName} <span class="tag">/&gt;</span>;
+}</pre></div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 Which Method to Choose?</div>
+          <div class="note-content">
+            <strong>Known set of images:</strong> Object Map (Method 1)<br>
+            <strong>Folder of images (Vite):</strong> import.meta.glob (Method 2)<br>
+            <strong>User uploads / API images:</strong> Public folder or URLs (Method 3)<br>
+            <strong>Code-split large images:</strong> Dynamic import (Method 4)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Background Images -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-background">🎨</div>
+        <div class="section-title">Part 5: Background Images in React</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Using Images as Backgrounds</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Background images are applied via CSS, but in React you have multiple options
+          for setting them dynamically.
+        </p>
+
+        <h3>🎯 Method 1: Inline Style with Import</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Inline Background Style</div>
+          <div class="code-body"><pre><span class="kw">import</span> heroBackground <span class="kw">from</span> <span class="str">'./assets/hero-bg.jpg'</span>;
+
+<span class="kw">function</span> <span class="fn">HeroSection</span>() {
+  <span class="kw">const</span> heroStyle = {
+    <span class="prop">backgroundImage</span>: <span class="str">`url(${heroBackground})`</span>,
+    <span class="prop">backgroundSize</span>: <span class="str">'cover'</span>,
+    <span class="prop">backgroundPosition</span>: <span class="str">'center'</span>,
+    <span class="prop">backgroundRepeat</span>: <span class="str">'no-repeat'</span>,
+    <span class="prop">minHeight</span>: <span class="str">'400px'</span>,
+    <span class="prop">display</span>: <span class="str">'flex'</span>,
+    <span class="prop">alignItems</span>: <span class="str">'center'</span>,
+    <span class="prop">justifyContent</span>: <span class="str">'center'</span>,
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;section</span> <span class="attr">style</span>={heroStyle}<span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Welcome to Our School<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;/section&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Method 2: CSS Module with Import</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Hero.module.css</div>
+            <div class="code-body"><pre><span class="cmt">/* Can't use imported images directly in CSS */</span>
+<span class="cmt">/* Use inline styles for dynamic imports */</span>
+
+<span class="cmt">/* Or reference public folder */</span>
+.hero {
+  background-image: url('/images/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 400px;
+}</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Hero.jsx</div>
+            <div class="code-body"><pre><span class="kw">import</span> styles <span class="kw">from</span> <span class="str">'./Hero.module.css'</span>;
+
+<span class="kw">function</span> <span class="fn">Hero</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;section</span> <span class="attr">className</span>={styles.hero}<span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Welcome!<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;/section&gt;</span>
+  );
+}</pre></div>
+          </div>
+        </div>
+
+        <h3>🎯 Method 3: Dynamic Background with Props</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Dynamic Background</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Card</span>({ title, backgroundUrl, children }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span>
+      <span class="attr">style</span>={{
+        <span class="prop">backgroundImage</span>: backgroundUrl ? <span class="str">`url(${backgroundUrl})`</span> : <span class="str">'none'</span>,
+        <span class="prop">backgroundSize</span>: <span class="str">'cover'</span>,
+        <span class="prop">backgroundPosition</span>: <span class="str">'center'</span>,
+        <span class="prop">padding</span>: <span class="str">'2rem'</span>,
+        <span class="prop">borderRadius</span>: <span class="str">'12px'</span>,
+      }}
+    <span class="tag">&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{title}<span class="tag">&lt;/h3&gt;</span>
+      {children}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;Card</span> 
+  <span class="attr">title</span>=<span class="str">"Featured Course"</span>
+  <span class="attr">backgroundUrl</span>=<span class="str">"https://example.com/course-bg.jpg"</span>
+<span class="tag">&gt;</span>
+  <span class="tag">&lt;p&gt;</span>Learn React Today!<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/Card&gt;</span></pre></div>
+        </div>
+
+        <h3>🎯 Method 4: Overlay Pattern (Common!)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Background with Overlay</div>
+          <div class="code-body"><pre><span class="kw">import</span> heroImage <span class="kw">from</span> <span class="str">'./assets/hero.jpg'</span>;
+
+<span class="kw">function</span> <span class="fn">HeroWithOverlay</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;section</span>
+      <span class="attr">style</span>={{
+        <span class="prop">position</span>: <span class="str">'relative'</span>,
+        <span class="prop">backgroundImage</span>: <span class="str">`url(${heroImage})`</span>,
+        <span class="prop">backgroundSize</span>: <span class="str">'cover'</span>,
+        <span class="prop">backgroundPosition</span>: <span class="str">'center'</span>,
+        <span class="prop">minHeight</span>: <span class="str">'500px'</span>,
+      }}
+    <span class="tag">&gt;</span>
+      <span class="cmt">{/* Dark overlay */}</span>
+      <span class="tag">&lt;div</span>
+        <span class="attr">style</span>={{
+          <span class="prop">position</span>: <span class="str">'absolute'</span>,
+          <span class="prop">inset</span>: <span class="num">0</span>,
+          <span class="prop">backgroundColor</span>: <span class="str">'rgba(0, 0, 0, 0.5)'</span>,
+        }}
+      <span class="tag">/&gt;</span>
+      
+      <span class="cmt">{/* Content above overlay */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">style</span>={{ <span class="prop">position</span>: <span class="str">'relative'</span>, <span class="prop">zIndex</span>: <span class="num">1</span>, <span class="prop">color</span>: <span class="str">'white'</span> }}<span class="tag">&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>Welcome to Our School<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Start your learning journey today<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/section&gt;</span>
+  );
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: SVG in React -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-svg">🎨</div>
+        <div class="section-title">Part 6: SVG Images in React</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Working with SVG Files</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>SVG (Scalable Vector Graphics)</strong> are perfect for icons, logos, and illustrations.
+          React offers multiple ways to use SVGs, each with different capabilities.
+        </p>
+
+        <h3>🎯 Method 1: Import as Image URL</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; SVG as Image Source</div>
+          <div class="code-body"><pre><span class="cmt">// Import SVG like any image</span>
+<span class="kw">import</span> logoSvg <span class="kw">from</span> <span class="str">'./assets/logo.svg'</span>;
+
+<span class="kw">function</span> <span class="fn">Header</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;header&gt;</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>={logoSvg} <span class="attr">alt</span>=<span class="str">"Logo"</span> <span class="attr">width</span>=<span class="str">"120"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/header&gt;</span>
+  );
+}
+
+<span class="cmt">// ✅ Simple and works</span>
+<span class="cmt">// ❌ Can't style with CSS (fill, stroke)</span>
+<span class="cmt">// ❌ Can't animate parts</span></pre></div>
+        </div>
+
+        <h3>🎯 Method 2: Import as React Component (Vite with plugin)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; SVG as React Component</div>
+          <div class="code-body"><pre><span class="cmt">// With vite-plugin-svgr or similar</span>
+<span class="cmt">// vite.config.js: import svgr from 'vite-plugin-svgr'</span>
+
+<span class="cmt">// Import as component using ?react suffix</span>
+<span class="kw">import</span> LogoIcon <span class="kw">from</span> <span class="str">'./assets/logo.svg?react'</span>;
+
+<span class="kw">function</span> <span class="fn">Header</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;header&gt;</span>
+      <span class="cmt">{/* Now it's a React component! */}</span>
+      <span class="tag">&lt;LogoIcon</span> 
+        <span class="attr">width</span>={<span class="num">120</span>}
+        <span class="attr">height</span>={<span class="num">40</span>}
+        <span class="attr">fill</span>=<span class="str">"currentColor"</span>
+        <span class="attr">className</span>=<span class="str">"logo-icon"</span>
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/header&gt;</span>
+  );
+}
+
+<span class="cmt">// ✅ Can style with CSS</span>
+<span class="cmt">// ✅ Can change colors dynamically</span>
+<span class="cmt">// ✅ Full control over SVG</span></pre></div>
+        </div>
+
+        <h3>🎯 Method 3: Inline SVG (Copy-Paste)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Inline SVG</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">CheckIcon</span>({ size = <span class="num">24</span>, color = <span class="str">'currentColor'</span> }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;svg</span>
+      <span class="attr">width</span>={size}
+      <span class="attr">height</span>={size}
+      <span class="attr">viewBox</span>=<span class="str">"0 0 24 24"</span>
+      <span class="attr">fill</span>=<span class="str">"none"</span>
+      <span class="attr">stroke</span>={color}
+      <span class="attr">strokeWidth</span>=<span class="str">"2"</span>
+      <span class="attr">strokeLinecap</span>=<span class="str">"round"</span>
+      <span class="attr">strokeLinejoin</span>=<span class="str">"round"</span>
+    <span class="tag">&gt;</span>
+      <span class="tag">&lt;polyline</span> <span class="attr">points</span>=<span class="str">"20 6 9 17 4 12"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/svg&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;CheckIcon</span> <span class="attr">size</span>={<span class="num">32</span>} <span class="attr">color</span>=<span class="str">"#22c55e"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;CheckIcon</span> <span class="attr">color</span>=<span class="str">"red"</span> <span class="tag">/&gt;</span></pre></div>
+        </div>
+
+        <h3>🎯 Method 4: Icon Libraries (Recommended for Icons!)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Using Lucide Icons</div>
+          <div class="code-body"><pre><span class="cmt">// npm install lucide-react</span>
+
+<span class="kw">import</span> { 
+  Check, X, Edit, Trash2, 
+  User, Search, Menu, Home 
+} <span class="kw">from</span> <span class="str">'lucide-react'</span>;
+
+<span class="kw">function</span> <span class="fn">ActionButtons</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"actions"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;button&gt;</span>
+        <span class="tag">&lt;Edit</span> <span class="attr">size</span>={<span class="num">20</span>} <span class="tag">/&gt;</span> Edit
+      <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button&gt;</span>
+        <span class="tag">&lt;Trash2</span> <span class="attr">size</span>={<span class="num">20</span>} <span class="attr">color</span>=<span class="str">"#ef4444"</span> <span class="tag">/&gt;</span> Delete
+      <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button&gt;</span>
+        <span class="tag">&lt;Check</span> <span class="attr">size</span>={<span class="num">20</span>} <span class="attr">strokeWidth</span>={<span class="num">3</span>} <span class="tag">/&gt;</span> Save
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>⚖️ SVG Methods Comparison</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Styleable?</th>
+              <th>Best For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Import as URL</td>
+              <td>❌ No</td>
+              <td>Simple logos, decorative images</td>
+            </tr>
+            <tr>
+              <td>Import as Component</td>
+              <td>✅ Yes</td>
+              <td>Icons that need styling</td>
+            </tr>
+            <tr>
+              <td>Inline SVG</td>
+              <td>✅ Yes</td>
+              <td>Custom icons, full control</td>
+            </tr>
+            <tr>
+              <td>Icon Library</td>
+              <td>✅ Yes</td>
+              <td>UI icons (recommended!)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 Recommendation</div>
+          <div class="tip-content">
+            Use <strong>Lucide</strong>, <strong>Heroicons</strong>, or <strong>React Icons</strong> for UI icons.
+            They're optimized, consistent, and easy to use!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Image Optimization -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-optimize">⚡</div>
+        <div class="section-title">Part 7: Image Optimization</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Making Images Load Fast</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Images are often the heaviest assets on a webpage. Proper optimization can dramatically improve
+          loading times and user experience.
+        </p>
+
+        <h3>📏 Right Size for the Job</h3>
+        <div class="highlight-box">
+          <h4 style="color: var(--primary); margin-bottom: 0.75rem;">Image Sizing Rules</h4>
+          <ul style="color: var(--muted); padding-left: 1.25rem;">
+            <li><strong>Don't serve 4000px images for 400px displays</strong></li>
+            <li>Resize images to max dimensions they'll be shown at</li>
+            <li>For retina: 2x the display size (e.g., 800px for 400px display)</li>
+            <li>Consider different sizes for different breakpoints</li>
+          </ul>
+        </div>
+
+        <h3>📸 Choose the Right Format</h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4 style="color: var(--warning);">JPEG/JPG</h4>
+            <ul style="color: var(--muted); font-size: 0.85rem; padding-left: 1rem;">
+              <li>Photos, complex images</li>
+              <li>No transparency</li>
+              <li>Good compression</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary);">PNG</h4>
+            <ul style="color: var(--muted); font-size: 0.85rem; padding-left: 1rem;">
+              <li>Transparency needed</li>
+              <li>Simple graphics</li>
+              <li>Larger file size</li>
+            </ul>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">WebP ⭐</h4>
+            <ul style="color: var(--muted); font-size: 0.85rem; padding-left: 1rem;">
+              <li>Best of both worlds</li>
+              <li>30% smaller than JPEG</li>
+              <li>Supports transparency</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>🎯 Optimized Image Component</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; OptimizedImage.jsx</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">OptimizedImage</span>({ 
+  src, 
+  alt, 
+  width, 
+  height,
+  className = <span class="str">''</span>,
+  priority = <span class="kw">false</span> 
+}) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span>
+      <span class="attr">src</span>={src}
+      <span class="attr">alt</span>={alt}
+      <span class="attr">width</span>={width}
+      <span class="attr">height</span>={height}
+      <span class="attr">className</span>={className}
+      <span class="cmt">{/* Lazy load non-priority images */}</span>
+      <span class="attr">loading</span>={priority ? <span class="str">'eager'</span> : <span class="str">'lazy'</span>}
+      <span class="cmt">{/* Decode async for smoother loading */}</span>
+      <span class="attr">decoding</span>=<span class="str">"async"</span>
+      <span class="cmt">{/* Prevent layout shift */}</span>
+      <span class="attr">style</span>={{
+        <span class="prop">aspectRatio</span>: width && height ? <span class="str">`${width} / ${height}`</span> : <span class="str">'auto'</span>,
+        <span class="prop">objectFit</span>: <span class="str">'cover'</span>,
+      }}
+    <span class="tag">/&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;OptimizedImage</span>
+  <span class="attr">src</span>=<span class="str">"/images/hero.webp"</span>
+  <span class="attr">alt</span>=<span class="str">"Hero banner"</span>
+  <span class="attr">width</span>={<span class="num">1200</span|}
+  <span class="attr">height</span>={<span class="num">600</span>}
+  <span class="attr">priority</span>  <span class="cmt">{/* Above the fold - load immediately */}</span>
+<span class="tag">/&gt;</span></pre></div>
+        </div>
+
+        <h3>🖼️ Responsive Images with srcset</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; ResponsiveImage.jsx</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">ResponsiveImage</span>({ basePath, alt }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span>
+      <span class="attr">src</span>={<span class="str">`${basePath}-800.webp`</span>}  <span class="cmt">{/* Fallback */}</span>
+      <span class="attr">srcSet</span>={<span class="str">`
+        ${basePath}-400.webp 400w,
+        ${basePath}-800.webp 800w,
+        ${basePath}-1200.webp 1200w,
+        ${basePath}-1600.webp 1600w
+      `</span>}
+      <span class="attr">sizes</span>=<span class="str">"(max-width: 640px) 100vw, 
+             (max-width: 1024px) 50vw, 
+             33vw"</span>
+      <span class="attr">alt</span>={alt}
+      <span class="attr">loading</span>=<span class="str">"lazy"</span>
+    <span class="tag">/&gt;</span>
+  );
+}
+
+<span class="cmt">{/* Browser picks the best image based on viewport and device pixel ratio */}</span></pre></div>
+        </div>
+
+        <h3>🎨 Modern Format with Fallback</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Picture Element</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">PictureWithFallback</span>({ src, alt }) {
+  <span class="cmt">// Remove extension from src</span>
+  <span class="kw">const</span> basePath = src.<span class="fn">replace</span>(<span class="str">/\.[^.]+$/</span>, <span class="str">''</span>);
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;picture&gt;</span>
+      <span class="cmt">{/* Try AVIF first (smallest) */}</span>
+      <span class="tag">&lt;source</span> <span class="attr">srcSet</span>={<span class="str">`${basePath}.avif`</span>} <span class="attr">type</span>=<span class="str">"image/avif"</span> <span class="tag">/&gt;</span>
+      <span class="cmt">{/* Then WebP */}</span>
+      <span class="tag">&lt;source</span> <span class="attr">srcSet</span>={<span class="str">`${basePath}.webp`</span>} <span class="attr">type</span>=<span class="str">"image/webp"</span> <span class="tag">/&gt;</span>
+      <span class="cmt">{/* Fallback to original */}</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>={src} <span class="attr">alt</span>={alt} <span class="attr">loading</span>=<span class="str">"lazy"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/picture&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Quick Wins</div>
+          <div class="tip-content">
+            1. Always specify <code>width</code> and <code>height</code> (prevents layout shift)<br>
+            2. Use <code>loading="lazy"</code> for below-the-fold images<br>
+            3. Use WebP format when possible<br>
+            4. Compress images before adding to project
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Lazy Loading -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon icon-lazy">⏳</div>
+        <div class="section-title">Part 8: Lazy Loading & Placeholders</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Loading Images Efficiently</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Lazy loading</strong> delays loading images until they're needed.
+          <strong>Placeholders</strong> show something while the image loads.
+        </p>
+
+        <h3>🎯 Native Lazy Loading (Simplest)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Native Lazy Loading</div>
+          <div class="code-body"><pre><span class="cmt">// Just add loading="lazy" attribute!</span>
+<span class="tag">&lt;img</span>
+  <span class="attr">src</span>=<span class="str">"/images/photo.jpg"</span>
+  <span class="attr">alt</span>=<span class="str">"Photo"</span>
+  <span class="attr">loading</span>=<span class="str">"lazy"</span>  <span class="cmt">{/* Browser handles it! */}</span>
+  <span class="attr">width</span>=<span class="str">"400"</span>
+  <span class="attr">height</span>=<span class="str">"300"</span>
+<span class="tag">/&gt;</span>
+
+<span class="cmt">// For above-the-fold images, use eager (or omit)</span>
+<span class="tag">&lt;img</span>
+  <span class="attr">src</span>=<span class="str">"/images/hero.jpg"</span>
+  <span class="attr">alt</span>=<span class="str">"Hero"</span>
+  <span class="attr">loading</span>=<span class="str">"eager"</span>  <span class="cmt">{/* Load immediately */}</span>
+<span class="tag">/&gt;</span></pre></div>
+        </div>
+
+        <h3>🎯 Lazy Load with Placeholder</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; LazyImage.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">LazyImage</span>({ src, alt, width, height, placeholder }) {
+  <span class="kw">const</span> [isLoaded, setIsLoaded] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [hasError, setHasError] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span>
+      <span class="attr">style</span>={{
+        <span class="prop">position</span>: <span class="str">'relative'</span>,
+        <span class="prop">width</span>,
+        <span class="prop">height</span>,
+        <span class="prop">overflow</span>: <span class="str">'hidden'</span>,
+        <span class="prop">backgroundColor</span>: <span class="str">'#1f2937'</span>,
+        <span class="prop">borderRadius</span>: <span class="str">'12px'</span>,
+      }}
+    <span class="tag">&gt;</span>
+      <span class="cmt">{/* Placeholder/Loading state */}</span>
+      {!isLoaded && !hasError && (
+        <span class="tag">&lt;div</span>
+          <span class="attr">style</span>={{
+            <span class="prop">position</span>: <span class="str">'absolute'</span>,
+            <span class="prop">inset</span>: <span class="num">0</span>,
+            <span class="prop">display</span>: <span class="str">'flex'</span>,
+            <span class="prop">alignItems</span>: <span class="str">'center'</span>,
+            <span class="prop">justifyContent</span>: <span class="str">'center'</span>,
+            <span class="prop">background</span>: placeholder || <span class="str">'linear-gradient(135deg, #1f2937, #374151)'</span>,
+          }}
+        <span class="tag">&gt;</span>
+          <span class="tag">&lt;span</span> <span class="attr">style</span>={{ <span class="prop">color</span>: <span class="str">'#9ca3af'</span> }}<span class="tag">&gt;</span>Loading...<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+
+      <span class="cmt">{/* Actual image */}</span>
+      {!hasError && (
+        <span class="tag">&lt;img</span>
+          <span class="attr">src</span>={src}
+          <span class="attr">alt</span>={alt}
+          <span class="attr">loading</span>=<span class="str">"lazy"</span>
+          <span class="attr">onLoad</span>={() => <span class="fn">setIsLoaded</span>(<span class="kw">true</span>)}
+          <span class="attr">onError</span>={() => <span class="fn">setHasError</span>(<span class="kw">true</span>)}
+          <span class="attr">style</span>={{
+            <span class="prop">width</span>: <span class="str">'100%'</span>,
+            <span class="prop">height</span>: <span class="str">'100%'</span>,
+            <span class="prop">objectFit</span>: <span class="str">'cover'</span>,
+            <span class="prop">opacity</span>: isLoaded ? <span class="num">1</span> : <span class="num">0</span>,
+            <span class="prop">transition</span>: <span class="str">'opacity 0.3s ease'</span>,
+          }}
+        <span class="tag">/&gt;</span>
+      )}
+
+      <span class="cmt">{/* Error state */}</span>
+      {hasError && (
+        <span class="tag">&lt;div</span> <span class="attr">style</span>={{ <span class="prop">color</span>: <span class="str">'#ef4444'</span>, <span class="prop">textAlign</span>: <span class="str">'center'</span> }}<span class="tag">&gt;</span>
+          Failed to load image
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Blur-Up Placeholder (Advanced)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; BlurImage.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Tiny base64 placeholder (generated at build time)</span>
+<span class="kw">const</span> tinyPlaceholder = <span class="str">'data:image/jpeg;base64,/9j/4AAQSkZ...'</span>;
+
+<span class="kw">function</span> <span class="fn">BlurImage</span>({ src, placeholder = tinyPlaceholder, alt, ...props }) {
+  <span class="kw">const</span> [isLoaded, setIsLoaded] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">style</span>={{ <span class="prop">position</span>: <span class="str">'relative'</span>, <span class="prop">overflow</span>: <span class="str">'hidden'</span> }}<span class="tag">&gt;</span>
+      <span class="cmt">{/* Blurred placeholder */}</span>
+      <span class="tag">&lt;img</span>
+        <span class="attr">src</span>={placeholder}
+        <span class="attr">alt</span>=<span class="str">""</span>
+        <span class="attr">aria-hidden</span>=<span class="str">"true"</span>
+        <span class="attr">style</span>={{
+          <span class="prop">position</span>: <span class="str">'absolute'</span>,
+          <span class="prop">inset</span>: <span class="num">0</span>,
+          <span class="prop">width</span>: <span class="str">'100%'</span>,
+          <span class="prop">height</span>: <span class="str">'100%'</span>,
+          <span class="prop">objectFit</span>: <span class="str">'cover'</span>,
+          <span class="prop">filter</span>: <span class="str">'blur(20px)'</span>,
+          <span class="prop">transform</span>: <span class="str">'scale(1.1)'</span>,
+          <span class="prop">opacity</span>: isLoaded ? <span class="num">0</span> : <span class="num">1</span>,
+          <span class="prop">transition</span>: <span class="str">'opacity 0.4s ease'</span>,
+        }}
+      <span class="tag">/&gt;</span>
+      
+      <span class="cmt">{/* Full image */}</span>
+      <span class="tag">&lt;img</span>
+        <span class="attr">src</span>={src}
+        <span class="attr">alt</span>={alt}
+        <span class="attr">loading</span>=<span class="str">"lazy"</span>
+        <span class="attr">onLoad</span>={() => <span class="fn">setIsLoaded</span>(<span class="kw">true</span>)}
+        <span class="attr">style</span>={{
+          <span class="prop">width</span>: <span class="str">'100%'</span>,
+          <span class="prop">height</span>: <span class="str">'100%'</span>,
+          <span class="prop">objectFit</span>: <span class="str">'cover'</span>,
+        }}
+        {...props}
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 Placeholder Options</div>
+          <div class="note-content">
+            <strong>Solid color:</strong> Fast, simple<br>
+            <strong>Gradient:</strong> Slightly more interesting<br>
+            <strong>Skeleton:</strong> Animated loading state<br>
+            <strong>Blur-up:</strong> Low-res preview (best UX, more complex)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9: Error Handling -->
+    <div class="section" id="s9">
+      <div class="section-header" onclick="toggleSection('s9')">
+        <div class="section-icon icon-errors">⚠️</div>
+        <div class="section-title">Part 9: Error Handling & Fallbacks</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Handling Image Load Failures</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Images fail to load for many reasons: network issues, wrong URLs, deleted files.
+          Always have a fallback plan!
+        </p>
+
+        <h3>🎯 Simple Fallback with onError</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Simple Fallback</div>
+          <div class="code-body"><pre><span class="kw">import</span> defaultAvatar <span class="kw">from</span> <span class="str">'./assets/default-avatar.png'</span>;
+
+<span class="kw">function</span> <span class="fn">UserAvatar</span>({ user }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span>
+      <span class="attr">src</span>={user.avatarUrl}
+      <span class="attr">alt</span>={user.name}
+      <span class="attr">onError</span>={(e) => {
+        e.target.src = defaultAvatar;  <span class="cmt">// Replace with fallback</span>
+        e.target.onerror = <span class="kw">null</span>;      <span class="cmt">// Prevent infinite loop</span>
+      }}
+    <span class="tag">/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Robust Image Component</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; ImageWithFallback.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">ImageWithFallback</span>({
+  src,
+  fallbackSrc,
+  alt,
+  fallbackElement,
+  className,
+  ...props
+}) {
+  <span class="kw">const</span> [imgSrc, setImgSrc] = <span class="fn">useState</span>(src);
+  <span class="kw">const</span> [hasError, setHasError] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="kw">const</span> handleError = () => {
+    <span class="kw">if</span> (!hasError) {
+      <span class="fn">setHasError</span>(<span class="kw">true</span>);
+      <span class="kw">if</span> (fallbackSrc) {
+        <span class="fn">setImgSrc</span>(fallbackSrc);
+      }
+    }
+  };
+
+  <span class="cmt">// If both original and fallback failed, show fallback element</span>
+  <span class="kw">if</span> (hasError && !fallbackSrc) {
+    <span class="kw">return</span> fallbackElement || (
+      <span class="tag">&lt;div</span>
+        <span class="attr">className</span>={className}
+        <span class="attr">style</span>={{
+          <span class="prop">display</span>: <span class="str">'flex'</span>,
+          <span class="prop">alignItems</span>: <span class="str">'center'</span>,
+          <span class="prop">justifyContent</span>: <span class="str">'center'</span>,
+          <span class="prop">background</span>: <span class="str">'#374151'</span>,
+          <span class="prop">color</span>: <span class="str">'#9ca3af'</span>,
+        }}
+      <span class="tag">&gt;</span>
+        📷
+      <span class="tag">&lt;/div&gt;</span>
+    );
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span>
+      <span class="attr">src</span>={imgSrc}
+      <span class="attr">alt</span>={alt}
+      <span class="attr">className</span>={className}
+      <span class="attr">onError</span>={handleError}
+      {...props}
+    <span class="tag">/&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;ImageWithFallback</span>
+  <span class="attr">src</span>={user.photo}
+  <span class="attr">fallbackSrc</span>=<span class="str">"/default-user.png"</span>
+  <span class="attr">alt</span>={user.name}
+  <span class="attr">fallbackElement</span>={<span class="tag">&lt;UserIcon</span> <span class="tag">/&gt;</span>}
+<span class="tag">/&gt;</span></pre></div>
+        </div>
+
+        <h3>🎯 Avatar Component with Initials Fallback</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Avatar.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Avatar</span>({ src, name, size = <span class="num">48</span> }) {
+  <span class="kw">const</span> [showImage, setShowImage] = <span class="fn">useState</span>(!!src);
+  
+  <span class="cmt">// Get initials from name</span>
+  <span class="kw">const</span> initials = name
+    .<span class="fn">split</span>(<span class="str">' '</span>)
+    .<span class="fn">map</span>(word => word[<span class="num">0</span>])
+    .<span class="fn">join</span>(<span class="str">''</span>)
+    .<span class="fn">toUpperCase</span>()
+    .<span class="fn">slice</span>(<span class="num">0</span>, <span class="num">2</span>);
+  
+  <span class="cmt">// Generate color from name</span>
+  <span class="kw">const</span> colors = [<span class="str">'#ef4444'</span>, <span class="str">'#f59e0b'</span>, <span class="str">'#22c55e'</span>, <span class="str">'#3b82f6'</span>, <span class="str">'#8b5cf6'</span>];
+  <span class="kw">const</span> colorIndex = name.<span class="fn">charCodeAt</span>(<span class="num">0</span>) % colors.length;
+  <span class="kw">const</span> bgColor = colors[colorIndex];
+
+  <span class="kw">const</span> containerStyle = {
+    <span class="prop">width</span>: size,
+    <span class="prop">height</span>: size,
+    <span class="prop">borderRadius</span>: <span class="str">'50%'</span>,
+    <span class="prop">overflow</span>: <span class="str">'hidden'</span>,
+    <span class="prop">backgroundColor</span>: bgColor,
+    <span class="prop">display</span>: <span class="str">'flex'</span>,
+    <span class="prop">alignItems</span>: <span class="str">'center'</span>,
+    <span class="prop">justifyContent</span>: <span class="str">'center'</span>,
+    <span class="prop">color</span>: <span class="str">'white'</span>,
+    <span class="prop">fontWeight</span>: <span class="str">'600'</span>,
+    <span class="prop">fontSize</span>: size * <span class="num">0.4</span>,
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">style</span>={containerStyle}<span class="tag">&gt;</span>
+      {showImage ? (
+        <span class="tag">&lt;img</span>
+          <span class="attr">src</span>={src}
+          <span class="attr">alt</span>={name}
+          <span class="attr">style</span>={{ <span class="prop">width</span>: <span class="str">'100%'</span>, <span class="prop">height</span>: <span class="str">'100%'</span>, <span class="prop">objectFit</span>: <span class="str">'cover'</span> }}
+          <span class="attr">onError</span>={() => <span class="fn">setShowImage</span>(<span class="kw">false</span>)}
+        <span class="tag">/&gt;</span>
+      ) : (
+        <span class="tag">&lt;span&gt;</span>{initials}<span class="tag">&lt;/span&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;Avatar</span> <span class="attr">name</span>=<span class="str">"John Doe"</span> <span class="attr">src</span>={user.avatar} <span class="attr">size</span>={<span class="num">64</span>} <span class="tag">/&gt;</span>
+<span class="tag">&lt;Avatar</span> <span class="attr">name</span>=<span class="str">"Jane Smith"</span> <span class="tag">/&gt;</span>  <span class="cmt">{/* Shows "JS" initials */}</span></pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 10: Complete Example -->
+    <div class="section" id="s10">
+      <div class="section-header" onclick="toggleSection('s10')">
+        <div class="section-icon icon-project">🚀</div>
+        <div class="section-title">Part 10: Complete Student Card with Images</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Putting It All Together</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Let's build a complete Student Card component that demonstrates all the image techniques we've learned.
+        </p>
+
+        <h3>📂 Project Structure</h3>
+        <div class="file-tree">
+          <div class="file-tree-item folder">📁 src/</div>
+          <div class="file-tree-item folder" style="padding-left: 1.5rem;">📁 components/</div>
+          <div class="file-tree-item file" style="padding-left: 3rem;">📄 StudentCard.jsx</div>
+          <div class="file-tree-item file" style="padding-left: 3rem;">📄 StudentCard.module.css</div>
+          <div class="file-tree-item file" style="padding-left: 3rem;">📄 Avatar.jsx</div>
+          <div class="file-tree-item file" style="padding-left: 3rem;">📄 GradeBadge.jsx</div>
+          <div class="file-tree-item folder" style="padding-left: 1.5rem;">📁 assets/</div>
+          <div class="file-tree-item image" style="padding-left: 3rem;">🖼️ default-avatar.png</div>
+          <div class="file-tree-item folder" style="padding-left: 3rem;">📁 grades/</div>
+          <div class="file-tree-item image" style="padding-left: 4.5rem;">🖼️ grade-a.svg</div>
+          <div class="file-tree-item image" style="padding-left: 4.5rem;">🖼️ grade-b.svg</div>
+          <div class="file-tree-item image" style="padding-left: 4.5rem;">🖼️ grade-c.svg</div>
+        </div>
+
+        <h3>📝 Complete Implementation</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Avatar.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> defaultAvatar <span class="kw">from</span> <span class="str">'../assets/default-avatar.png'</span>;
+<span class="kw">import</span> styles <span class="kw">from</span> <span class="str">'./Avatar.module.css'</span>;
+
+<span class="kw">function</span> <span class="fn">Avatar</span>({ src, name, size = <span class="str">'md'</span> }) {
+  <span class="kw">const</span> [imageSrc, setImageSrc] = <span class="fn">useState</span>(src || defaultAvatar);
+  <span class="kw">const</span> [isLoaded, setIsLoaded] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="kw">const</span> handleError = () => {
+    <span class="fn">setImageSrc</span>(defaultAvatar);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="str">`${styles.avatar} ${styles[size]}`</span>}<span class="tag">&gt;</span>
+      {!isLoaded && <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.skeleton} <span class="tag">/&gt;</span>}
+      <span class="tag">&lt;img</span>
+        <span class="attr">src</span>={imageSrc}
+        <span class="attr">alt</span>={name}
+        <span class="attr">loading</span>=<span class="str">"lazy"</span>
+        <span class="attr">onLoad</span>={() => <span class="fn">setIsLoaded</span>(<span class="kw">true</span>)}
+        <span class="attr">onError</span>={handleError}
+        <span class="attr">style</span>={{ <span class="prop">opacity</span>: isLoaded ? <span class="num">1</span> : <span class="num">0</span> }}
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> Avatar;</pre></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; GradeBadge.jsx</div>
+          <div class="code-body"><pre><span class="cmt">// Import grade images</span>
+<span class="kw">import</span> gradeA <span class="kw">from</span> <span class="str">'../assets/grades/grade-a.svg'</span>;
+<span class="kw">import</span> gradeB <span class="kw">from</span> <span class="str">'../assets/grades/grade-b.svg'</span>;
+<span class="kw">import</span> gradeC <span class="kw">from</span> <span class="str">'../assets/grades/grade-c.svg'</span>;
+
+<span class="kw">const</span> gradeImages = {
+  <span class="str">'A'</span>: gradeA,
+  <span class="str">'B'</span>: gradeB,
+  <span class="str">'C'</span>: gradeC,
+};
+
+<span class="kw">const</span> gradeColors = {
+  <span class="str">'A'</span>: <span class="str">'#22c55e'</span>,
+  <span class="str">'B'</span>: <span class="str">'#3b82f6'</span>,
+  <span class="str">'C'</span>: <span class="str">'#f59e0b'</span>,
+};
+
+<span class="kw">function</span> <span class="fn">GradeBadge</span>({ grade }) {
+  <span class="kw">const</span> image = gradeImages[grade];
+  <span class="kw">const</span> color = gradeColors[grade] || <span class="str">'#6b7280'</span>;
+
+  <span class="kw">if</span> (image) {
+    <span class="kw">return</span> <span class="tag">&lt;img</span> <span class="attr">src</span>={image} <span class="attr">alt</span>={<span class="str">`Grade ${grade}`</span>} <span class="attr">width</span>=<span class="str">"32"</span> <span class="attr">height</span>=<span class="str">"32"</span> <span class="tag">/&gt;</span>;
+  }
+
+  <span class="cmt">// Fallback for unknown grades</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;span</span>
+      <span class="attr">style</span>={{
+        <span class="prop">display</span>: <span class="str">'inline-flex'</span>,
+        <span class="prop">alignItems</span>: <span class="str">'center'</span>,
+        <span class="prop">justifyContent</span>: <span class="str">'center'</span>,
+        <span class="prop">width</span>: <span class="num">32</span>,
+        <span class="prop">height</span>: <span class="num">32</span>,
+        <span class="prop">borderRadius</span>: <span class="str">'50%'</span>,
+        <span class="prop">backgroundColor</span>: color,
+        <span class="prop">color</span>: <span class="str">'white'</span>,
+        <span class="prop">fontWeight</span>: <span class="str">'bold'</span>,
+      }}
+    <span class="tag">&gt;</span>
+      {grade}
+    <span class="tag">&lt;/span&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> GradeBadge;</pre></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { Edit, Trash2, Check } <span class="kw">from</span> <span class="str">'lucide-react'</span>;
+<span class="kw">import</span> Avatar <span class="kw">from</span> <span class="str">'./Avatar'</span>;
+<span class="kw">import</span> GradeBadge <span class="kw">from</span> <span class="str">'./GradeBadge'</span>;
+<span class="kw">import</span> styles <span class="kw">from</span> <span class="str">'./StudentCard.module.css'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, onSelect, onDelete, isSelected }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="str">`${styles.card} ${isSelected ? styles.selected : ''}`</span>}<span class="tag">&gt;</span>
+      <span class="cmt">{/* Header with Avatar and Grade */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.header}<span class="tag">&gt;</span>
+        <span class="tag">&lt;Avatar</span>
+          <span class="attr">src</span>={student.avatarUrl}
+          <span class="attr">name</span>={student.name}
+          <span class="attr">size</span>=<span class="str">"lg"</span>
+        <span class="tag">/&gt;</span>
+        <span class="tag">&lt;GradeBadge</span> <span class="attr">grade</span>={student.grade} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="cmt">{/* Student Info */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.info}<span class="tag">&gt;</span>
+        <span class="tag">&lt;h3</span> <span class="attr">className</span>={styles.name}<span class="tag">&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;p</span> <span class="attr">className</span>={styles.details}<span class="tag">&gt;</span>
+          Age: {student.age} | Class: {student.class}
+        <span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="cmt">{/* Actions */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.actions}<span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span>
+          <span class="attr">onClick</span>={() => <span class="fn">onSelect</span>(student.id)}
+          <span class="attr">className</span>={<span class="str">`${styles.btn} ${isSelected ? styles.btnSelected : styles.btnPrimary}`</span>}
+        <span class="tag">&gt;</span>
+          {isSelected ? (
+            <span class="tag">&lt;&gt;</span><span class="tag">&lt;Check</span> <span class="attr">size</span>={<span class="num">16</span>} <span class="tag">/&gt;</span> Selected<span class="tag">&lt;/&gt;</span>
+          ) : (
+            <span class="str">'Select'</span>
+          )}
+        <span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button</span>
+          <span class="attr">onClick</span>={() => <span class="fn">onDelete</span>(student.id)}
+          <span class="attr">className</span>={<span class="str">`${styles.btn} ${styles.btnDanger}`</span>}
+        <span class="tag">&gt;</span>
+          <span class="tag">&lt;Trash2</span> <span class="attr">size</span>={<span class="num">16</span>} <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentCard;</pre></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.module.css</div>
+          <div class="code-body"><pre><span class="css-sel">.card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#1a1a2e</span>;
+  <span class="css-prop">border</span>: <span class="css-val">1px solid #2d3a52</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">12px</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">1.25rem</span>;
+  <span class="css-prop">transition</span>: <span class="css-val">all 0.2s ease</span>;
+}
+
+<span class="css-sel">.card:hover</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">transform</span>: <span class="css-val">translateY(-2px)</span>;
+}
+
+<span class="css-sel">.card.selected</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">background</span>: <span class="css-val">rgba(34, 211, 238, 0.1)</span>;
+}
+
+<span class="css-sel">.header</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">justify-content</span>: <span class="css-val">space-between</span>;
+  <span class="css-prop">align-items</span>: <span class="css-val">flex-start</span>;
+  <span class="css-prop">margin-bottom</span>: <span class="css-val">1rem</span>;
+}
+
+<span class="css-sel">.name</span> {
+  <span class="css-prop">color</span>: <span class="css-val">#f1f5f9</span>;
+  <span class="css-prop">font-size</span>: <span class="css-val">1.1rem</span>;
+  <span class="css-prop">margin-bottom</span>: <span class="css-val">0.25rem</span>;
+}
+
+<span class="css-sel">.details</span> {
+  <span class="css-prop">color</span>: <span class="css-val">#94a3b8</span>;
+  <span class="css-prop">font-size</span>: <span class="css-val">0.9rem</span>;
+}
+
+<span class="css-sel">.actions</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">gap</span>: <span class="css-val">0.5rem</span>;
+  <span class="css-prop">margin-top</span>: <span class="css-val">1rem</span>;
+}</pre></div>
+        </div>
+
+        <h3>🎉 Summary: Image Handling in React</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Technique</th>
+              <th>When to Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Import</strong></td>
+              <td>Static, known images (recommended default)</td>
+            </tr>
+            <tr>
+              <td><strong>Public folder</strong></td>
+              <td>Dynamic paths, many images, API URLs</td>
+            </tr>
+            <tr>
+              <td><strong>SVG as component</strong></td>
+              <td>Icons that need styling/animation</td>
+            </tr>
+            <tr>
+              <td><strong>Icon library</strong></td>
+              <td>UI icons (Lucide, Heroicons)</td>
+            </tr>
+            <tr>
+              <td><strong>Lazy loading</strong></td>
+              <td>Below-the-fold images</td>
+            </tr>
+            <tr>
+              <td><strong>Error fallback</strong></td>
+              <td>User avatars, external images</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Takeaways</div>
+          <div class="tip-content">
+            1. <strong>Always include alt text</strong> for accessibility<br>
+            2. <strong>Specify dimensions</strong> to prevent layout shift<br>
+            3. <strong>Use lazy loading</strong> for images below the fold<br>
+            4. <strong>Handle errors gracefully</strong> with fallbacks<br>
+            5. <strong>Optimize images</strong> before adding to project<br>
+            6. <strong>Use WebP format</strong> when possible
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(97,218,251,0.05)); border-radius: 16px; border: 1px solid var(--border);">
+      <h3 style="color: var(--image); margin-bottom: 0.5rem;">🎉 You've Mastered Images in React!</h3>
+      <p style="color: var(--muted);">From basic img tags to optimized, lazy-loaded components with fallbacks!</p>
+      <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+        <span class="badge badge-accent">Import</span>
+        <span class="badge badge-warning">Public Folder</span>
+        <span class="badge badge-secondary">SVG</span>
+        <span class="badge badge-primary">Optimization</span>
+        <span class="badge badge-danger">Error Handling</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

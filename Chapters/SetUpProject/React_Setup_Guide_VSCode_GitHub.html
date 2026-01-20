@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React App Setup Guide - VS Code & GitHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --vscode-bg: #1e1e1e; --vscode-sidebar: #252526; --vscode-active: #37373d;
+      --vscode-blue: #007acc; --vscode-green: #4ec9b0; --react: #61dafb;
+      --github-bg: #0d1117; --github-green: #238636; --github-border: #30363d;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(97,218,251,0.15) 0%, transparent 40%), radial-gradient(circle at 70% 50%, rgba(167,139,250,0.1) 0%, transparent 40%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, var(--react), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { padding: 0.5rem 1.25rem; border-radius: 25px; font-weight: 600; font-size: 0.9rem; }
+    .badge-react { background: var(--react); color: #000; }
+    .badge-vscode { background: var(--vscode-blue); color: #fff; }
+    .badge-github { background: #fff; color: #000; }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-num { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .step { display: flex; gap: 1rem; margin: 1.5rem 0; }
+    .step-num { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; flex-shrink: 0; }
+    .step-content { flex: 1; }
+    .step-content h4 { margin-bottom: 0.5rem; color: var(--primary); }
+    
+    /* Screenshot Mockups */
+    .screenshot { background: var(--vscode-bg); border-radius: 12px; overflow: hidden; margin: 1rem 0; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+    .screenshot-header { background: #323233; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .screenshot-dots { display: flex; gap: 6px; }
+    .screenshot-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27ca40; }
+    .screenshot-title { flex: 1; text-align: center; color: var(--muted); font-size: 0.85rem; }
+    .screenshot-body { padding: 0; min-height: 300px; }
+    
+    /* VS Code Mockup */
+    .vscode-layout { display: grid; grid-template-columns: 48px 200px 1fr; height: 400px; }
+    .vscode-activity-bar { background: #333; display: flex; flex-direction: column; align-items: center; padding-top: 0.5rem; gap: 0.5rem; }
+    .vscode-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #858585; font-size: 1.25rem; cursor: pointer; border-radius: 4px; }
+    .vscode-icon:hover, .vscode-icon.active { color: #fff; background: rgba(255,255,255,0.1); }
+    .vscode-sidebar { background: var(--vscode-sidebar); border-right: 1px solid #3c3c3c; overflow: hidden; }
+    .vscode-sidebar-header { padding: 0.75rem; font-size: 0.75rem; color: #ccc; text-transform: uppercase; letter-spacing: 0.5px; }
+    .vscode-file { padding: 0.35rem 1rem; font-size: 0.85rem; color: #ccc; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+    .vscode-file:hover { background: var(--vscode-active); }
+    .vscode-file.active { background: var(--vscode-active); }
+    .vscode-folder { color: #dcb67a; }
+    .vscode-js { color: #f7df1e; }
+    .vscode-json { color: #f7df1e; }
+    .vscode-html { color: #e34c26; }
+    .vscode-css { color: #563d7c; }
+    .vscode-editor { background: var(--vscode-bg); padding: 1rem; overflow: auto; }
+    .vscode-tabs { background: #252526; display: flex; border-bottom: 1px solid #3c3c3c; }
+    .vscode-tab { padding: 0.5rem 1rem; font-size: 0.85rem; color: #969696; border-right: 1px solid #3c3c3c; display: flex; align-items: center; gap: 0.5rem; }
+    .vscode-tab.active { background: var(--vscode-bg); color: #fff; }
+    .vscode-content { padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.6; }
+    .line-num { color: #858585; display: inline-block; width: 30px; text-align: right; margin-right: 1rem; user-select: none; }
+    
+    /* Terminal Mockup */
+    .terminal { background: #1e1e1e; border-radius: 8px; overflow: hidden; margin: 1rem 0; border: 1px solid var(--border); }
+    .terminal-header { background: #323233; padding: 0.5rem 1rem; display: flex; align-items: center; }
+    .terminal-title { color: var(--muted); font-size: 0.8rem; }
+    .terminal-body { padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+    .terminal-prompt { color: var(--accent); }
+    .terminal-command { color: #fff; }
+    .terminal-output { color: var(--muted); }
+    .terminal-success { color: var(--accent); }
+    .terminal-info { color: var(--primary); }
+    
+    /* GitHub Mockup */
+    .github-mockup { background: var(--github-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--github-border); margin: 1rem 0; }
+    .github-header { background: #161b22; padding: 1rem; border-bottom: 1px solid var(--github-border); display: flex; align-items: center; gap: 1rem; }
+    .github-logo { font-size: 2rem; }
+    .github-nav { display: flex; gap: 1rem; }
+    .github-nav-item { color: #c9d1d9; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 6px; }
+    .github-nav-item:hover { background: #21262d; }
+    .github-body { padding: 2rem; }
+    .github-input { background: #0d1117; border: 1px solid var(--github-border); border-radius: 6px; padding: 0.75rem; color: #c9d1d9; width: 100%; font-size: 0.9rem; margin: 0.5rem 0; }
+    .github-btn { background: var(--github-green); color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .github-btn-secondary { background: #21262d; border: 1px solid var(--github-border); }
+    .github-label { color: #c9d1d9; font-size: 0.9rem; margin-bottom: 0.25rem; display: block; }
+    
+    /* Browser Mockup */
+    .browser { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin: 1rem 0; }
+    .browser-header { background: #f1f3f4; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 1rem; }
+    .browser-url { background: #fff; border-radius: 20px; padding: 0.5rem 1rem; flex: 1; font-size: 0.85rem; color: #5f6368; border: 1px solid #ddd; }
+    .browser-body { background: #282c34; min-height: 300px; display: flex; align-items: center; justify-content: center; }
+    .react-logo { font-size: 5rem; animation: spin 10s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.5rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .code-body { padding: 1rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; margin: 0; white-space: pre; }
+    .copy-btn { background: var(--surface); border: 1px solid var(--border); color: var(--muted); padding: 0.25rem 0.75rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+    .copy-btn:hover { background: var(--primary); color: var(--bg); }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .type { color: #e5c07b; }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } .vscode-layout { grid-template-columns: 1fr; height: auto; } .vscode-activity-bar, .vscode-sidebar { display: none; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.08), transparent); }
+    
+    .checklist { list-style: none; padding: 0; }
+    .checklist li { padding: 0.5rem 0; padding-left: 2rem; position: relative; color: var(--muted); }
+    .checklist li::before { content: '✓'; position: absolute; left: 0; color: var(--accent); font-weight: bold; }
+    
+    .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; background: var(--surface2); padding: 1rem; border-radius: 8px; }
+    .folder-tree .folder { color: #dcb67a; }
+    .folder-tree .file-js { color: #f7df1e; }
+    .folder-tree .file-json { color: #f7df1e; }
+    .folder-tree .file-html { color: #e34c26; }
+    .folder-tree .file-css { color: #563d7c; }
+    .folder-tree .file-md { color: #083fa1; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-react">⚛️ React</span>
+        <span class="hero-badge badge-vscode">💻 VS Code</span>
+        <span class="hero-badge badge-github">🐙 GitHub</span>
+      </div>
+      <h1>React App Setup Guide</h1>
+      <p>Complete step-by-step tutorial with screenshots for beginners</p>
+    </div>
+
+    <!-- Section 1: Prerequisites -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-num">1</div>
+        <div class="section-title">Prerequisites - What You Need</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🛠️ Required Software</h2>
+        
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="margin-bottom: 1rem;">1. Node.js</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem;">JavaScript runtime required to run React</p>
+            <div class="step">
+              <div class="step-num">a</div>
+              <div class="step-content">
+                <h4>Download Node.js</h4>
+                <p style="color: var(--muted);">Visit <strong style="color: var(--accent);">https://nodejs.org</strong></p>
+                <p style="color: var(--muted);">Download the <strong>LTS version</strong> (recommended)</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">b</div>
+              <div class="step-content">
+                <h4>Install Node.js</h4>
+                <p style="color: var(--muted);">Run the installer and follow the prompts</p>
+                <p style="color: var(--muted);">Accept default settings</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">c</div>
+              <div class="step-content">
+                <h4>Verify Installation</h4>
+                <div class="terminal">
+                  <div class="terminal-header"><span class="terminal-title">Terminal</span></div>
+                  <div class="terminal-body">
+                    <div><span class="terminal-prompt">$ </span><span class="terminal-command">node --version</span></div>
+                    <div class="terminal-output">v20.10.0</div>
+                    <div><span class="terminal-prompt">$ </span><span class="terminal-command">npm --version</span></div>
+                    <div class="terminal-output">10.2.3</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <h3 style="margin-bottom: 1rem;">2. VS Code</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem;">Code editor with excellent React support</p>
+            <div class="step">
+              <div class="step-num">a</div>
+              <div class="step-content">
+                <h4>Download VS Code</h4>
+                <p style="color: var(--muted);">Visit <strong style="color: var(--accent);">https://code.visualstudio.com</strong></p>
+                <p style="color: var(--muted);">Download for your OS (Windows/Mac/Linux)</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">b</div>
+              <div class="step-content">
+                <h4>Install VS Code</h4>
+                <p style="color: var(--muted);">Run installer, check "Add to PATH"</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">c</div>
+              <div class="step-content">
+                <h4>Recommended Extensions</h4>
+                <ul class="checklist">
+                  <li>ES7+ React/Redux/React-Native snippets</li>
+                  <li>Prettier - Code formatter</li>
+                  <li>Auto Rename Tag</li>
+                  <li>Live Server</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Quick Check</div>
+          <div class="tip-content">
+            Open a new terminal and run <code>node --version</code> and <code>npm --version</code>. 
+            If you see version numbers, you're ready to proceed!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Create React App -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-num">2</div>
+        <div class="section-title">Creating Your React App</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--react); margin-bottom: 1.5rem;">⚛️ Step-by-Step App Creation</h2>
+
+        <!-- Step 1: Open Terminal -->
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Open Terminal/Command Prompt</h4>
+            <p style="color: var(--muted);">Navigate to your projects folder</p>
+            <div class="terminal">
+              <div class="terminal-header"><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">cd Documents</span></div>
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">mkdir Projects</span></div>
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">cd Projects</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Create App -->
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Create React App with Vite</h4>
+            <p style="color: var(--muted);">Run the create command (this may take 1-2 minutes)</p>
+            <div class="terminal">
+              <div class="terminal-header"><span class="terminal-title">Terminal - Creating React App</span></div>
+              <div class="terminal-body">
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">npm create vite@latest my-react-learning -- --template react</span></div>
+                <div class="terminal-output" style="margin-top: 0.5rem;">
+<span class="terminal-info">Scaffolding project in ./my-react-learning...</span>
+
+<span class="terminal-success">Done. Now run:</span>
+
+  <span class="terminal-command">cd my-react-learning</span>
+  <span class="terminal-command">npm install</span>
+  <span class="terminal-command">npm run dev</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Install Dependencies -->
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Install Dependencies</h4>
+            <div class="terminal">
+              <div class="terminal-header"><span class="terminal-title">Terminal - Installing Dependencies</span></div>
+              <div class="terminal-body">
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">cd my-react-learning</span></div>
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">npm install</span></div>
+                <div class="terminal-output" style="margin-top: 0.5rem;">
+<span class="terminal-info">added 268 packages in 25s</span>
+
+<span class="terminal-success">98 packages are looking for funding</span>
+  run `npm fund` for details
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Open in VS Code -->
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Open Project in VS Code</h4>
+            <div class="terminal">
+              <div class="terminal-header"><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">code .</span></div>
+                <div class="terminal-output" style="margin-top: 0.5rem;">
+<span class="terminal-info"># This opens VS Code in current folder</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- VS Code Screenshot -->
+            <div class="screenshot">
+              <div class="screenshot-header">
+                <div class="screenshot-dots">
+                  <span class="screenshot-dot dot-red"></span>
+                  <span class="screenshot-dot dot-yellow"></span>
+                  <span class="screenshot-dot dot-green"></span>
+                </div>
+                <span class="screenshot-title">Visual Studio Code - my-react-learning</span>
+              </div>
+              <div class="screenshot-body">
+                <div class="vscode-layout">
+                  <div class="vscode-activity-bar">
+                    <div class="vscode-icon active">📁</div>
+                    <div class="vscode-icon">🔍</div>
+                    <div class="vscode-icon">🔀</div>
+                    <div class="vscode-icon">🐛</div>
+                    <div class="vscode-icon">📦</div>
+                  </div>
+                  <div class="vscode-sidebar">
+                    <div class="vscode-sidebar-header">Explorer</div>
+                    <div class="vscode-file"><span class="vscode-folder">📁</span> MY-REACT-LEARNING</div>
+                    <div class="vscode-file" style="padding-left: 2rem;"><span class="vscode-folder">📁</span> node_modules</div>
+                    <div class="vscode-file" style="padding-left: 2rem;"><span class="vscode-folder">📁</span> public</div>
+                    <div class="vscode-file" style="padding-left: 2rem;"><span class="vscode-folder">📁</span> src</div>
+                    <div class="vscode-file active" style="padding-left: 3rem;"><span class="vscode-js">JS</span> App.jsx</div>
+                    <div class="vscode-file" style="padding-left: 3rem;"><span class="vscode-css">🎨</span> App.css</div>
+                    <div class="vscode-file" style="padding-left: 3rem;"><span class="vscode-js">JS</span> main.jsx</div>
+                    <div class="vscode-file" style="padding-left: 3rem;"><span class="vscode-css">🎨</span> index.css</div>
+                    <div class="vscode-file" style="padding-left: 2rem;"><span class="vscode-html">🌐</span> index.html</div>
+                    <div class="vscode-file" style="padding-left: 2rem;"><span class="vscode-json">{}</span> package.json</div>
+                    <div class="vscode-file" style="padding-left: 2rem;"><span class="vscode-json">{}</span> vite.config.js</div>
+                  </div>
+                  <div class="vscode-editor">
+                    <div class="vscode-tabs">
+                      <div class="vscode-tab active"><span class="vscode-js">JS</span> App.jsx</div>
+                    </div>
+                    <div class="vscode-content">
+                      <div><span class="line-num">1</span><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span></div>
+                      <div><span class="line-num">2</span><span class="kw">import</span> <span class="str">'./App.css'</span></div>
+                      <div><span class="line-num">3</span></div>
+                      <div><span class="line-num">4</span><span class="kw">function</span> <span class="fn">App</span>() {</div>
+                      <div><span class="line-num">5</span>  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>)</div>
+                      <div><span class="line-num">6</span></div>
+                      <div><span class="line-num">7</span>  <span class="kw">return</span> (</div>
+                      <div><span class="line-num">8</span>    <span class="tag">&lt;div&gt;</span></div>
+                      <div><span class="line-num">9</span>      <span class="tag">&lt;h1&gt;</span>Vite + React<span class="tag">&lt;/h1&gt;</span></div>
+                      <div><span class="line-num">10</span>      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(c => c + <span class="num">1</span>)}<span class="tag">&gt;</span></div>
+                      <div><span class="line-num">11</span>        count is {count}</div>
+                      <div><span class="line-num">12</span>      <span class="tag">&lt;/button&gt;</span></div>
+                      <div><span class="line-num">13</span>    <span class="tag">&lt;/div&gt;</span></div>
+                      <div><span class="line-num">14</span>  )</div>
+                      <div><span class="line-num">15</span>}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5: Run the App -->
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Run the Development Server</h4>
+            <p style="color: var(--muted);">Open VS Code's integrated terminal: <strong>Ctrl + ` </strong> (backtick)</p>
+            <div class="terminal">
+              <div class="terminal-header"><span class="terminal-title">VS Code Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">npm run dev</span></div>
+                <div class="terminal-output" style="margin-top: 0.5rem;">
+  <span class="terminal-info">VITE v5.0.8</span>  ready in <span class="terminal-success">320 ms</span>
+
+  ➜  Local:   <span class="terminal-success">http://localhost:5173/</span>
+  ➜  Network: use --host to expose
+  ➜  press <span class="terminal-command">h + enter</span> to show help
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 6: View in Browser -->
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <h4>Open in Browser</h4>
+            <p style="color: var(--muted);">Click on <strong style="color: var(--accent);">http://localhost:5173</strong> or open it in your browser</p>
+            
+            <!-- Browser Screenshot -->
+            <div class="browser">
+              <div class="browser-header">
+                <div class="screenshot-dots">
+                  <span class="screenshot-dot dot-red"></span>
+                  <span class="screenshot-dot dot-yellow"></span>
+                  <span class="screenshot-dot dot-green"></span>
+                </div>
+                <div class="browser-url">🔒 localhost:5173</div>
+              </div>
+              <div class="browser-body" style="flex-direction: column; color: white;">
+                <div class="react-logo">⚛️</div>
+                <h2 style="margin: 1rem 0;">Vite + React</h2>
+                <button style="background: #646cff; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1rem; cursor: pointer;">
+                  count is 0
+                </button>
+                <p style="color: #888; margin-top: 1rem;">Edit src/App.jsx and save to test HMR</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">🎉 Congratulations!</div>
+          <div class="tip-content">
+            Your React app is now running! The page will automatically reload when you make changes to the code.
+            Try changing the text in <code>App.jsx</code> and see the magic!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Project Structure -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-num">3</div>
+        <div class="section-title">Understanding Project Structure</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📁 Project Files Explained</h2>
+        
+        <div class="folder-tree">
+          <pre>
+📁 my-react-learning/
+├── 📁 <span class="folder">node_modules/</span>      <span class="cmt"># Dependencies (don't edit)</span>
+├── 📁 <span class="folder">public/</span>            <span class="cmt"># Static assets</span>
+│   └── <span class="file-html">vite.svg</span>          <span class="cmt"># Favicon</span>
+├── 📁 <span class="folder">src/</span>               <span class="cmt"># YOUR CODE GOES HERE! ⭐</span>
+│   ├── 📁 <span class="folder">assets/</span>        <span class="cmt"># Images, fonts, etc.</span>
+│   ├── 📁 <span class="folder">components/</span>    <span class="cmt"># React components (create this)</span>
+│   ├── <span class="file-js">App.jsx</span>          <span class="cmt"># Main App component</span>
+│   ├── <span class="file-css">App.css</span>          <span class="cmt"># App styles</span>
+│   ├── <span class="file-js">main.jsx</span>         <span class="cmt"># Entry point</span>
+│   └── <span class="file-css">index.css</span>        <span class="cmt"># Global styles</span>
+├── <span class="file-html">index.html</span>           <span class="cmt"># HTML template</span>
+├── <span class="file-json">package.json</span>         <span class="cmt"># Project config & dependencies</span>
+├── <span class="file-json">vite.config.js</span>       <span class="cmt"># Vite configuration</span>
+└── <span class="file-md">README.md</span>            <span class="cmt"># Project documentation</span>
+          </pre>
+        </div>
+
+        <div class="grid-2" style="margin-top: 1.5rem;">
+          <div class="card">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">📄 main.jsx - Entry Point</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">This file starts your React app and renders it to the DOM</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> ReactDOM <span class="kw">from</span> <span class="str">'react-dom/client'</span>
+<span class="kw">import</span> App <span class="kw">from</span> <span class="str">'./App.jsx'</span>
+<span class="kw">import</span> <span class="str">'./index.css'</span>
+
+ReactDOM.<span class="fn">createRoot</span>(
+  document.<span class="fn">getElementById</span>(<span class="str">'root'</span>)
+).<span class="fn">render</span>(
+  <span class="tag">&lt;React.StrictMode&gt;</span>
+    <span class="tag">&lt;App /&gt;</span>
+  <span class="tag">&lt;/React.StrictMode&gt;</span>
+)</pre></div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <h4 style="color: var(--secondary); margin-bottom: 0.75rem;">📄 App.jsx - Main Component</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Your main component where you'll build your app</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">import</span> <span class="str">'./App.css'</span>
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>My React App<span class="tag">&lt;/h1&gt;</span>
+      <span class="cmt">{/* Your components go here */}</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> App</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Create Basic Component -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-num">4</div>
+        <div class="section-title">Creating Your First Component</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--react); margin-bottom: 1.5rem;">🧩 Building an Expandable Component</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Let's create a <strong>Student Profile</strong> component that you can expand as you learn more React concepts!
+        </p>
+
+        <!-- Step 1: Create components folder -->
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Create Components Folder</h4>
+            <p style="color: var(--muted);">In VS Code, right-click on <code>src</code> folder → New Folder → Name it <code>components</code></p>
+            
+            <div class="screenshot">
+              <div class="screenshot-header">
+                <div class="screenshot-dots">
+                  <span class="screenshot-dot dot-red"></span>
+                  <span class="screenshot-dot dot-yellow"></span>
+                  <span class="screenshot-dot dot-green"></span>
+                </div>
+                <span class="screenshot-title">VS Code - Create New Folder</span>
+              </div>
+              <div class="screenshot-body" style="padding: 1rem;">
+                <div style="background: var(--vscode-sidebar); padding: 1rem; border-radius: 8px; max-width: 250px;">
+                  <div style="color: #ccc; font-size: 0.85rem; margin-bottom: 0.5rem;">📁 src</div>
+                  <div style="padding-left: 1rem; color: #ccc; font-size: 0.85rem;">
+                    <div style="background: var(--vscode-active); padding: 0.25rem 0.5rem; border-radius: 4px; margin-bottom: 0.25rem;">📁 <span style="color: var(--accent);">components</span> ← New!</div>
+                    <div style="padding: 0.25rem 0.5rem;">📁 assets</div>
+                    <div style="padding: 0.25rem 0.5rem;">📄 App.jsx</div>
+                    <div style="padding: 0.25rem 0.5rem;">📄 main.jsx</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Create StudentProfile component -->
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Create StudentProfile.jsx</h4>
+            <p style="color: var(--muted);">Right-click on <code>components</code> folder → New File → Name it <code>StudentProfile.jsx</code></p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span>src/components/StudentProfile.jsx</span>
+                <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+              </div>
+              <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> <span class="str">'./StudentProfile.css'</span>
+
+<span class="cmt">// Basic component - Expandable for learning!</span>
+<span class="kw">function</span> <span class="fn">StudentProfile</span>({ student }) {
+  <span class="cmt">// State for showing/hiding details</span>
+  <span class="kw">const</span> [showDetails, setShowDetails] = <span class="fn">useState</span>(<span class="kw">false</span>)
+  
+  <span class="cmt">// State for editing mode (expand later!)</span>
+  <span class="kw">const</span> [isEditing, setIsEditing] = <span class="fn">useState</span>(<span class="kw">false</span>)
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"student-card"</span><span class="tag">&gt;</span>
+      <span class="cmt">{/* Header Section */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"student-header"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"avatar"</span><span class="tag">&gt;</span>
+          {student.name.<span class="fn">charAt</span>(<span class="num">0</span>)}
+        <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"student-info"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;h3</span> <span class="attr">className</span>=<span class="str">"student-name"</span><span class="tag">&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+          <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"student-class"</span><span class="tag">&gt;</span>Class {student.class}<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="cmt">{/* Toggle Button */}</span>
+      <span class="tag">&lt;button</span> 
+        <span class="attr">className</span>=<span class="str">"toggle-btn"</span>
+        <span class="attr">onClick</span>={() => <span class="fn">setShowDetails</span>(!showDetails)}
+      <span class="tag">&gt;</span>
+        {showDetails ? <span class="str">'Hide Details'</span> : <span class="str">'Show Details'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+
+      <span class="cmt">{/* Conditional Rendering - Details Section */}</span>
+      {showDetails && (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"student-details"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"detail-item"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"label"</span><span class="tag">&gt;</span>📧 Email:<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;span&gt;</span>{student.email}<span class="tag">&lt;/span&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+          <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"detail-item"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"label"</span><span class="tag">&gt;</span>📚 Subjects:<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;span&gt;</span>{student.subjects.<span class="fn">join</span>(<span class="str">', '</span>)}<span class="tag">&lt;/span&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+          <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"detail-item"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"label"</span><span class="tag">&gt;</span>📊 Grade:<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">{`grade grade-${student.grade}`}</span><span class="tag">&gt;</span>
+              {student.grade}
+            <span class="tag">&lt;/span&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+
+      <span class="cmt">{/* Future Expansion Areas (commented for learning) */}</span>
+      <span class="cmt">{/* TODO: Add edit functionality */}</span>
+      <span class="cmt">{/* TODO: Add delete confirmation */}</span>
+      <span class="cmt">{/* TODO: Add photo upload */}</span>
+      <span class="cmt">{/* TODO: Add progress chart */}</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> StudentProfile</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Create CSS -->
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Create StudentProfile.css</h4>
+            <p style="color: var(--muted);">Create <code>StudentProfile.css</code> in the same folder</p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span>src/components/StudentProfile.css</span>
+                <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+              </div>
+              <div class="code-body"><pre><span class="cmt">/* Student Card Container */</span>
+.student-card {
+  background: linear-gradient(<span class="num">135deg</span>, <span class="str">#1a1a2e</span>, <span class="str">#16213e</span>);
+  border-radius: <span class="num">16px</span>;
+  padding: <span class="num">1.5rem</span>;
+  margin: <span class="num">1rem</span>;
+  max-width: <span class="num">400px</span>;
+  box-shadow: <span class="num">0</span> <span class="num">10px</span> <span class="num">40px</span> <span class="fn">rgba</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>, <span class="num">0.3</span>);
+  border: <span class="num">1px</span> solid <span class="str">#2d3a52</span>;
+  transition: transform <span class="num">0.3s</span>, box-shadow <span class="num">0.3s</span>;
+}
+
+.student-card:hover {
+  transform: <span class="fn">translateY</span>(<span class="num">-5px</span>);
+  box-shadow: <span class="num">0</span> <span class="num">15px</span> <span class="num">50px</span> <span class="fn">rgba</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>, <span class="num">0.4</span>);
+}
+
+<span class="cmt">/* Header */</span>
+.student-header {
+  display: flex;
+  align-items: center;
+  gap: <span class="num">1rem</span>;
+  margin-bottom: <span class="num">1rem</span>;
+}
+
+.avatar {
+  width: <span class="num">60px</span>;
+  height: <span class="num">60px</span>;
+  background: linear-gradient(<span class="num">135deg</span>, <span class="str">#22d3ee</span>, <span class="str">#a78bfa</span>);
+  border-radius: <span class="num">50%</span>;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: <span class="num">1.5rem</span>;
+  font-weight: bold;
+  color: <span class="str">#000</span>;
+}
+
+.student-name {
+  color: <span class="str">#f1f5f9</span>;
+  margin: <span class="num">0</span>;
+  font-size: <span class="num">1.25rem</span>;
+}
+
+.student-class {
+  color: <span class="str">#94a3b8</span>;
+  margin: <span class="num">0.25rem</span> <span class="num">0</span> <span class="num">0</span>;
+  font-size: <span class="num">0.9rem</span>;
+}
+
+<span class="cmt">/* Toggle Button */</span>
+.toggle-btn {
+  width: <span class="num">100%</span>;
+  padding: <span class="num">0.75rem</span>;
+  background: <span class="str">#22d3ee</span>;
+  color: <span class="str">#000</span>;
+  border: none;
+  border-radius: <span class="num">8px</span>;
+  font-weight: <span class="num">600</span>;
+  cursor: pointer;
+  transition: background <span class="num">0.2s</span>;
+}
+
+.toggle-btn:hover {
+  background: <span class="str">#06b6d4</span>;
+}
+
+<span class="cmt">/* Details Section */</span>
+.student-details {
+  margin-top: <span class="num">1rem</span>;
+  padding-top: <span class="num">1rem</span>;
+  border-top: <span class="num">1px</span> solid <span class="str">#2d3a52</span>;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: <span class="num">0.5rem</span> <span class="num">0</span>;
+  color: <span class="str">#f1f5f9</span>;
+}
+
+.label {
+  color: <span class="str">#94a3b8</span>;
+}
+
+<span class="cmt">/* Grade Colors */</span>
+.grade {
+  padding: <span class="num">0.25rem</span> <span class="num">0.75rem</span>;
+  border-radius: <span class="num">20px</span>;
+  font-weight: <span class="num">600</span>;
+  font-size: <span class="num">0.85rem</span>;
+}
+
+.grade-A { background: <span class="str">#22c55e</span>; color: <span class="str">#000</span>; }
+.grade-B { background: <span class="str">#3b82f6</span>; color: <span class="str">#fff</span>; }
+.grade-C { background: <span class="str">#f59e0b</span>; color: <span class="str">#000</span>; }
+.grade-D { background: <span class="str">#ef4444</span>; color: <span class="str">#fff</span>; }</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Update App.jsx -->
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Update App.jsx</h4>
+            <p style="color: var(--muted);">Replace the content of <code>App.jsx</code> with:</p>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span>src/App.jsx</span>
+                <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+              </div>
+              <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> StudentProfile <span class="kw">from</span> <span class="str">'./components/StudentProfile'</span>
+<span class="kw">import</span> <span class="str">'./App.css'</span>
+
+<span class="cmt">// Sample data - Later you'll learn to fetch from API!</span>
+<span class="kw">const</span> sampleStudents = [
+  {
+    id: <span class="num">1</span>,
+    name: <span class="str">"Rahul Sharma"</span>,
+    class: <span class="str">"12-A"</span>,
+    email: <span class="str">"rahul.sharma@school.com"</span>,
+    subjects: [<span class="str">"Physics"</span>, <span class="str">"Chemistry"</span>, <span class="str">"Mathematics"</span>],
+    grade: <span class="str">"A"</span>
+  },
+  {
+    id: <span class="num">2</span>,
+    name: <span class="str">"Priya Patel"</span>,
+    class: <span class="str">"12-B"</span>,
+    email: <span class="str">"priya.patel@school.com"</span>,
+    subjects: [<span class="str">"Biology"</span>, <span class="str">"Chemistry"</span>, <span class="str">"English"</span>],
+    grade: <span class="str">"A"</span>
+  },
+  {
+    id: <span class="num">3</span>,
+    name: <span class="str">"Amit Kumar"</span>,
+    class: <span class="str">"12-A"</span>,
+    email: <span class="str">"amit.kumar@school.com"</span>,
+    subjects: [<span class="str">"Computer Science"</span>, <span class="str">"Mathematics"</span>, <span class="str">"Physics"</span>],
+    grade: <span class="str">"B"</span>
+  }
+]
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="cmt">// State to hold students - expandable for CRUD operations!</span>
+  <span class="kw">const</span> [students, setStudents] = <span class="fn">useState</span>(sampleStudents)
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;header</span> <span class="attr">className</span>=<span class="str">"app-header"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>🎓 Student Management System<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;p&gt;</span>A React Learning Project<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/header&gt;</span>
+
+      <span class="tag">&lt;main</span> <span class="attr">className</span>=<span class="str">"student-list"</span><span class="tag">&gt;</span>
+        {students.<span class="fn">map</span>(student => (
+          <span class="tag">&lt;StudentProfile</span> 
+            <span class="attr">key</span>={student.id} 
+            <span class="attr">student</span>={student} 
+          <span class="tag">/&gt;</span>
+        ))}
+      <span class="tag">&lt;/main&gt;</span>
+
+      <span class="tag">&lt;footer</span> <span class="attr">className</span>=<span class="str">"app-footer"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Total Students: {students.length}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/footer&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> App</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5: Update App.css -->
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Update App.css</h4>
+            
+            <div class="code-block">
+              <div class="code-header">
+                <span>src/App.css</span>
+                <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+              </div>
+              <div class="code-body"><pre><span class="cmt">/* Global App Styles */</span>
+.app {
+  min-height: <span class="num">100vh</span>;
+  background: <span class="str">#0a0f1c</span>;
+  padding: <span class="num">2rem</span>;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: <span class="num">2rem</span>;
+}
+
+.app-header h1 {
+  color: <span class="str">#f1f5f9</span>;
+  font-size: <span class="num">2.5rem</span>;
+  margin-bottom: <span class="num">0.5rem</span>;
+}
+
+.app-header p {
+  color: <span class="str">#94a3b8</span>;
+}
+
+.student-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: <span class="num">1rem</span>;
+}
+
+.app-footer {
+  text-align: center;
+  margin-top: <span class="num">2rem</span>;
+  padding: <span class="num">1rem</span>;
+  color: <span class="str">#94a3b8</span>;
+  border-top: <span class="num">1px</span> solid <span class="str">#2d3a52</span>;
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Screenshot -->
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <h4>See Your Result!</h4>
+            <p style="color: var(--muted);">Save all files and check your browser</p>
+            
+            <div class="browser">
+              <div class="browser-header">
+                <div class="screenshot-dots">
+                  <span class="screenshot-dot dot-red"></span>
+                  <span class="screenshot-dot dot-yellow"></span>
+                  <span class="screenshot-dot dot-green"></span>
+                </div>
+                <div class="browser-url">🔒 localhost:5173</div>
+              </div>
+              <div class="browser-body" style="background: #0a0f1c; flex-direction: column; padding: 2rem;">
+                <h1 style="color: #f1f5f9; margin-bottom: 0.5rem;">🎓 Student Management System</h1>
+                <p style="color: #94a3b8; margin-bottom: 2rem;">A React Learning Project</p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                  <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 1.5rem; border-radius: 16px; width: 200px; border: 1px solid #2d3a52;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                      <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #22d3ee, #a78bfa); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">R</div>
+                      <div>
+                        <div style="color: #f1f5f9; font-weight: 600;">Rahul Sharma</div>
+                        <div style="color: #94a3b8; font-size: 0.8rem;">Class 12-A</div>
+                      </div>
+                    </div>
+                    <button style="width: 100%; padding: 0.5rem; background: #22d3ee; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Show Details</button>
+                  </div>
+                  <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 1.5rem; border-radius: 16px; width: 200px; border: 1px solid #2d3a52;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                      <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #22d3ee, #a78bfa); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">P</div>
+                      <div>
+                        <div style="color: #f1f5f9; font-weight: 600;">Priya Patel</div>
+                        <div style="color: #94a3b8; font-size: 0.8rem;">Class 12-B</div>
+                      </div>
+                    </div>
+                    <button style="width: 100%; padding: 0.5rem; background: #22d3ee; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Show Details</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">🚀 What You Can Expand Later</div>
+          <div class="tip-content">
+            As you learn more React concepts, you can add:
+            <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+              <li><strong>Forms:</strong> Add new students</li>
+              <li><strong>Edit functionality:</strong> Update student info</li>
+              <li><strong>Delete:</strong> Remove students with confirmation</li>
+              <li><strong>Search & Filter:</strong> Find students quickly</li>
+              <li><strong>API Integration:</strong> Fetch from backend</li>
+              <li><strong>Routing:</strong> Multiple pages with React Router</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: GitHub Setup -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-num">5</div>
+        <div class="section-title">Creating GitHub Account</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🐙 GitHub Account Setup</h2>
+
+        <!-- Step 1: Go to GitHub -->
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Visit GitHub Website</h4>
+            <p style="color: var(--muted);">Go to <strong style="color: var(--accent);">https://github.com</strong></p>
+            
+            <div class="github-mockup">
+              <div class="github-header">
+                <span class="github-logo">🐙</span>
+                <span style="color: #fff; font-weight: 600; font-size: 1.25rem;">GitHub</span>
+                <div style="flex: 1;"></div>
+                <button class="github-btn">Sign up</button>
+              </div>
+              <div class="github-body" style="text-align: center; padding: 3rem;">
+                <h2 style="color: #c9d1d9; font-size: 2rem; margin-bottom: 1rem;">Where the world builds software</h2>
+                <p style="color: #8b949e; margin-bottom: 2rem;">Millions of developers and companies build, ship, and maintain their software on GitHub</p>
+                <button class="github-btn" style="font-size: 1.1rem; padding: 1rem 2rem;">Sign up for GitHub</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Sign Up Form -->
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Fill Sign Up Form</h4>
+            
+            <div class="github-mockup">
+              <div class="github-header">
+                <span class="github-logo">🐙</span>
+                <span style="color: #fff; font-weight: 600;">Create your account</span>
+              </div>
+              <div class="github-body" style="max-width: 400px; margin: 0 auto;">
+                <div style="margin-bottom: 1rem;">
+                  <label class="github-label">Email address *</label>
+                  <input class="github-input" placeholder="your.email@example.com" />
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label class="github-label">Password *</label>
+                  <input class="github-input" type="password" placeholder="Create a strong password" />
+                  <p style="color: #8b949e; font-size: 0.8rem; margin-top: 0.25rem;">Make sure it's at least 15 characters OR at least 8 characters including a number and a lowercase letter.</p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label class="github-label">Username *</label>
+                  <input class="github-input" placeholder="Choose a username" />
+                  <p style="color: #8b949e; font-size: 0.8rem; margin-top: 0.25rem;">Username will appear in your profile URL: github.com/your-username</p>
+                </div>
+                <button class="github-btn" style="width: 100%; margin-top: 1rem;">Create account</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Verify Email -->
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Verify Your Email</h4>
+            <p style="color: var(--muted);">Check your inbox for verification email and click the link</p>
+            
+            <div class="card" style="max-width: 400px;">
+              <div style="text-align: center; padding: 1rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📧</div>
+                <h4 style="color: var(--primary);">Check your email!</h4>
+                <p style="color: var(--muted); font-size: 0.9rem;">We sent a verification link to your email address. Click the link to verify your account.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Complete Profile -->
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Complete Your Profile (Optional)</h4>
+            <p style="color: var(--muted);">Add a profile picture and bio</p>
+            
+            <div class="github-mockup">
+              <div class="github-header">
+                <span class="github-logo">🐙</span>
+                <span style="color: #fff; font-weight: 600;">Welcome to GitHub!</span>
+              </div>
+              <div class="github-body" style="display: flex; gap: 2rem; align-items: start;">
+                <div style="text-align: center;">
+                  <div style="width: 100px; height: 100px; background: #21262d; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">👤</div>
+                  <button class="github-btn github-btn-secondary" style="margin-top: 0.5rem; font-size: 0.85rem;">Upload photo</button>
+                </div>
+                <div style="flex: 1;">
+                  <div style="margin-bottom: 1rem;">
+                    <label class="github-label">Name</label>
+                    <input class="github-input" placeholder="Your full name" />
+                  </div>
+                  <div style="margin-bottom: 1rem;">
+                    <label class="github-label">Bio</label>
+                    <input class="github-input" placeholder="Tell us about yourself" />
+                  </div>
+                  <button class="github-btn">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">✅ Account Created!</div>
+          <div class="tip-content">
+            Your GitHub account is now ready. Next, let's create a repository and push your React project!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Push to GitHub -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-num">6</div>
+        <div class="section-title">Pushing Project to GitHub</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📤 Store Your Code on GitHub</h2>
+
+        <!-- Step 1: Create New Repository -->
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Create New Repository</h4>
+            <p style="color: var(--muted);">Click the <strong>+</strong> icon in top-right → New repository</p>
+            
+            <div class="github-mockup">
+              <div class="github-header">
+                <span class="github-logo">🐙</span>
+                <span style="color: #fff; font-weight: 600;">Create a new repository</span>
+              </div>
+              <div class="github-body">
+                <div style="margin-bottom: 1rem;">
+                  <label class="github-label">Repository name *</label>
+                  <input class="github-input" value="my-react-learning" style="color: var(--accent);" />
+                  <p style="color: var(--accent); font-size: 0.8rem; margin-top: 0.25rem;">✓ my-react-learning is available</p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label class="github-label">Description (optional)</label>
+                  <input class="github-input" value="My React learning project - Student Management System" />
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <div style="display: flex; gap: 1rem;">
+                    <label style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
+                      <input type="radio" name="visibility" checked /> 🌐 Public
+                    </label>
+                    <label style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
+                      <input type="radio" name="visibility" /> 🔒 Private
+                    </label>
+                  </div>
+                </div>
+                <div style="background: #161b22; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                  <label style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" /> Add a README file
+                  </label>
+                  <p style="color: #8b949e; font-size: 0.8rem; margin-top: 0.25rem; padding-left: 1.5rem;">This is where you can write a long description for your project.</p>
+                </div>
+                <button class="github-btn" style="width: 100%;">Create repository</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Initialize Git -->
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Initialize Git in Your Project</h4>
+            <p style="color: var(--muted);">Open VS Code terminal and run these commands:</p>
+            
+            <div class="terminal">
+              <div class="terminal-header"><span class="terminal-title">VS Code Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">git init</span></div>
+                <div class="terminal-output">Initialized empty Git repository in .../my-react-learning/.git/</div>
+                <div style="margin-top: 0.5rem;"><span class="terminal-prompt">$ </span><span class="terminal-command">git add .</span></div>
+                <div style="margin-top: 0.5rem;"><span class="terminal-prompt">$ </span><span class="terminal-command">git commit -m "Initial commit - Student Management System"</span></div>
+                <div class="terminal-output">[main (root-commit) a1b2c3d] Initial commit - Student Management System
+ 15 files changed, 500 insertions(+)
+ create mode 100644 package.json
+ create mode 100644 src/App.jsx
+ ...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Add Remote -->
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Connect to GitHub Repository</h4>
+            <p style="color: var(--muted);">Copy the repository URL from GitHub and run:</p>
+            
+            <div class="terminal">
+              <div class="terminal-header"><span class="terminal-title">VS Code Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">git branch -M main</span></div>
+                <div style="margin-top: 0.5rem;"><span class="terminal-prompt">$ </span><span class="terminal-command">git remote add origin https://github.com/YOUR-USERNAME/my-react-learning.git</span></div>
+                <div style="margin-top: 0.5rem;"><span class="terminal-prompt">$ </span><span class="terminal-command">git push -u origin main</span></div>
+                <div class="terminal-output" style="margin-top: 0.5rem;">
+Enumerating objects: 20, done.
+Counting objects: 100% (20/20), done.
+Compressing objects: 100% (15/15), done.
+Writing objects: 100% (20/20), 5.12 KiB | 1.71 MiB/s, done.
+Total 20 (delta 0), reused 0 (delta 0)
+To https://github.com/YOUR-USERNAME/my-react-learning.git
+ * [new branch]      main -> main
+<span class="terminal-success">Branch 'main' set up to track remote branch 'main' from 'origin'.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: View on GitHub -->
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>View Your Repository on GitHub</h4>
+            <p style="color: var(--muted);">Refresh your GitHub repository page</p>
+            
+            <div class="github-mockup">
+              <div class="github-header">
+                <span class="github-logo">🐙</span>
+                <span style="color: #fff; font-weight: 600;">YOUR-USERNAME / my-react-learning</span>
+                <div style="flex: 1;"></div>
+                <span style="color: #8b949e;">⭐ Star</span>
+              </div>
+              <div class="github-body">
+                <div style="background: #161b22; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                  <p style="color: #c9d1d9;">📝 My React learning project - Student Management System</p>
+                </div>
+                <div style="border: 1px solid var(--github-border); border-radius: 6px; overflow: hidden;">
+                  <div style="background: #161b22; padding: 0.75rem 1rem; border-bottom: 1px solid var(--github-border); display: flex; justify-content: space-between;">
+                    <span style="color: #c9d1d9;">📁 main</span>
+                    <span style="color: #8b949e;">3 commits</span>
+                  </div>
+                  <div style="padding: 0;">
+                    <div style="padding: 0.5rem 1rem; border-bottom: 1px solid var(--github-border); display: flex; gap: 1rem; color: #c9d1d9;">
+                      <span>📁 node_modules</span>
+                    </div>
+                    <div style="padding: 0.5rem 1rem; border-bottom: 1px solid var(--github-border); display: flex; gap: 1rem; color: #c9d1d9;">
+                      <span>📁 public</span>
+                    </div>
+                    <div style="padding: 0.5rem 1rem; border-bottom: 1px solid var(--github-border); display: flex; gap: 1rem; color: #c9d1d9;">
+                      <span>📁 src</span>
+                    </div>
+                    <div style="padding: 0.5rem 1rem; border-bottom: 1px solid var(--github-border); display: flex; gap: 1rem; color: #c9d1d9;">
+                      <span>📄 package.json</span>
+                    </div>
+                    <div style="padding: 0.5rem 1rem; display: flex; gap: 1rem; color: #c9d1d9;">
+                      <span>📄 README.md</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ First Time Git Setup?</div>
+          <div class="warning-content">
+            If this is your first time using Git, you may need to configure your identity:
+            <div class="terminal" style="margin-top: 0.5rem;">
+              <div class="terminal-body" style="padding: 0.5rem 1rem;">
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">git config --global user.email "your.email@example.com"</span></div>
+                <div><span class="terminal-prompt">$ </span><span class="terminal-command">git config --global user.name "Your Name"</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">🎉 Success!</div>
+          <div class="tip-content">
+            Your React project is now on GitHub! You can share the link with others, collaborate with team members, 
+            and track all your changes. Remember to commit and push regularly as you add new features!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Summary -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-num">✓</div>
+        <div class="section-title">Summary & Next Steps</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🎯 What You've Accomplished</h2>
+
+        <div class="grid-2">
+          <div class="card card-highlight">
+            <h4 style="color: var(--accent); margin-bottom: 1rem;">✅ Completed Tasks</h4>
+            <ul class="checklist">
+              <li>Installed Node.js and VS Code</li>
+              <li>Created a React app with Vite</li>
+              <li>Understood project structure</li>
+              <li>Built a reusable StudentProfile component</li>
+              <li>Created a GitHub account</li>
+              <li>Pushed your project to GitHub</li>
+            </ul>
+          </div>
+          
+          <div class="card">
+            <h4 style="color: var(--secondary); margin-bottom: 1rem;">📚 Concepts You Learned</h4>
+            <ul class="checklist">
+              <li><strong>Components:</strong> Reusable UI pieces</li>
+              <li><strong>Props:</strong> Passing data to components</li>
+              <li><strong>State:</strong> useState hook for data</li>
+              <li><strong>Conditional Rendering:</strong> Show/hide elements</li>
+              <li><strong>List Rendering:</strong> .map() for arrays</li>
+              <li><strong>Git Basics:</strong> init, add, commit, push</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">🚀 What to Learn Next</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="margin-bottom: 0.75rem;">Week 1-2: React Basics</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>More about useState</li>
+              <li>useEffect for side effects</li>
+              <li>Event handling</li>
+              <li>Form inputs</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="margin-bottom: 0.75rem;">Week 3-4: Intermediate</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>React Router for navigation</li>
+              <li>Context API for state sharing</li>
+              <li>API calls with fetch/axios</li>
+              <li>Custom hooks</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="code-block" style="margin-top: 2rem;">
+          <div class="code-header">
+            <span>Git Commands Cheat Sheet</span>
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="cmt"># Daily workflow</span>
+git status                    <span class="cmt"># Check what changed</span>
+git add .                     <span class="cmt"># Stage all changes</span>
+git commit -m <span class="str">"Your message"</span> <span class="cmt"># Commit changes</span>
+git push                      <span class="cmt"># Push to GitHub</span>
+
+<span class="cmt"># Useful commands</span>
+git log                       <span class="cmt"># View commit history</span>
+git pull                      <span class="cmt"># Get latest from GitHub</span>
+git branch feature-name       <span class="cmt"># Create new branch</span>
+git checkout feature-name     <span class="cmt"># Switch to branch</span></pre></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(97,218,251,0.1), rgba(167,139,250,0.1)); border-radius: 16px;">
+          <h3 style="margin-bottom: 0.5rem;">🎉 You're Ready to Build!</h3>
+          <p style="color: var(--muted);">Keep coding, keep committing, and watch your skills grow!</p>
+          <p style="color: var(--accent); margin-top: 1rem; font-weight: 600;">Happy Coding! ⚛️</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    function copyCode(btn) {
+      const codeBlock = btn.closest('.code-block');
+      const code = codeBlock.querySelector('pre').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => btn.textContent = '📋 Copy', 2000);
+      });
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

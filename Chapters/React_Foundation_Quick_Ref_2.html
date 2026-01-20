@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Course - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1150px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(97,218,251,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(34,211,238,0.1) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--react), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-react { background: #20232a; color: var(--react); }
+    .badge-section { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--bg); }
+    
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; }
+    .toc h3 { color: var(--primary); margin-bottom: 1rem; }
+    .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.75rem; }
+    .toc-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--surface2); border-radius: 10px; cursor: pointer; transition: all 0.2s; text-decoration: none; color: var(--text); }
+    .toc-item:hover { background: #1f2a3f; transform: translateX(5px); }
+    .toc-num { width: 30px; height: 30px; background: linear-gradient(135deg, var(--react), var(--primary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: var(--bg); }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; }
+    .icon-ch1 { background: linear-gradient(135deg, var(--react), #0891b2); color: white; }
+    .icon-ch2 { background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; }
+    .icon-ch3 { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    .icon-ch4 { background: linear-gradient(135deg, var(--warning), #d97706); color: white; }
+    .icon-state { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
+    .icon-reducer { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
+    .icon-context { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-react { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--react); box-shadow: 0 0 20px rgba(97,218,251,0.2); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    .learning-objectives { background: linear-gradient(135deg, rgba(97,218,251,0.1), rgba(34,211,238,0.05)); border: 1px solid rgba(97,218,251,0.3); border-radius: 12px; padding: 1.25rem; margin: 1.5rem 0; }
+    .learning-objectives h4 { color: var(--react); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .learning-objectives ul { color: var(--muted); padding-left: 1.5rem; }
+    .learning-objectives li { margin: 0.35rem 0; }
+    
+    .key-concept { background: var(--surface2); border-radius: 12px; padding: 1.25rem; margin: 1rem 0; border-left: 4px solid var(--react); }
+    .key-concept h4 { color: var(--react); margin-bottom: 0.5rem; }
+    
+    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: start; margin: 1.5rem 0; }
+    .vs-divider { display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--warning); font-size: 1.5rem; padding-top: 2rem; }
+    @media (max-width: 900px) { .vs-container { grid-template-columns: 1fr; } .vs-divider { padding: 1rem 0; } }
+    
+    .recap-box { background: linear-gradient(135deg, rgba(52,211,153,0.1), rgba(34,211,238,0.05)); border: 1px solid rgba(52,211,153,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    .recap-box h4 { color: var(--accent); margin-bottom: 0.75rem; }
+    .recap-box ul { color: var(--muted); padding-left: 1.5rem; }
+    .recap-box li { margin: 0.35rem 0; }
+    
+    h2 { color: var(--react); margin-bottom: 1rem; }
+    h3 { color: var(--primary); margin: 1.5rem 0 1rem; }
+    
+    .step-list { counter-reset: step; list-style: none; padding: 0; }
+    .step-list li { counter-increment: step; position: relative; padding-left: 3rem; margin: 1rem 0; color: var(--muted); }
+    .step-list li::before { content: counter(step); position: absolute; left: 0; width: 2rem; height: 2rem; background: var(--react); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-react">⚛️ React</span>
+        <span class="hero-badge badge-section">Complete Course</span>
+      </div>
+      <h1>React - Web Development</h1>
+      <p>From Fundamentals to Advanced State Management</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="toc">
+      <h3>📚 Course Contents</h3>
+      <div class="toc-grid">
+        <a class="toc-item" onclick="openSection('ch1')">
+          <div class="toc-num">1</div>
+          <span>React – What and Why</span>
+        </a>
+        <a class="toc-item" onclick="openSection('ch2')">
+          <div class="toc-num">2</div>
+          <span>Components and JSX</span>
+        </a>
+        <a class="toc-item" onclick="openSection('ch3')">
+          <div class="toc-num">3</div>
+          <span>Components and Props</span>
+        </a>
+        <a class="toc-item" onclick="openSection('ch4')">
+          <div class="toc-num">4</div>
+          <span>Events and State</span>
+        </a>
+        <a class="toc-item" onclick="openSection('ch5')">
+          <div class="toc-num">5</div>
+          <span>State Management</span>
+        </a>
+        <a class="toc-item" onclick="openSection('ch6')">
+          <div class="toc-num">6</div>
+          <span>useReducer Hook</span>
+        </a>
+        <a class="toc-item" onclick="openSection('ch7')">
+          <div class="toc-num">7</div>
+          <span>Context API</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Chapter 1: React – What and Why -->
+    <div class="section open" id="ch1">
+      <div class="section-header" onclick="toggleSection('ch1')">
+        <div class="section-icon icon-ch1">1</div>
+        <div class="section-title">Chapter 1: React – What and Why</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="learning-objectives">
+          <h4>🎯 Learning Objectives</h4>
+          <ul>
+            <li>Describe what React is and why you would use it</li>
+            <li>Compare React to web projects built with just JavaScript</li>
+            <li>Explain the difference between imperative and declarative code</li>
+            <li>Differentiate between SPAs and multi-page apps</li>
+            <li>Create new React projects</li>
+          </ul>
+        </div>
+
+        <h2>What is React?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>React.js</strong> is one of the most popular frontend JavaScript libraries. 
+          The creators call it <em>"The library for web and native user interfaces."</em>
+        </p>
+
+        <div class="key-concept">
+          <h4>💡 What is a Library?</h4>
+          <p style="color: var(--muted);">A library is a collection of functionalities that you can use in your code to achieve results that would normally require more code. React provides utility functionalities that help you create interactive and reactive UIs.</p>
+        </div>
+
+        <h3>🚫 The Problem with Vanilla JavaScript</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          <strong>Vanilla JavaScript</strong> refers to JavaScript without any frameworks or libraries. While it results in smaller download sizes, it has significant downsides for complex UIs.
+        </p>
+
+        <div class="vs-container">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ Imperative Approach</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Step-by-step DOM instructions</p>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; vanilla.js</div>
+              <div class="code-body"><pre><span class="kw">const</span> buttonEl = document.<span class="fn">querySelector</span>(<span class="str">'button'</span>);
+<span class="kw">const</span> paragraphEl = document.<span class="fn">querySelector</span>(<span class="str">'p'</span>);
+
+<span class="kw">function</span> <span class="fn">updateTextHandler</span>() {
+  paragraphEl.textContent = <span class="str">'Text was changed!'</span>;
+}
+
+buttonEl.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, updateTextHandler);</pre></div>
+            </div>
+            <p style="color: var(--danger); font-size: 0.85rem;">~75% of code is DOM manipulation!</p>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="card card-react">
+            <h4 style="color: var(--react); margin-bottom: 0.75rem;">✅ Declarative Approach</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">Define desired states</p>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; App.jsx</div>
+              <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [text, setText] = <span class="fn">useState</span>(<span class="str">'Initial text'</span>);
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setText</span>(<span class="str">'Changed!'</span>)}<span class="tag">&gt;</span>
+        Click to change text
+      <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{text}<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}</pre></div>
+            </div>
+            <p style="color: var(--accent); font-size: 0.85rem;">Focus on business logic!</p>
+          </div>
+        </div>
+
+        <h3>⚙️ How React Works</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📝</div>
+            <div style="font-weight: 600;">JSX Code</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Your components</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">⚛️</div>
+            <div style="font-weight: 600; color: var(--react);">react</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Virtual DOM</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">🔄</div>
+            <div style="font-weight: 600;">react-dom</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Translation bridge</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">🌐</div>
+            <div style="font-weight: 600;">Real DOM</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Browser updates</div>
+          </div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📦 Two Main Packages</div>
+          <div class="note-content">
+            <strong>react:</strong> Creates the virtual DOM and derives UI state<br>
+            <strong>react-dom:</strong> Translates virtual DOM to actual browser DOM instructions
+          </div>
+        </div>
+
+        <h3>🌐 Single Page Applications (SPAs)</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          React can handle URL path changes and update the page accordingly. A website using React for all subpages is called a <strong>SPA</strong> because it contains only one HTML file (typically index.html).
+        </p>
+
+        <h3>🚀 Creating a React Project with Vite</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Terminal</div>
+          <div class="code-body"><pre><span class="cmt"># Create new project</span>
+npm create vite@latest my-react-project
+
+<span class="cmt"># Navigate to project folder</span>
+cd my-react-project
+
+<span class="cmt"># Install dependencies</span>
+npm install
+
+<span class="cmt"># Start development server</span>
+npm run dev</pre></div>
+        </div>
+
+        <h3>📁 Project Structure</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">📂 src/ folder</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li><code>main.jsx</code> - Main entry script</li>
+              <li><code>App.jsx</code> - Root component</li>
+              <li><code>*.css</code> - Styling files</li>
+              <li><code>assets/</code> - Images and assets</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">📄 Other Files</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li><code>public/</code> - Static files</li>
+              <li><code>index.html</code> - Single HTML page</li>
+              <li><code>package.json</code> - Dependencies</li>
+              <li><code>node_modules/</code> - Installed packages</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 File Extensions</div>
+          <div class="tip-content">
+            Vite enforces <code>.jsx</code> extension for files containing JSX code. Using <code>.js</code> for JSX is not allowed in Vite projects.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter 2: Understanding React Components and JSX -->
+    <div class="section" id="ch2">
+      <div class="section-header" onclick="toggleSection('ch2')">
+        <div class="section-icon icon-ch2">2</div>
+        <div class="section-title">Chapter 2: Understanding React Components and JSX</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="learning-objectives">
+          <h4>🎯 Learning Objectives</h4>
+          <ul>
+            <li>Define what exactly components are</li>
+            <li>Build and use components effectively</li>
+            <li>Utilize common naming conventions</li>
+            <li>Describe the relationship between components and JSX</li>
+            <li>Write JSX code and understand why it's used</li>
+          </ul>
+        </div>
+
+        <h2>What Are Components?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Components</strong> are reusable building blocks that are combined to compose the final user interface. 
+          React embraces breaking a web page into small, manageable chunks of code.
+        </p>
+
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">🧱</div>
+            <div style="font-weight: 600;">Header</div>
+          </div>
+          <span style="color: var(--muted);">+</span>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📋</div>
+            <div style="font-weight: 600;">Sidebar</div>
+          </div>
+          <span style="color: var(--muted);">+</span>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📝</div>
+            <div style="font-weight: 600;">Content</div>
+          </div>
+          <div class="flow-arrow">=</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">🌐</div>
+            <div style="font-weight: 600; color: var(--react);">Web Page</div>
+          </div>
+        </div>
+
+        <h3>🔧 The Anatomy of a Component</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; SubmitButton.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">SubmitButton</span>() {
+  <span class="kw">const</span> [isSubmitted, setIsSubmitted] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  
+  <span class="kw">function</span> <span class="fn">handleSubmit</span>() {
+    <span class="fn">setIsSubmitted</span>(<span class="kw">true</span>);
+  }
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleSubmit}<span class="tag">&gt;</span>
+      {isSubmitted ? <span class="str">'Loading…'</span> : <span class="str">'Submit'</span>}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> SubmitButton;</pre></div>
+        </div>
+
+        <h3>📛 Naming Conventions</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ Component Functions</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+              Use <strong>PascalCase</strong> for component names. This is required in JSX to distinguish custom components from built-in HTML elements.
+            </p>
+            <div style="margin-top: 0.75rem;">
+              <span class="badge badge-accent">SubmitButton</span>
+              <span class="badge badge-accent">AuthForm</span>
+              <span class="badge badge-accent">UserProfile</span>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">📄 File Names</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">
+              Either <strong>PascalCase</strong> (App.jsx) or <strong>kebab-case</strong> (submit-button.jsx) is acceptable.
+            </p>
+            <div style="margin-top: 0.75rem;">
+              <span class="badge badge-primary">App.jsx</span>
+              <span class="badge badge-primary">submit-button.jsx</span>
+            </div>
+          </div>
+        </div>
+
+        <h3>🔄 Component Types</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Functional Components</strong></td>
+              <td>Components defined via regular JavaScript functions</td>
+              <td><span class="badge badge-accent">Modern / Recommended</span></td>
+            </tr>
+            <tr>
+              <td><strong>Class-based Components</strong></td>
+              <td>Components defined via the <code>class</code> keyword</td>
+              <td><span class="badge badge-warning">Legacy</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>📜 JSX Rules</h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">1️⃣ Single Root Element</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">Return one element or use Fragment <code>&lt;&gt;...&lt;/&gt;</code></p>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--accent); margin-bottom: 0.5rem;">2️⃣ Self-Closing Tags</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">All tags must close: <code>&lt;img /&gt;</code></p>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--warning); margin-bottom: 0.5rem;">3️⃣ Dynamic Content</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">Use curly braces: <code>{expression}</code></p>
+          </div>
+        </div>
+
+        <h3>🖼️ Rendering Images</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">📂 Images in src/ folder</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">import</span> myImage <span class="kw">from</span> <span class="str">'./assets/my-image.png'</span>;
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> <span class="tag">&lt;img</span> <span class="attr">src</span>={myImage} <span class="tag">/&gt;</span>;
+}</pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">📂 Images in public/ folder</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="str">"/images/demo.jpg"</span> <span class="tag">/&gt;</span>;
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>🌳 Root Rendering</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; main.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> ReactDOM <span class="kw">from</span> <span class="str">'react-dom/client'</span>;
+<span class="kw">import</span> App <span class="kw">from</span> <span class="str">'./App.jsx'</span>;
+
+<span class="cmt">// Create root entry point</span>
+<span class="kw">const</span> root = ReactDOM.<span class="fn">createRoot</span>(
+  document.<span class="fn">getElementById</span>(<span class="str">'root'</span>)
+);
+
+<span class="cmt">// Render the App component</span>
+root.<span class="fn">render</span>(<span class="tag">&lt;App /&gt;</span>);</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter 3: Components and Props -->
+    <div class="section" id="ch3">
+      <div class="section-header" onclick="toggleSection('ch3')">
+        <div class="section-icon icon-ch3">3</div>
+        <div class="section-title">Chapter 3: Components and Props</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="learning-objectives">
+          <h4>🎯 Learning Objectives</h4>
+          <ul>
+            <li>Build reusable React components</li>
+            <li>Utilize props to make components configurable</li>
+            <li>Build flexible user interfaces by combining components with props</li>
+          </ul>
+        </div>
+
+        <h2>What Are Props?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Props</strong> (properties) make components configurable and reusable. 
+          They work just like HTML attributes but for custom components.
+        </p>
+
+        <h3>📤 Passing Props</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Passing Props</div>
+          <div class="code-body"><pre><span class="cmt">// Like HTML attributes</span>
+<span class="tag">&lt;GoalItem</span> <span class="attr">id</span>=<span class="str">"g1"</span> <span class="attr">title</span>=<span class="str">"Learn React"</span> <span class="tag">/&gt;</span>
+
+<span class="cmt">// With content between tags (children prop)</span>
+<span class="tag">&lt;FancyLink</span> <span class="attr">target</span>=<span class="str">"https://example.com"</span><span class="tag">&gt;</span>
+  Click me
+<span class="tag">&lt;/FancyLink&gt;</span>
+
+<span class="cmt">// Passing objects</span>
+<span class="tag">&lt;UserCard</span> <span class="attr">data</span>={{ name: <span class="str">'John'</span>, age: <span class="num">25</span> }} <span class="tag">/&gt;</span></pre></div>
+        </div>
+
+        <h3>📥 Consuming Props</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">Option 1: Props Object</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">GoalItem</span>(props) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;li&gt;</span>
+      {props.title} (ID: {props.id})
+    <span class="tag">&lt;/li&gt;</span>
+  );
+}</pre></div>
+            </div>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">Option 2: Destructuring ✨</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">GoalItem</span>({ title, id }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;li&gt;</span>
+      {title} (ID: {id})
+    <span class="tag">&lt;/li&gt;</span>
+  );
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>👶 The "children" Prop</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Using children prop</div>
+          <div class="code-body"><pre><span class="cmt">// Parent component</span>
+<span class="tag">&lt;Card&gt;</span>
+  <span class="tag">&lt;h2&gt;</span>Hello World<span class="tag">&lt;/h2&gt;</span>
+  <span class="tag">&lt;p&gt;</span>This is the card content<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/Card&gt;</span>
+
+<span class="cmt">// Card component definition</span>
+<span class="kw">function</span> <span class="fn">Card</span>({ children }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card"</span><span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📌 Default Values & Spread Operator</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">Default Values</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Avatar</span>({ person, size = <span class="num">100</span> }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;img</span>
+      <span class="attr">src</span>={person.imageUrl}
+      <span class="attr">width</span>={size}
+      <span class="attr">height</span>={size}
+    <span class="tag">/&gt;</span>
+  );
+}</pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary); margin-bottom: 0.75rem;">Spread Operator</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Profile</span>(props) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;Avatar</span> {...props} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Props are Read-Only</div>
+          <div class="warning-content">
+            Props are <strong>immutable</strong>. A component cannot modify its own props. When a component needs to change its props, it must "ask" its parent component to pass different props.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter 4: Working with Events and State -->
+    <div class="section" id="ch4">
+      <div class="section-header" onclick="toggleSection('ch4')">
+        <div class="section-icon icon-ch4">4</div>
+        <div class="section-title">Chapter 4: Working with Events and State</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="learning-objectives">
+          <h4>🎯 Learning Objectives</h4>
+          <ul>
+            <li>Add user event handlers (for reacting to button clicks, etc.)</li>
+            <li>Update the user interface via state</li>
+            <li>Build real dynamic and interactive UIs</li>
+          </ul>
+        </div>
+
+        <h2>Responding to Events</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          React lets you add <strong>event handlers</strong> to your JSX. Event handlers are functions that will be triggered in response to user interactions.
+        </p>
+
+        <h3>🖱️ Event Handler Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Event Handlers</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Button</span>() {
+  <span class="kw">function</span> <span class="fn">handleClick</span>() {
+    <span class="fn">alert</span>(<span class="str">'You clicked me!'</span>);
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClick}<span class="tag">&gt;</span>
+      Click me
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="danger">
+          <div class="danger-title">❌ Common Mistake</div>
+          <div class="danger-content">
+            <code>onClick={handleClick()}</code> - This fires immediately!<br>
+            <code>onClick={handleClick}</code> - This passes the function reference ✅
+          </div>
+        </div>
+
+        <h3>📊 Common Event Types</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>HTML Attribute</th>
+              <th>React Prop</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Click</td><td>onclick</td><td>onClick</td></tr>
+            <tr><td>Change</td><td>onchange</td><td>onChange</td></tr>
+            <tr><td>Submit</td><td>onsubmit</td><td>onSubmit</td></tr>
+            <tr><td>Focus</td><td>onfocus</td><td>onFocus</td></tr>
+            <tr><td>Mouse Enter</td><td>onmouseenter</td><td>onMouseEnter</td></tr>
+          </tbody>
+        </table>
+
+        <h2 style="margin-top: 2rem;">State: Making UIs Interactive</h2>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          Regular variables don't trigger re-renders. React's <strong>useState</strong> hook lets you add state to components.
+        </p>
+
+        <h3>🎣 The useState Hook</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; useState Syntax</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="cmt">// Destructure the array: [currentValue, setterFunction]</span>
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Count: {count}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(count + <span class="num">1</span>)}<span class="tag">&gt;</span>
+        Increment
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="key-concept">
+          <h4>💡 How useState Works</h4>
+          <ol style="color: var(--muted); padding-left: 1.5rem;">
+            <li>Call <code>setValue(newValue)</code> to update state</li>
+            <li>React re-executes the component function</li>
+            <li><code>useState</code> returns a new array with the updated value</li>
+            <li>React updates the DOM where needed</li>
+          </ol>
+        </div>
+
+        <h3>📋 State Can Hold Any Value</h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4 style="color: var(--primary);">Primitives</h4>
+            <code style="color: var(--muted); font-size: 0.85rem;">
+              useState(0)<br>
+              useState('')<br>
+              useState(true)
+            </code>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--accent);">Arrays</h4>
+            <code style="color: var(--muted); font-size: 0.85rem;">
+              useState([])<br>
+              useState([1, 2, 3])
+            </code>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary);">Objects</h4>
+            <code style="color: var(--muted); font-size: 0.85rem;">
+              useState({})<br>
+              useState({name: ''})
+            </code>
+          </div>
+        </div>
+
+        <div class="recap-box">
+          <h4>📝 Recap: Events & State</h4>
+          <ul>
+            <li>Event handlers are functions passed to event props like <code>onClick</code></li>
+            <li>Pass function reference, not the function call: <code>onClick={handleClick}</code></li>
+            <li>Use <code>useState</code> to add reactive state to components</li>
+            <li>State changes trigger component re-renders</li>
+            <li>Each component instance has its own isolated state</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter 5: State Management -->
+    <div class="section" id="ch5">
+      <div class="section-header" onclick="toggleSection('ch5')">
+        <div class="section-icon icon-state">5</div>
+        <div class="section-title">Chapter 5: State Management Patterns</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Lifting State Up</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          When multiple components need to share state, move it to their closest common parent. This is called <strong>"lifting state up"</strong>.
+        </p>
+
+        <div class="flow-diagram">
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">👆</div>
+            <div style="font-weight: 600; color: var(--react);">Parent</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Owns the state</div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="flow-arrow">↓</div>
+            <div style="color: var(--muted); font-size: 0.75rem;">props</div>
+          </div>
+          <div style="display: flex; gap: 1rem;">
+            <div class="flow-box">
+              <div style="font-size: 1.2rem;">📦</div>
+              <div style="font-weight: 600;">Child A</div>
+            </div>
+            <div class="flow-box">
+              <div style="font-size: 1.2rem;">📦</div>
+              <div style="font-weight: 600;">Child B</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>🎹 Example: Accordion Component</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Accordion.jsx - Lifting State Up</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Accordion</span>() {
+  <span class="cmt">// State lives in parent - "single source of truth"</span>
+  <span class="kw">const</span> [activeIndex, setActiveIndex] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="tag">&lt;Panel</span>
+        <span class="attr">title</span>=<span class="str">"About"</span>
+        <span class="attr">isActive</span>={activeIndex === <span class="num">0</span|}
+        <span class="attr">onShow</span>={() => <span class="fn">setActiveIndex</span>(<span class="num">0</span>)}
+      <span class="tag">&gt;</span>
+        About content here...
+      <span class="tag">&lt;/Panel&gt;</span>
+      <span class="tag">&lt;Panel</span>
+        <span class="attr">title</span>=<span class="str">"FAQ"</span>
+        <span class="attr">isActive</span>={activeIndex === <span class="num">1</span>}
+        <span class="attr">onShow</span>={() => <span class="fn">setActiveIndex</span>(<span class="num">1</span>)}
+      <span class="tag">&gt;</span>
+        FAQ content here...
+      <span class="tag">&lt;/Panel&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🔑 Preserving and Resetting State</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ State Preserved</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Same component at same position in the tree keeps its state.</p>
+          </div>
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">🔄 State Reset</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Different component at same position, or same component with different <code>key</code>.</p>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Force Reset with Key</div>
+          <div class="tip-content">
+            Use the <code>key</code> prop to tell React to treat a component as different: <code>&lt;Form key={selectedId} /&gt;</code>
+          </div>
+        </div>
+
+        <div class="recap-box">
+          <h4>📝 State Management Principles</h4>
+          <ul>
+            <li>State is tied to position in the render tree</li>
+            <li>Lift state to the closest common parent when sharing</li>
+            <li>Use <code>key</code> prop to reset component state</li>
+            <li>Each piece of state should have a single "source of truth"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter 6: useReducer -->
+    <div class="section" id="ch6">
+      <div class="section-header" onclick="toggleSection('ch6')">
+        <div class="section-icon icon-reducer">6</div>
+        <div class="section-title">Chapter 6: useReducer Hook</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>What is useReducer?</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          <code>useReducer</code> is an alternative to <code>useState</code> for complex state logic. It consolidates state updates in a single <strong>reducer function</strong>.
+        </p>
+
+        <h3>📊 useState vs useReducer</h3>
+        <div class="vs-container">
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">useState</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Simple state, few updates</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+<span class="fn">setCount</span>(count + <span class="num">1</span>);</pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="card card-secondary">
+            <h4 style="color: var(--secondary); margin-bottom: 0.75rem;">useReducer</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Complex state, many updates</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">const</span> [state, dispatch] = <span class="fn">useReducer</span>(
+  reducer, initialState
+);
+<span class="fn">dispatch</span>({ type: <span class="str">'increment'</span> });</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>🔧 useReducer Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; TasksReducer.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useReducer } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Reducer function - handles all state updates</span>
+<span class="kw">function</span> <span class="fn">tasksReducer</span>(state, action) {
+  <span class="kw">switch</span> (action.type) {
+    <span class="kw">case</span> <span class="str">'added'</span>:
+      <span class="kw">return</span> [...state, {
+        id: action.id,
+        text: action.text,
+        done: <span class="kw">false</span>
+      }];
+    <span class="kw">case</span> <span class="str">'changed'</span>:
+      <span class="kw">return</span> state.<span class="fn">map</span>(t => 
+        t.id === action.task.id ? action.task : t
+      );
+    <span class="kw">case</span> <span class="str">'deleted'</span>:
+      <span class="kw">return</span> state.<span class="fn">filter</span>(t => t.id !== action.id);
+    <span class="kw">default</span>:
+      <span class="kw">throw</span> Error(<span class="str">'Unknown action: '</span> + action.type);
+  }
+}
+
+<span class="kw">function</span> <span class="fn">TaskApp</span>() {
+  <span class="kw">const</span> [tasks, dispatch] = <span class="fn">useReducer</span>(tasksReducer, []);
+
+  <span class="kw">function</span> <span class="fn">handleAddTask</span>(text) {
+    <span class="fn">dispatch</span>({
+      type: <span class="str">'added'</span>,
+      id: nextId++,
+      text: text
+    });
+  }
+
+  <span class="kw">function</span> <span class="fn">handleDeleteTask</span>(taskId) {
+    <span class="fn">dispatch</span>({
+      type: <span class="str">'deleted'</span>,
+      id: taskId
+    });
+  }
+
+  <span class="cmt">// ... render tasks</span>
+}</pre></div>
+        </div>
+
+        <h3>✅ When to Use useReducer</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Use useReducer when:</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Many event handlers modify state similarly</li>
+              <li>State updates are complex</li>
+              <li>You want to separate "what happened" from "how to update"</li>
+              <li>You need easier testing</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--primary);">Stick with useState when:</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>State is simple (primitives)</li>
+              <li>Few state updates needed</li>
+              <li>Updates are straightforward</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter 7: Context API -->
+    <div class="section" id="ch7">
+      <div class="section-header" onclick="toggleSection('ch7')">
+        <div class="section-icon icon-context">7</div>
+        <div class="section-title">Chapter 7: Context API</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>The Problem: Prop Drilling</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Passing props through many intermediate components that don't use them is called <strong>"prop drilling"</strong>. Context lets you "teleport" data to components that need it.
+        </p>
+
+        <div class="flow-diagram">
+          <div style="text-align: center;">
+            <div class="flow-box" style="margin-bottom: 0.5rem;">Parent (has data)</div>
+            <div style="color: var(--danger);">↓ props ↓ props ↓ props</div>
+            <div class="flow-box" style="margin: 0.5rem 0; opacity: 0.5;">Intermediate Component</div>
+            <div style="color: var(--danger);">↓ props ↓ props ↓ props</div>
+            <div class="flow-box" style="margin: 0.5rem 0; opacity: 0.5;">Another Component</div>
+            <div style="color: var(--danger);">↓ props ↓ props ↓ props</div>
+            <div class="flow-box highlight">Child (needs data)</div>
+          </div>
+        </div>
+
+        <h3>✨ Context: Three Steps</h3>
+        <ol class="step-list">
+          <li><strong>Create</strong> the context with <code>createContext()</code></li>
+          <li><strong>Provide</strong> the context value from a parent component</li>
+          <li><strong>Consume</strong> the context with <code>useContext()</code></li>
+        </ol>
+
+        <h3>🔧 Context Implementation</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; ThemeContext.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { createContext, useContext, useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Step 1: Create context</span>
+<span class="kw">const</span> ThemeContext = <span class="fn">createContext</span>(<span class="str">'light'</span>);
+
+<span class="cmt">// Step 2: Provider component</span>
+<span class="kw">function</span> <span class="fn">ThemeProvider</span>({ children }) {
+  <span class="kw">const</span> [theme, setTheme] = <span class="fn">useState</span>(<span class="str">'light'</span>);
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ThemeContext</span> <span class="attr">value</span>={{ theme, setTheme }}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/ThemeContext&gt;</span>
+  );
+}
+
+<span class="cmt">// Step 3: Consume with useContext</span>
+<span class="kw">function</span> <span class="fn">ThemedButton</span>() {
+  <span class="kw">const</span> { theme, setTheme } = <span class="fn">useContext</span>(ThemeContext);
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span>
+      <span class="attr">onClick</span>={() => <span class="fn">setTheme</span>(theme === <span class="str">'light'</span> ? <span class="str">'dark'</span> : <span class="str">'light'</span>)}
+      <span class="attr">className</span>={theme}
+    <span class="tag">&gt;</span>
+      Toggle Theme
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Common Use Cases for Context</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">🎨 Theming</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Dark mode, color schemes</p>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--accent); margin-bottom: 0.5rem;">👤 Current User</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Authentication state</p>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary); margin-bottom: 0.5rem;">🧭 Routing</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Current route information</p>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--warning); margin-bottom: 0.5rem;">📊 Global State</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">App-wide data management</p>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Before Using Context</div>
+          <div class="warning-content">
+            <strong>1. Try passing props first</strong> - it makes data flow explicit.<br>
+            <strong>2. Extract components</strong> - pass JSX as children instead of drilling data.
+          </div>
+        </div>
+
+        <div class="recap-box">
+          <h4>📝 Context API Recap</h4>
+          <ul>
+            <li>Context lets a parent provide data to the entire tree below it</li>
+            <li>Create with <code>createContext()</code>, provide with <code>&lt;Context value={...}&gt;</code></li>
+            <li>Consume with <code>useContext(MyContext)</code></li>
+            <li>Context passes through any components in the middle</li>
+            <li>Different contexts don't override each other</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(97,218,251,0.1), rgba(34,211,238,0.05)); border-radius: 16px; border: 1px solid var(--border);">
+      <h3 style="color: var(--react); margin-bottom: 0.5rem;">🎉 Course Complete!</h3>
+      <p style="color: var(--muted);">You now have a solid foundation in React development.</p>
+      <div style="margin-top: 1rem;">
+        <span class="badge badge-primary" style="margin: 0.25rem;">Components</span>
+        <span class="badge badge-accent" style="margin: 0.25rem;">Props</span>
+        <span class="badge badge-secondary" style="margin: 0.25rem;">State</span>
+        <span class="badge badge-warning" style="margin: 0.25rem;">Events</span>
+        <span class="badge badge-danger" style="margin: 0.25rem;">useReducer</span>
+        <span class="badge badge-primary" style="margin: 0.25rem;">Context</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    function openSection(id) {
+      const section = document.getElementById(id);
+      section.classList.add('open');
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Open first section by default
+    document.getElementById('ch1').classList.add('open');
+  </script>
+</body>
+</html>

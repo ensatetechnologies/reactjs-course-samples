@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Fundamentals - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 30%, rgba(34,211,238,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(167,139,250,0.15) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badge { display: inline-block; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--bg); padding: 0.4rem 1.25rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; position: relative; }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-num { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; font-size: 1rem; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.08), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.08), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.08), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 100px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--primary); box-shadow: 0 0 20px rgba(34,211,238,0.3); }
+    .flow-box.server { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.1), transparent); }
+    .flow-box.client { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.1), transparent); }
+    .flow-box.database { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.1), transparent); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    .flow-arrow-down { color: var(--primary); font-size: 1.5rem; transform: rotate(90deg); }
+    
+    /* Timeline */
+    .timeline { position: relative; padding: 1rem 0; }
+    .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, var(--primary), var(--secondary), var(--accent), var(--warning)); border-radius: 4px; transform: translateX(-50%); }
+    @media (max-width: 768px) { .timeline::before { left: 20px; } }
+    .timeline-item { display: flex; align-items: center; margin: 2rem 0; position: relative; }
+    .timeline-item:nth-child(odd) { flex-direction: row-reverse; }
+    @media (max-width: 768px) { .timeline-item, .timeline-item:nth-child(odd) { flex-direction: row; padding-left: 50px; } }
+    .timeline-content { width: 45%; padding: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+    @media (max-width: 768px) { .timeline-content { width: 100%; } }
+    .timeline-year { position: absolute; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--bg); padding: 0.5rem 1rem; border-radius: 25px; font-weight: 700; font-size: 0.9rem; z-index: 1; }
+    @media (max-width: 768px) { .timeline-year { left: 20px; transform: translateX(-50%); font-size: 0.75rem; padding: 0.35rem 0.75rem; } }
+    
+    /* Comparison Table */
+    .compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .compare-table th, .compare-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .compare-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .compare-table td { background: var(--surface); }
+    .compare-table tr:hover td { background: var(--surface2); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    /* Architecture Diagram */
+    .arch-diagram { background: var(--surface2); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .arch-layer { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.25rem; margin: 0.75rem 0; text-align: center; transition: all 0.3s; }
+    .arch-layer:hover { border-color: var(--primary); }
+    .arch-layer h4 { margin-bottom: 0.5rem; }
+    .arch-connector { text-align: center; color: var(--muted); font-size: 1.5rem; }
+    
+    /* Framework Cards */
+    .framework-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; transition: all 0.3s; }
+    .framework-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .framework-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .framework-name { font-weight: 600; margin-bottom: 0.25rem; }
+    .framework-type { color: var(--muted); font-size: 0.85rem; }
+    
+    /* Interactive Demo */
+    .demo-container { background: var(--surface2); border-radius: 16px; padding: 1.5rem; margin: 1.5rem 0; }
+    .demo-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .demo-tab { padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); cursor: pointer; transition: all 0.2s; }
+    .demo-tab:hover { border-color: var(--primary); }
+    .demo-tab.active { background: var(--primary); color: var(--bg); border-color: var(--primary); }
+    .demo-content { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; min-height: 200px; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.5rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); }
+    .code-body { padding: 1rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; margin: 0; white-space: pre; }
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; }
+    
+    .icon-box { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem; }
+    
+    .vs-badge { background: var(--warning); color: var(--bg); padding: 0.5rem 1rem; border-radius: 25px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badge">🌐 Complete Guide</div>
+      <h1>Web Fundamentals</h1>
+      <p>From Static Pages to Modern Web Applications</p>
+    </div>
+
+    <!-- Section 1: Websites vs Web Applications -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-num">1</div>
+        <div class="section-title">Websites vs Web Applications</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Understanding the Difference</h2>
+        
+        <div class="grid-2">
+          <div class="card card-highlight">
+            <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">🌐</div>
+            <h3 style="color: var(--primary); margin-bottom: 0.75rem;">Website</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              A collection of <strong>informational pages</strong> connected together. 
+              Primarily for <em>consuming content</em>.
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Read-only or minimal interaction</li>
+              <li>Content-focused (articles, images, videos)</li>
+              <li>Examples: Blogs, news sites, portfolios</li>
+              <li>Wikipedia, CNN, company landing pages</li>
+            </ul>
+          </div>
+          
+          <div class="card card-accent">
+            <div class="icon-box" style="background: linear-gradient(135deg, var(--accent), #059669);">⚡</div>
+            <h3 style="color: var(--accent); margin-bottom: 0.75rem;">Web Application</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              An <strong>interactive software</strong> that runs in a browser. 
+              Designed for <em>performing tasks</em>.
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>High user interaction</li>
+              <li>CRUD operations (Create, Read, Update, Delete)</li>
+              <li>Examples: Gmail, Facebook, Trello</li>
+              <li>Google Docs, Slack, Banking apps</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📊 Comparison Table</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>Website</th>
+              <th>Web Application</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Purpose</strong></td>
+              <td>Provide information</td>
+              <td>Perform tasks/functions</td>
+            </tr>
+            <tr>
+              <td><strong>Interaction</strong></td>
+              <td>Read content <span class="badge badge-primary">Low</span></td>
+              <td>Create, modify data <span class="badge badge-accent">High</span></td>
+            </tr>
+            <tr>
+              <td><strong>Authentication</strong></td>
+              <td>Usually not required</td>
+              <td>Often required (login)</td>
+            </tr>
+            <tr>
+              <td><strong>Complexity</strong></td>
+              <td>Simple structure</td>
+              <td>Complex with business logic</td>
+            </tr>
+            <tr>
+              <td><strong>Examples</strong></td>
+              <td>Blog, Portfolio, News</td>
+              <td>Gmail, Trello, Banking</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 The Line is Blurring!</div>
+          <div class="tip-content">
+            Modern websites often have app-like features (comments, shopping carts), and web apps have informational pages. 
+            The distinction is more about <strong>primary purpose</strong> than strict categories.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Brief History of the Web -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-num">2</div>
+        <div class="section-title">Brief History of the Web</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🕰️ Evolution of the Web</h2>
+        
+        <div class="timeline">
+          <!-- 1989 -->
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <h4 style="color: var(--primary);">🌱 The Birth of WWW</h4>
+              <p style="color: var(--muted); font-size: 0.9rem;">
+                Tim Berners-Lee invents the World Wide Web at CERN. 
+                Creates HTML, HTTP, and the first web browser.
+              </p>
+              <span class="badge badge-primary">Static HTML Only</span>
+            </div>
+            <div class="timeline-year">1989</div>
+          </div>
+
+          <!-- 1995 -->
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <h4 style="color: #f7df1e;">⚡ JavaScript is Born</h4>
+              <p style="color: var(--muted); font-size: 0.9rem;">
+                Brendan Eich creates JavaScript in 10 days at Netscape. 
+                Web pages can now be interactive!
+              </p>
+              <span class="badge badge-warning">Dynamic Behavior</span>
+            </div>
+            <div class="timeline-year">1995</div>
+          </div>
+
+          <!-- 1996 -->
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <h4 style="color: var(--secondary);">🎨 CSS Arrives</h4>
+              <p style="color: var(--muted); font-size: 0.9rem;">
+                CSS1 released. Separation of content (HTML) and presentation (CSS). 
+                Web design becomes more sophisticated.
+              </p>
+              <span class="badge badge-secondary">Styling</span>
+            </div>
+            <div class="timeline-year">1996</div>
+          </div>
+
+          <!-- 2004 -->
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <h4 style="color: var(--accent);">🌐 Web 2.0 & AJAX</h4>
+              <p style="color: var(--muted); font-size: 0.9rem;">
+                Gmail launches using AJAX. Pages update without full reload. 
+                Birth of modern web applications.
+              </p>
+              <span class="badge badge-accent">Interactive Apps</span>
+            </div>
+            <div class="timeline-year">2004</div>
+          </div>
+
+          <!-- 2006 -->
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <h4 style="color: #0769ad;">📚 jQuery Era</h4>
+              <p style="color: var(--muted); font-size: 0.9rem;">
+                jQuery makes DOM manipulation easy. 
+                "Write less, do more" becomes the motto.
+              </p>
+              <span class="badge badge-primary">Simplified JS</span>
+            </div>
+            <div class="timeline-year">2006</div>
+          </div>
+
+          <!-- 2010 -->
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <h4 style="color: #dd1b16;">🅰️ Angular & Backbone</h4>
+              <p style="color: var(--muted); font-size: 0.9rem;">
+                Google releases AngularJS. Single Page Applications (SPAs) become mainstream. 
+                MVC pattern in frontend.
+              </p>
+              <span class="badge badge-danger">SPA Revolution</span>
+            </div>
+            <div class="timeline-year">2010</div>
+          </div>
+
+          <!-- 2013 -->
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <h4 style="color: #61dafb;">⚛️ React Changes Everything</h4>
+              <p style="color: var(--muted); font-size: 0.9rem;">
+                Facebook releases React. Component-based architecture, Virtual DOM, 
+                and declarative UI transform frontend development.
+              </p>
+              <span class="badge badge-primary">Component Era</span>
+            </div>
+            <div class="timeline-year">2013</div>
+          </div>
+
+          <!-- 2014-2016 -->
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <h4 style="color: #42b883;">🖖 Vue & Modern Tooling</h4>
+              <p style="color: var(--muted); font-size: 0.9rem;">
+                Vue.js released. Node.js ecosystem explodes. 
+                Webpack, Babel, npm transform development workflow.
+              </p>
+              <span class="badge badge-accent">Modern Stack</span>
+            </div>
+            <div class="timeline-year">2014</div>
+          </div>
+
+          <!-- 2020+ -->
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <h4 style="color: var(--primary);">🚀 Full-Stack JavaScript</h4>
+              <p style="color: var(--muted); font-size: 0.9rem;">
+                Next.js, Nuxt, Remix dominate. Server-side rendering returns. 
+                Edge computing, serverless, and AI integration.
+              </p>
+              <span class="badge badge-primary">Meta-Frameworks</span>
+            </div>
+            <div class="timeline-year">2020+</div>
+          </div>
+        </div>
+
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-weight: 600;">Web 1.0</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Read-Only</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-weight: 600;">Web 2.0</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Read-Write</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-weight: 600;">Web 3.0</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Semantic/AI</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Static vs Dynamic -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-num">3</div>
+        <div class="section-title">Static vs Dynamic Content</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Understanding Content Types</h2>
+        
+        <div class="grid-2">
+          <!-- Static -->
+          <div class="card">
+            <h3 style="color: var(--warning); margin-bottom: 1rem;">📄 Static Content</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              Content that <strong>doesn't change</strong> unless manually edited. 
+              Same for every user, every time.
+            </p>
+            
+            <div class="flow-diagram" style="padding: 1rem;">
+              <div class="flow-box" style="min-width: 80px;">
+                <div>👤</div>
+                <div style="font-size: 0.8rem;">User</div>
+              </div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box" style="min-width: 80px;">
+                <div>🖥️</div>
+                <div style="font-size: 0.8rem;">Server</div>
+              </div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box" style="min-width: 80px; border-color: var(--warning);">
+                <div>📄</div>
+                <div style="font-size: 0.8rem;">Same HTML</div>
+              </div>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">static-page.html</div>
+              <div class="code-body"><pre><span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;h1&gt;</span>Welcome to My Site<span class="tag">&lt;/h1&gt;</span>
+  <span class="tag">&lt;p&gt;</span>This content never changes<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;p&gt;</span>Last updated: Jan 1, 2024<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></pre></div>
+            </div>
+
+            <h4 style="color: var(--text); margin: 1rem 0 0.5rem;">✓ Pros</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Fast loading (no processing)</li>
+              <li>Easy to host (any server)</li>
+              <li>Secure (no database attacks)</li>
+              <li>Great for SEO</li>
+            </ul>
+
+            <h4 style="color: var(--text); margin: 1rem 0 0.5rem;">✗ Cons</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Manual updates required</li>
+              <li>No personalization</li>
+              <li>Limited functionality</li>
+            </ul>
+          </div>
+
+          <!-- Dynamic -->
+          <div class="card card-highlight">
+            <h3 style="color: var(--primary); margin-bottom: 1rem;">⚡ Dynamic Content</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              Content <strong>generated on request</strong>. 
+              Can be different for each user or time.
+            </p>
+            
+            <div class="flow-diagram" style="padding: 1rem;">
+              <div class="flow-box" style="min-width: 80px;">
+                <div>👤</div>
+                <div style="font-size: 0.8rem;">User</div>
+              </div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box" style="min-width: 80px;">
+                <div>🖥️⚙️</div>
+                <div style="font-size: 0.8rem;">Server + DB</div>
+              </div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box" style="min-width: 80px; border-color: var(--primary);">
+                <div>✨</div>
+                <div style="font-size: 0.8rem;">Custom HTML</div>
+              </div>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">dynamic-page.php / .js</div>
+              <div class="code-body"><pre><span class="cmt">// Server generates HTML dynamically</span>
+<span class="kw">const</span> user = <span class="kw">await</span> db.<span class="fn">getUser</span>(userId)
+<span class="kw">const</span> posts = <span class="kw">await</span> db.<span class="fn">getPosts</span>(userId)
+
+<span class="kw">return</span> <span class="str">`
+  &lt;h1&gt;Welcome, ${user.name}!&lt;/h1&gt;
+  &lt;p&gt;You have ${posts.length} posts&lt;/p&gt;
+  &lt;p&gt;Last login: ${user.lastLogin}&lt;/p&gt;
+`</span></pre></div>
+            </div>
+
+            <h4 style="color: var(--text); margin: 1rem 0 0.5rem;">✓ Pros</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Personalized content</li>
+              <li>Real-time updates</li>
+              <li>User interaction</li>
+              <li>Powerful functionality</li>
+            </ul>
+
+            <h4 style="color: var(--text); margin: 1rem 0 0.5rem;">✗ Cons</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Slower (processing needed)</li>
+              <li>More complex hosting</li>
+              <li>Security considerations</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🔄 The Transition: Static → Dynamic</h3>
+        
+        <div class="arch-diagram">
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;">
+            <div>
+              <div class="arch-layer" style="border-color: var(--muted);">
+                <h4 style="color: var(--muted);">Stage 1</h4>
+                <p style="font-size: 0.85rem;">Pure HTML</p>
+                <span class="badge badge-warning">Static</span>
+              </div>
+              <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem;">Just HTML files</p>
+            </div>
+            <div>
+              <div class="arch-layer" style="border-color: #f7df1e;">
+                <h4 style="color: #f7df1e;">Stage 2</h4>
+                <p style="font-size: 0.85rem;">HTML + JS</p>
+                <span class="badge badge-warning">Client Dynamic</span>
+              </div>
+              <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem;">DOM manipulation</p>
+            </div>
+            <div>
+              <div class="arch-layer" style="border-color: var(--secondary);">
+                <h4 style="color: var(--secondary);">Stage 3</h4>
+                <p style="font-size: 0.85rem;">Server-Side</p>
+                <span class="badge badge-secondary">Server Dynamic</span>
+              </div>
+              <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem;">PHP, Node, Python</p>
+            </div>
+            <div>
+              <div class="arch-layer" style="border-color: var(--primary);">
+                <h4 style="color: var(--primary);">Stage 4</h4>
+                <p style="font-size: 0.85rem;">Full Stack</p>
+                <span class="badge badge-primary">Hybrid</span>
+              </div>
+              <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem;">SSR + CSR</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-container">
+          <h4 style="margin-bottom: 1rem;">🎮 Interactive Demo: Static vs Dynamic</h4>
+          <div class="demo-tabs">
+            <div class="demo-tab active" onclick="showDemo('static')">Static Page</div>
+            <div class="demo-tab" onclick="showDemo('dynamic')">Dynamic Page</div>
+          </div>
+          <div class="demo-content" id="demo-content">
+            <div id="static-demo">
+              <h3>📄 Static Page</h3>
+              <p style="color: var(--muted);">Welcome, Visitor!</p>
+              <p style="color: var(--muted);">Today's date: January 1, 2024</p>
+              <p style="color: var(--muted); font-style: italic; margin-top: 1rem;">
+                ↑ This content is hardcoded and never changes
+              </p>
+            </div>
+            <div id="dynamic-demo" style="display: none;">
+              <h3>⚡ Dynamic Page</h3>
+              <p style="color: var(--primary);">Welcome, <span id="user-name">Guest</span>!</p>
+              <p style="color: var(--muted);">Today's date: <span id="current-date"></span></p>
+              <p style="color: var(--muted);">Current time: <span id="current-time"></span></p>
+              <p style="color: var(--muted);">Your visit count: <span id="visit-count">1</span></p>
+              <div style="margin-top: 1rem;">
+                <input type="text" id="name-input" placeholder="Enter your name" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); margin-right: 0.5rem;">
+                <button onclick="updateName()" style="padding: 0.5rem 1rem; background: var(--primary); color: var(--bg); border: none; border-radius: 6px; cursor: pointer;">Update</button>
+              </div>
+              <p style="color: var(--accent); font-style: italic; margin-top: 1rem;">
+                ↑ This content updates in real-time!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: What is an Application -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-num">4</div>
+        <div class="section-title">What is an Application?</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">Definition</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          An <strong style="color: var(--primary);">Application</strong> (or "App") is a software program designed to 
+          perform a <strong>specific task</strong> or set of tasks for the user.
+        </p>
+
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 2rem;">👤</div>
+            <div style="font-weight: 600;">User</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Has a need</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 2rem;">📱</div>
+            <div style="font-weight: 600; color: var(--primary);">Application</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Solves the need</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 2rem;">✅</div>
+            <div style="font-weight: 600;">Task Done</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Goal achieved</div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🔑 Key Characteristics</h3>
+        <div class="grid-4">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+            <h4>Purpose-Built</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">Designed for specific tasks</p>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">👆</div>
+            <h4>Interactive</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">Responds to user input</p>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">💾</div>
+            <h4>Data Processing</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">Manages & transforms data</p>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔄</div>
+            <h4>State Management</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">Remembers information</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Types of Applications -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-num">5</div>
+        <div class="section-title">Types of Applications</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Application Categories</h2>
+        
+        <div class="grid-2">
+          <!-- Desktop Apps -->
+          <div class="card card-secondary">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <div class="icon-box" style="background: linear-gradient(135deg, var(--secondary), #7c3aed);">🖥️</div>
+              <div>
+                <h3 style="color: var(--secondary);">Desktop Applications</h3>
+                <span class="badge badge-secondary">Native</span>
+              </div>
+            </div>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              Installed on your computer. Runs directly on the OS.
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li><strong>Windows:</strong> .exe files</li>
+              <li><strong>macOS:</strong> .app bundles</li>
+              <li><strong>Linux:</strong> .deb, .rpm packages</li>
+            </ul>
+            <p style="color: var(--muted); margin-top: 0.75rem; font-size: 0.9rem;">
+              <strong>Examples:</strong> VS Code, Photoshop, Microsoft Office
+            </p>
+          </div>
+
+          <!-- Mobile Apps -->
+          <div class="card card-accent">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <div class="icon-box" style="background: linear-gradient(135deg, var(--accent), #059669);">📱</div>
+              <div>
+                <h3 style="color: var(--accent);">Mobile Applications</h3>
+                <span class="badge badge-accent">Native/Hybrid</span>
+              </div>
+            </div>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              Apps for smartphones and tablets.
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li><strong>iOS:</strong> Swift, Objective-C</li>
+              <li><strong>Android:</strong> Kotlin, Java</li>
+              <li><strong>Cross-platform:</strong> React Native, Flutter</li>
+            </ul>
+            <p style="color: var(--muted); margin-top: 0.75rem; font-size: 0.9rem;">
+              <strong>Examples:</strong> Instagram, WhatsApp, Uber
+            </p>
+          </div>
+
+          <!-- Web Apps -->
+          <div class="card card-highlight">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <div class="icon-box" style="background: linear-gradient(135deg, var(--primary), #0891b2);">🌐</div>
+              <div>
+                <h3 style="color: var(--primary);">Web Applications</h3>
+                <span class="badge badge-primary">Browser-based</span>
+              </div>
+            </div>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              Runs in web browsers. No installation needed.
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li><strong>Frontend:</strong> HTML, CSS, JavaScript</li>
+              <li><strong>Backend:</strong> Node.js, Python, PHP</li>
+              <li><strong>Frameworks:</strong> React, Vue, Angular</li>
+            </ul>
+            <p style="color: var(--muted); margin-top: 0.75rem; font-size: 0.9rem;">
+              <strong>Examples:</strong> Gmail, Google Docs, Trello
+            </p>
+          </div>
+
+          <!-- PWA -->
+          <div class="card card-warning">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <div class="icon-box" style="background: linear-gradient(135deg, var(--warning), #d97706);">⚡</div>
+              <div>
+                <h3 style="color: var(--warning);">Progressive Web Apps</h3>
+                <span class="badge badge-warning">Hybrid</span>
+              </div>
+            </div>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              Web apps with native-like features.
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Install on home screen</li>
+              <li>Work offline</li>
+              <li>Push notifications</li>
+            </ul>
+            <p style="color: var(--muted); margin-top: 0.75rem; font-size: 0.9rem;">
+              <strong>Examples:</strong> Twitter Lite, Pinterest, Starbucks
+            </p>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📊 Comparison</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Platform</th>
+              <th>Installation</th>
+              <th>Performance</th>
+              <th>Updates</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Desktop</td>
+              <td>Specific OS</td>
+              <td>Required</td>
+              <td><span class="badge badge-accent">Best</span></td>
+              <td>Manual</td>
+            </tr>
+            <tr>
+              <td>Mobile</td>
+              <td>iOS/Android</td>
+              <td>App Store</td>
+              <td><span class="badge badge-accent">Great</span></td>
+              <td>Store updates</td>
+            </tr>
+            <tr>
+              <td>Web</td>
+              <td>Any browser</td>
+              <td>None</td>
+              <td><span class="badge badge-primary">Good</span></td>
+              <td>Instant</td>
+            </tr>
+            <tr>
+              <td>PWA</td>
+              <td>Any + Install</td>
+              <td>Optional</td>
+              <td><span class="badge badge-primary">Good</span></td>
+              <td>Automatic</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 6: Structure of a Web Application -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-num">6</div>
+        <div class="section-title">Structure of a Web Application</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🏗️ Three-Tier Architecture</h2>
+        
+        <div class="arch-diagram">
+          <!-- Presentation Layer -->
+          <div class="arch-layer" style="border-color: var(--accent);">
+            <h4 style="color: var(--accent);">📱 Presentation Layer (Frontend)</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">What users see and interact with</p>
+            <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.75rem; flex-wrap: wrap;">
+              <span class="badge badge-accent">HTML</span>
+              <span class="badge badge-accent">CSS</span>
+              <span class="badge badge-accent">JavaScript</span>
+              <span class="badge badge-accent">React/Vue</span>
+            </div>
+          </div>
+          
+          <div class="arch-connector">⬇️ API Calls (HTTP/REST) ⬆️</div>
+          
+          <!-- Business Layer -->
+          <div class="arch-layer" style="border-color: var(--secondary);">
+            <h4 style="color: var(--secondary);">⚙️ Business Logic Layer (Backend)</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Processes requests, applies rules, handles authentication</p>
+            <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.75rem; flex-wrap: wrap;">
+              <span class="badge badge-secondary">Node.js</span>
+              <span class="badge badge-secondary">Python</span>
+              <span class="badge badge-secondary">Java</span>
+              <span class="badge badge-secondary">PHP</span>
+            </div>
+          </div>
+          
+          <div class="arch-connector">⬇️ Database Queries ⬆️</div>
+          
+          <!-- Data Layer -->
+          <div class="arch-layer" style="border-color: var(--warning);">
+            <h4 style="color: var(--warning);">💾 Data Layer (Database)</h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Stores and retrieves data</p>
+            <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.75rem; flex-wrap: wrap;">
+              <span class="badge badge-warning">PostgreSQL</span>
+              <span class="badge badge-warning">MongoDB</span>
+              <span class="badge badge-warning">MySQL</span>
+              <span class="badge badge-warning">Redis</span>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">📁 Typical Project Structure</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header">Frontend (React/Next.js)</div>
+            <div class="code-body"><pre>📁 my-web-app/
+├── 📁 src/
+│   ├── 📁 components/     <span class="cmt"># UI components</span>
+│   │   ├── Button.jsx
+│   │   ├── Navbar.jsx
+│   │   └── Card.jsx
+│   ├── 📁 pages/          <span class="cmt"># Route pages</span>
+│   │   ├── Home.jsx
+│   │   ├── About.jsx
+│   │   └── Dashboard.jsx
+│   ├── 📁 hooks/          <span class="cmt"># Custom hooks</span>
+│   ├── 📁 services/       <span class="cmt"># API calls</span>
+│   ├── 📁 styles/         <span class="cmt"># CSS files</span>
+│   └── App.jsx            <span class="cmt"># Root component</span>
+├── 📄 package.json
+└── 📄 index.html</pre></div>
+          </div>
+          
+          <div class="code-block">
+            <div class="code-header">Backend (Node.js/Express)</div>
+            <div class="code-body"><pre>📁 backend/
+├── 📁 src/
+│   ├── 📁 routes/         <span class="cmt"># API endpoints</span>
+│   │   ├── auth.js
+│   │   ├── users.js
+│   │   └── posts.js
+│   ├── 📁 controllers/    <span class="cmt"># Request handlers</span>
+│   ├── 📁 models/         <span class="cmt"># Database schemas</span>
+│   ├── 📁 middleware/     <span class="cmt"># Auth, logging</span>
+│   ├── 📁 services/       <span class="cmt"># Business logic</span>
+│   ├── 📁 utils/          <span class="cmt"># Helper functions</span>
+│   └── app.js             <span class="cmt"># Express app</span>
+├── 📄 package.json
+└── 📄 .env                <span class="cmt"># Environment vars</span></pre></div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">🔄 Request-Response Flow</h3>
+        <div class="flow-diagram">
+          <div class="flow-box client">
+            <div style="font-size: 1.5rem;">👤</div>
+            <div style="font-weight: 600; color: var(--accent);">User</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Clicks button</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box client">
+            <div style="font-size: 1.5rem;">🌐</div>
+            <div style="font-weight: 600; color: var(--accent);">Browser</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Sends request</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box server">
+            <div style="font-size: 1.5rem;">🖥️</div>
+            <div style="font-weight: 600; color: var(--secondary);">Server</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Processes</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box database">
+            <div style="font-size: 1.5rem;">💾</div>
+            <div style="font-weight: 600; color: var(--warning);">Database</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Stores data</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Modern Frameworks -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-num">7</div>
+        <div class="section-title">Modern Web Frameworks</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🛠️ Popular Frameworks & Libraries</h2>
+        
+        <h3 style="color: var(--accent); margin-bottom: 1rem;">Frontend Frameworks</h3>
+        <div class="grid-4">
+          <div class="framework-card">
+            <div class="framework-icon">⚛️</div>
+            <div class="framework-name" style="color: #61dafb;">React</div>
+            <div class="framework-type">Library by Meta</div>
+            <span class="badge badge-primary" style="margin-top: 0.5rem;">Most Popular</span>
+          </div>
+          <div class="framework-card">
+            <div class="framework-icon">🖖</div>
+            <div class="framework-name" style="color: #42b883;">Vue.js</div>
+            <div class="framework-type">Progressive Framework</div>
+            <span class="badge badge-accent" style="margin-top: 0.5rem;">Easy to Learn</span>
+          </div>
+          <div class="framework-card">
+            <div class="framework-icon">🅰️</div>
+            <div class="framework-name" style="color: #dd1b16;">Angular</div>
+            <div class="framework-type">Framework by Google</div>
+            <span class="badge badge-danger" style="margin-top: 0.5rem;">Enterprise</span>
+          </div>
+          <div class="framework-card">
+            <div class="framework-icon">🔷</div>
+            <div class="framework-name" style="color: #ff3e00;">Svelte</div>
+            <div class="framework-type">Compiler</div>
+            <span class="badge badge-warning" style="margin-top: 0.5rem;">Rising Star</span>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">Meta-Frameworks (Full-Stack)</h3>
+        <div class="grid-4">
+          <div class="framework-card">
+            <div class="framework-icon">▲</div>
+            <div class="framework-name">Next.js</div>
+            <div class="framework-type">React Framework</div>
+            <span class="badge badge-primary" style="margin-top: 0.5rem;">SSR + SSG</span>
+          </div>
+          <div class="framework-card">
+            <div class="framework-icon">💚</div>
+            <div class="framework-name" style="color: #00dc82;">Nuxt</div>
+            <div class="framework-type">Vue Framework</div>
+            <span class="badge badge-accent" style="margin-top: 0.5rem;">Full-Stack</span>
+          </div>
+          <div class="framework-card">
+            <div class="framework-icon">💿</div>
+            <div class="framework-name" style="color: #3992ff;">Remix</div>
+            <div class="framework-type">React Framework</div>
+            <span class="badge badge-primary" style="margin-top: 0.5rem;">Web Standards</span>
+          </div>
+          <div class="framework-card">
+            <div class="framework-icon">🚀</div>
+            <div class="framework-name" style="color: #ff5d01;">Astro</div>
+            <div class="framework-type">Content Sites</div>
+            <span class="badge badge-warning" style="margin-top: 0.5rem;">Zero JS</span>
+          </div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">Backend Frameworks</h3>
+        <div class="grid-4">
+          <div class="framework-card">
+            <div class="framework-icon">🟢</div>
+            <div class="framework-name" style="color: #68a063;">Express.js</div>
+            <div class="framework-type">Node.js</div>
+            <span class="badge badge-accent" style="margin-top: 0.5rem;">Minimal</span>
+          </div>
+          <div class="framework-card">
+            <div class="framework-icon">🐍</div>
+            <div class="framework-name" style="color: #092e20;">Django</div>
+            <div class="framework-type">Python</div>
+            <span class="badge badge-accent" style="margin-top: 0.5rem;">Batteries Included</span>
+          </div>
+          <div class="framework-card">
+            <div class="framework-icon">💎</div>
+            <div class="framework-name" style="color: #cc0000;">Rails</div>
+            <div class="framework-type">Ruby</div>
+            <span class="badge badge-danger" style="margin-top: 0.5rem;">Convention</span>
+          </div>
+          <div class="framework-card">
+            <div class="framework-icon">🌶️</div>
+            <div class="framework-name" style="color: #009688;">FastAPI</div>
+            <div class="framework-type">Python</div>
+            <span class="badge badge-primary" style="margin-top: 0.5rem;">Modern API</span>
+          </div>
+        </div>
+
+        <div class="tip" style="margin-top: 2rem;">
+          <div class="tip-title">💡 How to Choose?</div>
+          <div class="tip-content">
+            <strong>React/Next.js:</strong> Large ecosystem, most jobs<br>
+            <strong>Vue/Nuxt:</strong> Gentler learning curve<br>
+            <strong>Angular:</strong> Enterprise, TypeScript-first<br>
+            <strong>Svelte:</strong> Simplest syntax, smallest bundle
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Client-Server Architecture -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-num">8</div>
+        <div class="section-title">Client-Server Architecture</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">Understanding the Model</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The <strong>Client-Server Architecture</strong> is the foundation of the web. 
+          It's a model where <em>clients</em> request services and <em>servers</em> provide them.
+        </p>
+
+        <div class="flow-diagram" style="padding: 2.5rem;">
+          <div style="text-align: center;">
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+              <div class="flow-box client" style="min-width: 120px;">
+                <div style="font-size: 2rem;">💻</div>
+                <div style="font-weight: 600; color: var(--accent);">Client 1</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">Browser</div>
+              </div>
+              <div class="flow-box client" style="min-width: 120px;">
+                <div style="font-size: 2rem;">📱</div>
+                <div style="font-weight: 600; color: var(--accent);">Client 2</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">Mobile App</div>
+              </div>
+              <div class="flow-box client" style="min-width: 120px;">
+                <div style="font-size: 2rem;">🖥️</div>
+                <div style="font-weight: 600; color: var(--accent);">Client 3</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">Desktop App</div>
+              </div>
+            </div>
+            
+            <div style="color: var(--primary); font-size: 1.5rem; margin: 1rem 0;">⬇️ Request  ⬆️ Response</div>
+            <div style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">HTTP / HTTPS / WebSocket</div>
+            
+            <div class="flow-box server" style="min-width: 200px; margin: 0 auto;">
+              <div style="font-size: 2.5rem;">🖥️</div>
+              <div style="font-weight: 600; color: var(--secondary); font-size: 1.25rem;">SERVER</div>
+              <div style="font-size: 0.85rem; color: var(--muted);">Processes requests, returns data</div>
+            </div>
+            
+            <div style="color: var(--warning); font-size: 1.5rem; margin: 1rem 0;">⬇️⬆️</div>
+            
+            <div class="flow-box database" style="min-width: 200px; margin: 0 auto;">
+              <div style="font-size: 2rem;">💾</div>
+              <div style="font-weight: 600; color: var(--warning);">DATABASE</div>
+              <div style="font-size: 0.85rem; color: var(--muted);">Persistent storage</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h3 style="color: var(--accent); margin-bottom: 1rem;">👤 Client</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              The <strong>requester</strong>. Any device/software that initiates communication.
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Web browsers (Chrome, Firefox)</li>
+              <li>Mobile apps</li>
+              <li>Desktop applications</li>
+              <li>IoT devices</li>
+              <li>Other servers (API calls)</li>
+            </ul>
+            <h4 style="margin: 1rem 0 0.5rem;">Responsibilities:</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Send requests</li>
+              <li>Render UI</li>
+              <li>Handle user input</li>
+              <li>Display responses</li>
+            </ul>
+          </div>
+
+          <div class="card card-secondary">
+            <h3 style="color: var(--secondary); margin-bottom: 1rem;">🖥️ Server</h3>
+            <p style="color: var(--muted); margin-bottom: 1rem;">
+              The <strong>responder</strong>. Waits for requests and provides resources/services.
+            </p>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Web servers (Nginx, Apache)</li>
+              <li>Application servers (Node, Django)</li>
+              <li>Database servers</li>
+              <li>File servers</li>
+              <li>API servers</li>
+            </ul>
+            <h4 style="margin: 1rem 0 0.5rem;">Responsibilities:</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Listen for requests</li>
+              <li>Process business logic</li>
+              <li>Query databases</li>
+              <li>Return responses</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">🔄 HTTP Request/Response Cycle</h3>
+        <div class="code-block">
+          <div class="code-header">HTTP Request</div>
+          <div class="code-body"><pre><span class="kw">GET</span> /api/users/123 <span class="str">HTTP/1.1</span>
+<span class="attr">Host:</span> api.example.com
+<span class="attr">Authorization:</span> Bearer eyJhbGciOiJIUzI1NiIs...
+<span class="attr">Content-Type:</span> application/json
+<span class="attr">Accept:</span> application/json</pre></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">HTTP Response</div>
+          <div class="code-body"><pre><span class="str">HTTP/1.1</span> <span class="num">200</span> <span class="kw">OK</span>
+<span class="attr">Content-Type:</span> application/json
+<span class="attr">Cache-Control:</span> max-age=3600
+
+{
+  <span class="attr">"id"</span>: <span class="num">123</span>,
+  <span class="attr">"name"</span>: <span class="str">"John Doe"</span>,
+  <span class="attr">"email"</span>: <span class="str">"john@example.com"</span>,
+  <span class="attr">"role"</span>: <span class="str">"admin"</span>
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">🏗️ Architecture Patterns</h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Monolithic</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">
+              Single application handles everything. Simple but hard to scale.
+            </p>
+            <span class="badge badge-primary">Traditional</span>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary); margin-bottom: 0.5rem;">Microservices</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">
+              Multiple small services communicate via APIs. Scalable but complex.
+            </p>
+            <span class="badge badge-secondary">Modern</span>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--accent); margin-bottom: 0.5rem;">Serverless</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">
+              Cloud functions run on-demand. No server management.
+            </p>
+            <span class="badge badge-accent">Cloud-Native</span>
+          </div>
+        </div>
+
+        <div class="tip" style="margin-top: 2rem;">
+          <div class="tip-title">🎓 Summary</div>
+          <div class="tip-content">
+            <strong>Client:</strong> Requests resources (your browser)<br>
+            <strong>Server:</strong> Provides resources (web server + API)<br>
+            <strong>Protocol:</strong> Rules for communication (HTTP/HTTPS)<br>
+            <strong>API:</strong> Interface between client and server (REST/GraphQL)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="section" id="s9">
+      <div class="section-header" onclick="toggleSection('s9')">
+        <div class="section-num">✓</div>
+        <div class="section-title">Summary & Key Takeaways</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <div class="grid-2">
+          <div class="card card-highlight">
+            <h3 style="color: var(--primary); margin-bottom: 1rem;">📚 What You Learned</h3>
+            <ul style="color: var(--muted); padding-left: 1.25rem;">
+              <li><strong>Websites vs Web Apps:</strong> Information vs Interaction</li>
+              <li><strong>Web History:</strong> From static HTML to modern SPAs</li>
+              <li><strong>Static vs Dynamic:</strong> Fixed content vs generated content</li>
+              <li><strong>Applications:</strong> Purpose-built software for tasks</li>
+              <li><strong>App Types:</strong> Desktop, Mobile, Web, PWA</li>
+              <li><strong>Web Structure:</strong> Frontend → Backend → Database</li>
+              <li><strong>Frameworks:</strong> React, Vue, Angular, Next.js</li>
+              <li><strong>Client-Server:</strong> Request-Response model</li>
+            </ul>
+          </div>
+          
+          <div class="card card-accent">
+            <h3 style="color: var(--accent); margin-bottom: 1rem;">🚀 Next Steps</h3>
+            <ul style="color: var(--muted); padding-left: 1.25rem;">
+              <li>Learn HTML, CSS, JavaScript basics</li>
+              <li>Understand the DOM</li>
+              <li>Pick a frontend framework (React recommended)</li>
+              <li>Learn a backend language (Node.js is easiest with JS)</li>
+              <li>Study databases (SQL and NoSQL)</li>
+              <li>Practice building full-stack projects</li>
+              <li>Learn about deployment and DevOps</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(167,139,250,0.1)); border-radius: 16px;">
+          <h3 style="margin-bottom: 0.5rem;">🎉 You Now Understand Web Fundamentals!</h3>
+          <p style="color: var(--muted);">The foundation for becoming a web developer</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle sections
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    // Static vs Dynamic Demo
+    let visitCount = 1;
+    
+    function showDemo(type) {
+      document.querySelectorAll('.demo-tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('static-demo').style.display = type === 'static' ? 'block' : 'none';
+      document.getElementById('dynamic-demo').style.display = type === 'dynamic' ? 'block' : 'none';
+      
+      if (type === 'dynamic') {
+        visitCount++;
+        updateDynamicContent();
+      }
+    }
+
+    function updateDynamicContent() {
+      const now = new Date();
+      document.getElementById('current-date').textContent = now.toLocaleDateString();
+      document.getElementById('current-time').textContent = now.toLocaleTimeString();
+      document.getElementById('visit-count').textContent = visitCount;
+    }
+
+    function updateName() {
+      const name = document.getElementById('name-input').value || 'Guest';
+      document.getElementById('user-name').textContent = name;
+    }
+
+    // Update time every second when dynamic demo is visible
+    setInterval(() => {
+      if (document.getElementById('dynamic-demo').style.display !== 'none') {
+        document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
+      }
+    }, 1000);
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

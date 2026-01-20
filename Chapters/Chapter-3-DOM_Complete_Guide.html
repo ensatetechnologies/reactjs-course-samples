@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM - Complete Visual Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(34,211,238,0.1) 0%, transparent 50%); animation: pulse 4s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badge { display: inline-block; background: var(--primary); color: var(--bg); padding: 0.35rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; position: relative; }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-num { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; font-size: 1rem; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; }
+    
+    /* DOM Tree Visualization */
+    .dom-tree { background: var(--surface2); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .tree-container { display: flex; flex-direction: column; align-items: center; }
+    .tree-node { background: linear-gradient(135deg, var(--surface), #1a2234); border: 2px solid var(--border); border-radius: 12px; padding: 0.75rem 1.25rem; margin: 0.5rem; text-align: center; position: relative; transition: all 0.3s; cursor: pointer; }
+    .tree-node:hover { border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 20px rgba(34,211,238,0.3); }
+    .tree-node.highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(34,211,238,0.1)); }
+    .tree-node .tag-name { color: var(--primary); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    .tree-node .node-type { color: var(--muted); font-size: 0.75rem; margin-top: 0.25rem; }
+    .tree-level { display: flex; justify-content: center; flex-wrap: wrap; position: relative; }
+    .tree-connector { width: 2px; height: 30px; background: var(--border); margin: 0 auto; }
+    .tree-branch { display: flex; flex-direction: column; align-items: center; }
+    .horizontal-line { height: 2px; background: var(--border); position: absolute; top: 0; }
+    
+    /* Interactive Demo */
+    .demo-area { background: var(--surface2); border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; min-height: 150px; }
+    .demo-area.active { border-color: var(--primary); border-style: solid; }
+    
+    .btn { padding: 0.6rem 1.25rem; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: var(--bg); }
+    .btn-primary:hover { background: #06b6d4; transform: translateY(-2px); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--primary); }
+    .btn-accent { background: var(--accent); color: var(--bg); }
+    .btn-warning { background: var(--warning); color: var(--bg); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0; }
+    
+    .input { padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); font-family: inherit; font-size: 0.9rem; width: 100%; }
+    .input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(34,211,238,0.2); }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin: 0.75rem 0; }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    .comparison-table tr:hover td { background: var(--surface2); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-element { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-text { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-attribute { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-comment { background: rgba(148,163,184,0.2); color: var(--muted); }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; min-width: 140px; }
+    .flow-box.highlight { border-color: var(--primary); }
+    .flow-arrow { color: var(--primary); font-size: 2rem; }
+    
+    .console-output { background: #000; border-radius: 10px; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; margin-top: 1rem; }
+    .console-line { padding: 0.25rem 0; }
+    .console-line::before { content: '> '; color: var(--accent); }
+    
+    /* Animation */
+    @keyframes highlight { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,211,238,0); } 50% { box-shadow: 0 0 20px 5px rgba(34,211,238,0.4); } }
+    .animate-highlight { animation: highlight 1s ease-in-out; }
+    
+    .method-card { background: linear-gradient(135deg, var(--surface), var(--surface2)); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin: 0.5rem 0; }
+    .method-name { color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+    .method-desc { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badge">📚 Complete Guide</div>
+      <h1>Understanding the DOM</h1>
+      <p>Document Object Model - The Bridge Between HTML and JavaScript</p>
+    </div>
+
+    <!-- Section 1: What is DOM -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-num">1</div>
+        <div class="section-title">What is the DOM?</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The <strong style="color: var(--primary);">Document Object Model (DOM)</strong> is a programming interface for web documents. 
+          It represents the page as a <strong>tree of objects</strong> that JavaScript can interact with.
+        </p>
+
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📄</div>
+            <div style="font-weight: 600;">HTML Code</div>
+            <div style="color: var(--muted); font-size: 0.85rem;">Static text file</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌳</div>
+            <div style="font-weight: 600; color: var(--primary);">DOM</div>
+            <div style="color: var(--muted); font-size: 0.85rem;">Tree of objects</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🖥️</div>
+            <div style="font-weight: 600;">Rendered Page</div>
+            <div style="color: var(--muted); font-size: 0.85rem;">What you see</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="color: var(--primary); margin-bottom: 1rem;">🔑 Key Concepts</h3>
+            <ul style="color: var(--muted); padding-left: 1.5rem;">
+              <li><strong style="color: var(--text);">Document</strong> - The entire HTML page</li>
+              <li><strong style="color: var(--text);">Object</strong> - Each element becomes an object</li>
+              <li><strong style="color: var(--text);">Model</strong> - Structured representation (tree)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--accent); margin-bottom: 1rem;">✨ What Can You Do?</h3>
+            <ul style="color: var(--muted); padding-left: 1.5rem;">
+              <li>Change HTML content & attributes</li>
+              <li>Modify CSS styles</li>
+              <li>Add/remove elements</li>
+              <li>React to user events</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Think of it like this...</div>
+          <div class="tip-content">
+            If HTML is a <strong>blueprint</strong> of a house, the DOM is the <strong>actual house</strong> built from that blueprint. 
+            JavaScript is like a contractor who can modify the house after it's built!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: DOM Tree Structure -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-num">2</div>
+        <div class="section-title">DOM Tree Structure - Visual Breakdown</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="margin-bottom: 1.5rem;">Every HTML document becomes a tree structure. Let's visualize this with a simple example:</p>
+
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; index.html</div>
+            <div class="code-body"><pre><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+  <span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;title&gt;</span>My Page<span class="tag">&lt;/title&gt;</span>
+  <span class="tag">&lt;/head&gt;</span>
+  <span class="tag">&lt;body&gt;</span>
+    <span class="tag">&lt;h1</span> <span class="attr">id</span>=<span class="val">"title"</span><span class="tag">&gt;</span>Hello<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"intro"</span><span class="tag">&gt;</span>
+      Welcome to <span class="tag">&lt;strong&gt;</span>DOM<span class="tag">&lt;/strong&gt;</span>
+    <span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></pre></div>
+          </div>
+
+          <!-- DOM Tree Visualization -->
+          <div class="dom-tree">
+            <div class="tree-container">
+              <div class="tree-node" style="border-color: var(--warning);">
+                <div class="tag-name" style="color: var(--warning);">document</div>
+                <div class="node-type">Document Node</div>
+              </div>
+              <div class="tree-connector"></div>
+              <div class="tree-node">
+                <div class="tag-name">&lt;html&gt;</div>
+                <div class="node-type">Root Element</div>
+              </div>
+              <div class="tree-connector"></div>
+              <div class="tree-level">
+                <div class="tree-branch">
+                  <div class="tree-node">
+                    <div class="tag-name">&lt;head&gt;</div>
+                  </div>
+                  <div class="tree-connector"></div>
+                  <div class="tree-node" style="font-size: 0.9rem;">
+                    <div class="tag-name">&lt;title&gt;</div>
+                    <div class="node-type">"My Page"</div>
+                  </div>
+                </div>
+                <div style="width: 40px;"></div>
+                <div class="tree-branch">
+                  <div class="tree-node">
+                    <div class="tag-name">&lt;body&gt;</div>
+                  </div>
+                  <div class="tree-connector"></div>
+                  <div class="tree-level">
+                    <div class="tree-branch">
+                      <div class="tree-node">
+                        <div class="tag-name">&lt;h1&gt;</div>
+                        <div class="node-type">"Hello"</div>
+                      </div>
+                    </div>
+                    <div class="tree-branch">
+                      <div class="tree-node">
+                        <div class="tag-name">&lt;p&gt;</div>
+                      </div>
+                      <div class="tree-connector"></div>
+                      <div class="tree-level">
+                        <div class="tree-node" style="font-size: 0.85rem;">
+                          <div style="color: var(--accent);">"Welcome to "</div>
+                          <div class="node-type">Text Node</div>
+                        </div>
+                        <div class="tree-node" style="font-size: 0.85rem;">
+                          <div class="tag-name">&lt;strong&gt;</div>
+                          <div class="node-type">"DOM"</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📦 Node Types</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <span class="badge badge-element">Element Node (tags)</span>
+          <span class="badge badge-text">Text Node (content)</span>
+          <span class="badge badge-attribute">Attribute Node (id, class)</span>
+          <span class="badge badge-comment">Comment Node</span>
+        </div>
+
+        <table class="comparison-table" style="margin-top: 1.5rem;">
+          <thead>
+            <tr>
+              <th>Node Type</th>
+              <th>Description</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-element">Element</span></td>
+              <td>HTML tags that become objects</td>
+              <td><code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-text">Text</span></td>
+              <td>Text content inside elements</td>
+              <td><code>"Hello World"</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-attribute">Attribute</span></td>
+              <td>Element attributes</td>
+              <td><code>id="main"</code>, <code>class="btn"</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-comment">Comment</span></td>
+              <td>HTML comments</td>
+              <td><code>&lt;!-- Comment --&gt;</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 3: Selecting Elements -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-num">3</div>
+        <div class="section-title">Selecting DOM Elements</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="margin-bottom: 1.5rem;">Before you can manipulate elements, you need to <strong>select</strong> them. Here are the main methods:</p>
+
+        <div class="grid-2">
+          <div class="method-card">
+            <div class="method-name">getElementById()</div>
+            <div class="method-desc">Select ONE element by its ID (fastest)</div>
+            <div class="code-block" style="margin-top: 0.75rem;">
+              <div class="code-body"><pre><span class="kw">const</span> title = document.<span class="fn">getElementById</span>(<span class="str">'title'</span>)
+<span class="cmt">// Returns: single element or null</span></pre></div>
+            </div>
+          </div>
+
+          <div class="method-card">
+            <div class="method-name">getElementsByClassName()</div>
+            <div class="method-desc">Select ALL elements with a class</div>
+            <div class="code-block" style="margin-top: 0.75rem;">
+              <div class="code-body"><pre><span class="kw">const</span> buttons = document.<span class="fn">getElementsByClassName</span>(<span class="str">'btn'</span>)
+<span class="cmt">// Returns: HTMLCollection (array-like)</span></pre></div>
+            </div>
+          </div>
+
+          <div class="method-card">
+            <div class="method-name">querySelector()</div>
+            <div class="method-desc">Select FIRST element matching CSS selector</div>
+            <div class="code-block" style="margin-top: 0.75rem;">
+              <div class="code-body"><pre><span class="kw">const</span> firstCard = document.<span class="fn">querySelector</span>(<span class="str">'.card'</span>)
+<span class="kw">const</span> header = document.<span class="fn">querySelector</span>(<span class="str">'header nav'</span>)
+<span class="cmt">// Returns: single element or null</span></pre></div>
+            </div>
+          </div>
+
+          <div class="method-card">
+            <div class="method-name">querySelectorAll()</div>
+            <div class="method-desc">Select ALL elements matching CSS selector</div>
+            <div class="code-block" style="margin-top: 0.75rem;">
+              <div class="code-body"><pre><span class="kw">const</span> allCards = document.<span class="fn">querySelectorAll</span>(<span class="str">'.card'</span>)
+<span class="kw">const</span> links = document.<span class="fn">querySelectorAll</span>(<span class="str">'a[href^="http"]'</span>)
+<span class="cmt">// Returns: NodeList (can use forEach)</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">🎯 Interactive Demo: Try Selecting Elements</h3>
+        
+        <div class="demo-area" id="selection-demo">
+          <div id="demo-box-1" class="card" style="background: var(--surface);">
+            <span class="badge badge-element">id="demo-box-1"</span>
+            <p>I'm the first box</p>
+          </div>
+          <div class="demo-item card" style="background: var(--surface);">
+            <span class="badge badge-attribute">class="demo-item"</span>
+            <p>I'm a demo item</p>
+          </div>
+          <div class="demo-item card" style="background: var(--surface);">
+            <span class="badge badge-attribute">class="demo-item"</span>
+            <p>I'm another demo item</p>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="selectById()">getElementById('demo-box-1')</button>
+          <button class="btn btn-secondary" onclick="selectByClass()">querySelectorAll('.demo-item')</button>
+          <button class="btn btn-accent" onclick="resetSelection()">Reset</button>
+        </div>
+
+        <div class="console-output" id="selection-output">
+          <div class="console-line" style="color: var(--muted);">Click a button to see the result...</div>
+        </div>
+
+        <div class="tip" style="margin-top: 1.5rem;">
+          <div class="tip-title">💡 Best Practice</div>
+          <div class="tip-content">
+            Use <code>querySelector</code> and <code>querySelectorAll</code> for most cases - they're flexible and support any CSS selector!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Manipulating Elements -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-num">4</div>
+        <div class="section-title">Manipulating DOM Elements</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="margin-bottom: 1.5rem;">Once you've selected an element, you can modify it in many ways:</p>
+
+        <h3 style="color: var(--primary); margin-bottom: 1rem;">📝 Changing Content</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; content.js</div>
+          <div class="code-body"><pre><span class="kw">const</span> element = document.<span class="fn">getElementById</span>(<span class="str">'myElement'</span>)
+
+<span class="cmt">// Change text content (safe, no HTML parsing)</span>
+element.textContent = <span class="str">'New text content'</span>
+
+<span class="cmt">// Change HTML content (can include tags)</span>
+element.innerHTML = <span class="str">'&lt;strong&gt;Bold&lt;/strong&gt; text'</span>
+
+<span class="cmt">// Get/Set attributes</span>
+element.<span class="fn">getAttribute</span>(<span class="str">'href'</span>)
+element.<span class="fn">setAttribute</span>(<span class="str">'href'</span>, <span class="str">'https://example.com'</span>)
+
+<span class="cmt">// Shortcut for common attributes</span>
+element.id = <span class="str">'newId'</span>
+element.className = <span class="str">'new-class'</span>
+element.src = <span class="str">'image.png'</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🎨 Changing Styles</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; styles.js</div>
+          <div class="code-body"><pre><span class="kw">const</span> box = document.<span class="fn">querySelector</span>(<span class="str">'.box'</span>)
+
+<span class="cmt">// Direct style manipulation (inline styles)</span>
+box.style.backgroundColor = <span class="str">'#22d3ee'</span>
+box.style.padding = <span class="str">'20px'</span>
+box.style.borderRadius = <span class="str">'10px'</span>  <span class="cmt">// Note: camelCase!</span>
+
+<span class="cmt">// Better: Toggle CSS classes</span>
+box.classList.<span class="fn">add</span>(<span class="str">'active'</span>)
+box.classList.<span class="fn">remove</span>(<span class="str">'hidden'</span>)
+box.classList.<span class="fn">toggle</span>(<span class="str">'dark-mode'</span>)
+box.classList.<span class="fn">contains</span>(<span class="str">'active'</span>)  <span class="cmt">// true/false</span>
+
+<span class="cmt">// Replace class</span>
+box.classList.<span class="fn">replace</span>(<span class="str">'old-class'</span>, <span class="str">'new-class'</span>)</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🎮 Interactive Demo: Live Manipulation</h3>
+        
+        <div class="demo-area">
+          <div id="manipulate-box" style="background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; transition: all 0.3s;">
+            <h3 id="manipulate-title">Click buttons to change me!</h3>
+            <p id="manipulate-text" style="color: var(--muted);">I'm a manipulatable element</p>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="changeText()">Change Text</button>
+          <button class="btn btn-secondary" onclick="changeColor()">Change Color</button>
+          <button class="btn btn-accent" onclick="toggleClass()">Toggle Border</button>
+          <button class="btn btn-warning" onclick="addHTML()">Add HTML</button>
+          <button class="btn btn-danger" onclick="resetDemo()">Reset</button>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Security Warning</div>
+          <div class="warning-content">
+            Be careful with <code>innerHTML</code> when using user input - it can lead to XSS attacks! 
+            Use <code>textContent</code> for plain text or sanitize HTML input.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Creating & Removing Elements -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-num">5</div>
+        <div class="section-title">Creating & Removing Elements</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="margin-bottom: 1.5rem;">You can dynamically add or remove elements from the DOM:</p>
+
+        <div class="grid-2">
+          <div>
+            <h3 style="color: var(--accent); margin-bottom: 1rem;">➕ Creating Elements</h3>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// 1. Create the element</span>
+<span class="kw">const</span> newDiv = document.<span class="fn">createElement</span>(<span class="str">'div'</span>)
+
+<span class="cmt">// 2. Add content and attributes</span>
+newDiv.textContent = <span class="str">'I am new!'</span>
+newDiv.className = <span class="str">'card new-card'</span>
+newDiv.id = <span class="str">'card-1'</span>
+
+<span class="cmt">// 3. Add to the DOM</span>
+document.body.<span class="fn">appendChild</span>(newDiv)
+
+<span class="cmt">// Or insert at specific position</span>
+parent.<span class="fn">insertBefore</span>(newDiv, referenceElement)
+
+<span class="cmt">// Modern methods</span>
+parent.<span class="fn">append</span>(newDiv)        <span class="cmt">// At end</span>
+parent.<span class="fn">prepend</span>(newDiv)       <span class="cmt">// At start</span>
+element.<span class="fn">before</span>(newDiv)       <span class="cmt">// Before element</span>
+element.<span class="fn">after</span>(newDiv)        <span class="cmt">// After element</span></pre></div>
+            </div>
+          </div>
+
+          <div>
+            <h3 style="color: var(--danger); margin-bottom: 1rem;">➖ Removing Elements</h3>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Modern way (recommended)</span>
+element.<span class="fn">remove</span>()
+
+<span class="cmt">// Old way (still works)</span>
+parent.<span class="fn">removeChild</span>(element)
+
+<span class="cmt">// Remove all children</span>
+parent.innerHTML = <span class="str">''</span>
+
+<span class="cmt">// Or more safely</span>
+<span class="kw">while</span> (parent.firstChild) {
+  parent.<span class="fn">removeChild</span>(parent.firstChild)
+}
+
+<span class="cmt">// Replace an element</span>
+oldElement.<span class="fn">replaceWith</span>(newElement)</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📋 Interactive Demo: Todo List</h3>
+        
+        <div class="demo-area">
+          <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+            <input type="text" id="todo-input" class="input" placeholder="Enter a task..." style="flex: 1;" onkeypress="if(event.key==='Enter')addTodo()">
+            <button class="btn btn-primary" onclick="addTodo()">Add Task</button>
+          </div>
+          <ul id="todo-list" style="list-style: none;">
+            <li class="card" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Learn DOM basics</span>
+              <button class="btn btn-danger" onclick="this.parentElement.remove()" style="padding: 0.4rem 0.8rem;">×</button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; todo.js</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">addTodo</span>() {
+  <span class="kw">const</span> input = document.<span class="fn">getElementById</span>(<span class="str">'todo-input'</span>)
+  <span class="kw">const</span> list = document.<span class="fn">getElementById</span>(<span class="str">'todo-list'</span>)
+  
+  <span class="kw">if</span> (!input.value.trim()) <span class="kw">return</span>
+  
+  <span class="cmt">// Create new list item</span>
+  <span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">'li'</span>)
+  li.className = <span class="str">'card'</span>
+  li.innerHTML = <span class="str">`
+    &lt;span&gt;${input.value}&lt;/span&gt;
+    &lt;button onclick="this.parentElement.remove()"&gt;×&lt;/button&gt;
+  `</span>
+  
+  <span class="cmt">// Add to list</span>
+  list.<span class="fn">appendChild</span>(li)
+  
+  <span class="cmt">// Clear input</span>
+  input.value = <span class="str">''</span>
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: DOM Events -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-num">6</div>
+        <div class="section-title">DOM Events - Making Pages Interactive</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="margin-bottom: 1.5rem;">Events let your page respond to user actions. Here's how they flow:</p>
+
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">👆</div>
+            <div style="font-weight: 600;">User Action</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">click, type, scroll</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">📡</div>
+            <div style="font-weight: 600; color: var(--primary);">Event Fired</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">browser creates event</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">⚡</div>
+            <div style="font-weight: 600;">Handler Runs</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">your function executes</div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">🎧 Adding Event Listeners</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; events.js</div>
+          <div class="code-body"><pre><span class="kw">const</span> button = document.<span class="fn">querySelector</span>(<span class="str">'#myButton'</span>)
+
+<span class="cmt">// Method 1: addEventListener (recommended)</span>
+button.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, <span class="kw">function</span>(event) {
+  console.<span class="fn">log</span>(<span class="str">'Button clicked!'</span>)
+  console.<span class="fn">log</span>(event.target)  <span class="cmt">// The clicked element</span>
+})
+
+<span class="cmt">// Method 2: Arrow function</span>
+button.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) => {
+  console.<span class="fn">log</span>(<span class="str">'Clicked!'</span>, e)
+})
+
+<span class="cmt">// Method 3: Named function (can be removed later)</span>
+<span class="kw">function</span> <span class="fn">handleClick</span>(e) {
+  console.<span class="fn">log</span>(<span class="str">'Handling click'</span>)
+}
+button.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, handleClick)
+button.<span class="fn">removeEventListener</span>(<span class="str">'click'</span>, handleClick)
+
+<span class="cmt">// Common events</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, fn)      <span class="cmt">// Mouse click</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'dblclick'</span>, fn)   <span class="cmt">// Double click</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'mouseenter'</span>, fn) <span class="cmt">// Mouse enters</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'mouseleave'</span>, fn) <span class="cmt">// Mouse leaves</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'keydown'</span>, fn)    <span class="cmt">// Key pressed</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'keyup'</span>, fn)      <span class="cmt">// Key released</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'input'</span>, fn)      <span class="cmt">// Input value changes</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>, fn)     <span class="cmt">// Form submitted</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'focus'</span>, fn)      <span class="cmt">// Element focused</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'blur'</span>, fn)       <span class="cmt">// Element loses focus</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🎮 Event Playground</h3>
+        
+        <div class="demo-area" style="text-align: center;">
+          <div id="event-box" style="background: var(--surface); border: 2px solid var(--border); border-radius: 16px; padding: 3rem; transition: all 0.3s; cursor: pointer;">
+            <h3 id="event-title">Hover, Click, or Type!</h3>
+            <p id="event-info" style="color: var(--muted); margin-top: 0.5rem;">Event info will appear here</p>
+          </div>
+          <input type="text" id="event-input" class="input" placeholder="Type something..." style="margin-top: 1rem; max-width: 300px;">
+        </div>
+
+        <div class="console-output" id="event-log">
+          <div class="console-line" style="color: var(--muted);">Events will be logged here...</div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">🫧 Event Bubbling & Capturing</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">Events travel through the DOM in two phases:</p>
+        
+        <div class="flow-diagram" style="flex-direction: column; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <span style="color: var(--primary); font-weight: 600;">Capturing ↓</span>
+            <div style="display: flex; gap: 0.5rem;">
+              <div class="flow-box" style="padding: 0.5rem 1rem; min-width: auto;">window</div>
+              <span>→</span>
+              <div class="flow-box" style="padding: 0.5rem 1rem; min-width: auto;">document</div>
+              <span>→</span>
+              <div class="flow-box" style="padding: 0.5rem 1rem; min-width: auto;">html</div>
+              <span>→</span>
+              <div class="flow-box" style="padding: 0.5rem 1rem; min-width: auto;">body</div>
+              <span>→</span>
+              <div class="flow-box highlight" style="padding: 0.5rem 1rem; min-width: auto;">target</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <span style="color: var(--accent); font-weight: 600;">Bubbling ↑</span>
+            <div style="display: flex; gap: 0.5rem;">
+              <div class="flow-box highlight" style="padding: 0.5rem 1rem; min-width: auto;">target</div>
+              <span>→</span>
+              <div class="flow-box" style="padding: 0.5rem 1rem; min-width: auto;">body</div>
+              <span>→</span>
+              <div class="flow-box" style="padding: 0.5rem 1rem; min-width: auto;">html</div>
+              <span>→</span>
+              <div class="flow-box" style="padding: 0.5rem 1rem; min-width: auto;">document</div>
+              <span>→</span>
+              <div class="flow-box" style="padding: 0.5rem 1rem; min-width: auto;">window</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block" style="margin-top: 1.5rem;">
+          <div class="code-body"><pre><span class="cmt">// Stop event from bubbling up</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) => {
+  e.<span class="fn">stopPropagation</span>()  <span class="cmt">// Don't bubble to parent</span>
+})
+
+<span class="cmt">// Prevent default browser behavior</span>
+form.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>, (e) => {
+  e.<span class="fn">preventDefault</span>()  <span class="cmt">// Don't submit form normally</span>
+  <span class="cmt">// Handle with JavaScript instead</span>
+})</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Traversing the DOM -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-num">7</div>
+        <div class="section-title">Traversing the DOM Tree</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <p style="margin-bottom: 1.5rem;">Navigate between related elements in the DOM tree:</p>
+
+        <div class="dom-tree" style="text-align: center;">
+          <div style="margin-bottom: 1rem; color: var(--muted);">Click any node to see its relationships:</div>
+          <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+            <div>
+              <div class="tree-node" style="border-color: var(--secondary);">
+                <div class="tag-name" style="color: var(--secondary);">&lt;parent&gt;</div>
+                <div class="node-type">.parentElement</div>
+              </div>
+              <div class="tree-connector"></div>
+              <div style="display: flex; gap: 1rem;">
+                <div class="tree-node">
+                  <div class="tag-name">&lt;sibling&gt;</div>
+                  <div class="node-type">.previousElementSibling</div>
+                </div>
+                <div class="tree-node highlight">
+                  <div class="tag-name" style="color: var(--primary);">&lt;current&gt;</div>
+                  <div class="node-type">selected element</div>
+                </div>
+                <div class="tree-node">
+                  <div class="tag-name">&lt;sibling&gt;</div>
+                  <div class="node-type">.nextElementSibling</div>
+                </div>
+              </div>
+              <div class="tree-connector"></div>
+              <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                <div class="tree-node" style="border-color: var(--accent);">
+                  <div class="tag-name" style="color: var(--accent);">&lt;child&gt;</div>
+                  <div class="node-type">.firstElementChild</div>
+                </div>
+                <div class="tree-node" style="border-color: var(--accent);">
+                  <div class="tag-name" style="color: var(--accent);">&lt;child&gt;</div>
+                  <div class="node-type">.lastElementChild</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; traversal.js</div>
+          <div class="code-body"><pre><span class="kw">const</span> element = document.<span class="fn">querySelector</span>(<span class="str">'.current'</span>)
+
+<span class="cmt">// Parent</span>
+element.parentElement          <span class="cmt">// Direct parent</span>
+element.<span class="fn">closest</span>(<span class="str">'.container'</span>)   <span class="cmt">// Nearest ancestor matching selector</span>
+
+<span class="cmt">// Children</span>
+element.children               <span class="cmt">// All child elements (HTMLCollection)</span>
+element.firstElementChild      <span class="cmt">// First child element</span>
+element.lastElementChild       <span class="cmt">// Last child element</span>
+element.childElementCount      <span class="cmt">// Number of children</span>
+
+<span class="cmt">// Siblings</span>
+element.previousElementSibling <span class="cmt">// Previous sibling element</span>
+element.nextElementSibling     <span class="cmt">// Next sibling element</span>
+
+<span class="cmt">// Example: Highlight all siblings</span>
+<span class="kw">let</span> sibling = element.parentElement.firstElementChild
+<span class="kw">while</span> (sibling) {
+  <span class="kw">if</span> (sibling !== element) {
+    sibling.classList.<span class="fn">add</span>(<span class="str">'highlight'</span>)
+  }
+  sibling = sibling.nextElementSibling
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Element vs Node Properties</div>
+          <div class="tip-content">
+            Use <code>Element</code> versions (e.g., <code>parentElement</code>, <code>children</code>) to skip text nodes and comments. 
+            Node versions (<code>parentNode</code>, <code>childNodes</code>) include all node types.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Summary -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-num">✓</div>
+        <div class="section-title">Quick Reference & Summary</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h3 style="color: var(--primary); margin-bottom: 1.5rem;">🎯 DOM Methods Cheat Sheet</h3>
+        
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Method</th>
+              <th>Returns</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Select by ID</td>
+              <td><code>getElementById('id')</code></td>
+              <td>Element or null</td>
+            </tr>
+            <tr>
+              <td>Select first match</td>
+              <td><code>querySelector('.class')</code></td>
+              <td>Element or null</td>
+            </tr>
+            <tr>
+              <td>Select all matches</td>
+              <td><code>querySelectorAll('.class')</code></td>
+              <td>NodeList</td>
+            </tr>
+            <tr>
+              <td>Create element</td>
+              <td><code>createElement('div')</code></td>
+              <td>Element</td>
+            </tr>
+            <tr>
+              <td>Add child</td>
+              <td><code>parent.appendChild(el)</code></td>
+              <td>Added element</td>
+            </tr>
+            <tr>
+              <td>Remove element</td>
+              <td><code>element.remove()</code></td>
+              <td>undefined</td>
+            </tr>
+            <tr>
+              <td>Add event</td>
+              <td><code>addEventListener('click', fn)</code></td>
+              <td>undefined</td>
+            </tr>
+            <tr>
+              <td>Change content</td>
+              <td><code>element.textContent = 'text'</code></td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>Change style</td>
+              <td><code>element.style.color = 'red'</code></td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>Toggle class</td>
+              <td><code>element.classList.toggle('active')</code></td>
+              <td>boolean</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip" style="margin-top: 2rem;">
+          <div class="tip-title">🚀 You've Learned</div>
+          <div class="tip-content">
+            <strong>1.</strong> What the DOM is and how it represents HTML as a tree<br>
+            <strong>2.</strong> How to select elements with various methods<br>
+            <strong>3.</strong> How to manipulate content, styles, and attributes<br>
+            <strong>4.</strong> How to create and remove elements dynamically<br>
+            <strong>5.</strong> How to handle events and user interactions<br>
+            <strong>6.</strong> How to traverse the DOM tree
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(167,139,250,0.1)); border-radius: 16px;">
+          <h3 style="margin-bottom: 0.5rem;">🎉 Congratulations!</h3>
+          <p style="color: var(--muted);">You now understand how JavaScript interacts with web pages through the DOM!</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Toggle sections
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    // Section 3: Selection Demo
+    function selectById() {
+      resetSelection();
+      const element = document.getElementById('demo-box-1');
+      if (element) {
+        element.classList.add('animate-highlight');
+        element.style.borderColor = '#22d3ee';
+        element.style.boxShadow = '0 0 20px rgba(34,211,238,0.4)';
+      }
+      document.getElementById('selection-output').innerHTML = `
+        <div class="console-line" style="color: #22d3ee;">document.getElementById('demo-box-1')</div>
+        <div class="console-line" style="color: #98c379;">→ Found 1 element with id="demo-box-1"</div>
+      `;
+    }
+
+    function selectByClass() {
+      resetSelection();
+      const elements = document.querySelectorAll('.demo-item');
+      elements.forEach(el => {
+        el.classList.add('animate-highlight');
+        el.style.borderColor = '#a78bfa';
+        el.style.boxShadow = '0 0 20px rgba(167,139,250,0.4)';
+      });
+      document.getElementById('selection-output').innerHTML = `
+        <div class="console-line" style="color: #a78bfa;">document.querySelectorAll('.demo-item')</div>
+        <div class="console-line" style="color: #98c379;">→ Found ${elements.length} elements with class="demo-item"</div>
+      `;
+    }
+
+    function resetSelection() {
+      const demo = document.getElementById('selection-demo');
+      demo.querySelectorAll('.card').forEach(el => {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+        el.classList.remove('animate-highlight');
+      });
+    }
+
+    // Section 4: Manipulation Demo
+    const colors = ['#22d3ee', '#a78bfa', '#34d399', '#fbbf24', '#ef4444'];
+    let colorIndex = 0;
+    let borderVisible = false;
+
+    function changeText() {
+      const texts = ['Hello DOM!', 'JavaScript is awesome!', 'DOM manipulation rocks!', 'Click buttons to change me!'];
+      const title = document.getElementById('manipulate-title');
+      const current = texts.indexOf(title.textContent);
+      title.textContent = texts[(current + 1) % texts.length];
+    }
+
+    function changeColor() {
+      const box = document.getElementById('manipulate-box');
+      colorIndex = (colorIndex + 1) % colors.length;
+      box.style.backgroundColor = colors[colorIndex] + '20';
+      box.style.borderColor = colors[colorIndex];
+    }
+
+    function toggleClass() {
+      const box = document.getElementById('manipulate-box');
+      borderVisible = !borderVisible;
+      box.style.borderWidth = borderVisible ? '4px' : '2px';
+      box.style.borderStyle = borderVisible ? 'dashed' : 'solid';
+    }
+
+    function addHTML() {
+      const box = document.getElementById('manipulate-box');
+      const badge = document.createElement('span');
+      badge.className = 'badge badge-element';
+      badge.textContent = 'New!';
+      badge.style.marginLeft = '0.5rem';
+      document.getElementById('manipulate-title').appendChild(badge);
+    }
+
+    function resetDemo() {
+      const box = document.getElementById('manipulate-box');
+      const title = document.getElementById('manipulate-title');
+      box.style.backgroundColor = '';
+      box.style.borderColor = '';
+      box.style.borderWidth = '';
+      box.style.borderStyle = '';
+      title.innerHTML = 'Click buttons to change me!';
+      colorIndex = 0;
+      borderVisible = false;
+    }
+
+    // Section 5: Todo Demo
+    function addTodo() {
+      const input = document.getElementById('todo-input');
+      const list = document.getElementById('todo-list');
+      
+      if (!input.value.trim()) return;
+      
+      const li = document.createElement('li');
+      li.className = 'card';
+      li.style.display = 'flex';
+      li.style.justifyContent = 'space-between';
+      li.style.alignItems = 'center';
+      li.innerHTML = `
+        <span>${input.value}</span>
+        <button class="btn btn-danger" onclick="this.parentElement.remove()" style="padding: 0.4rem 0.8rem;">×</button>
+      `;
+      
+      list.appendChild(li);
+      input.value = '';
+    }
+
+    // Section 6: Event Demo
+    const eventBox = document.getElementById('event-box');
+    const eventTitle = document.getElementById('event-title');
+    const eventInfo = document.getElementById('event-info');
+    const eventInput = document.getElementById('event-input');
+    const eventLog = document.getElementById('event-log');
+
+    function logEvent(message, color = '#22d3ee') {
+      const line = document.createElement('div');
+      line.className = 'console-line';
+      line.style.color = color;
+      line.textContent = message;
+      eventLog.insertBefore(line, eventLog.firstChild);
+      if (eventLog.children.length > 5) {
+        eventLog.removeChild(eventLog.lastChild);
+      }
+    }
+
+    eventBox.addEventListener('click', (e) => {
+      eventTitle.textContent = '🖱️ Clicked!';
+      eventInfo.textContent = `Position: (${e.clientX}, ${e.clientY})`;
+      eventBox.style.transform = 'scale(0.98)';
+      setTimeout(() => eventBox.style.transform = '', 100);
+      logEvent(`click at (${e.clientX}, ${e.clientY})`, '#22d3ee');
+    });
+
+    eventBox.addEventListener('mouseenter', () => {
+      eventTitle.textContent = '👋 Mouse entered!';
+      eventBox.style.borderColor = '#22d3ee';
+      logEvent('mouseenter', '#34d399');
+    });
+
+    eventBox.addEventListener('mouseleave', () => {
+      eventTitle.textContent = 'Hover, Click, or Type!';
+      eventBox.style.borderColor = '';
+      eventInfo.textContent = 'Event info will appear here';
+      logEvent('mouseleave', '#fbbf24');
+    });
+
+    eventInput.addEventListener('input', (e) => {
+      eventInfo.textContent = `You typed: "${e.target.value}"`;
+      logEvent(`input: "${e.target.value}"`, '#a78bfa');
+    });
+
+    eventInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        eventTitle.textContent = '⏎ Enter pressed!';
+        logEvent('keydown: Enter', '#ef4444');
+      }
+    });
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

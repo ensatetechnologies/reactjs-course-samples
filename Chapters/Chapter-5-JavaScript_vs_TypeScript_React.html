@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript vs TypeScript in React - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --js: #f7df1e; --ts: #3178c6;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(247,223,30,0.1) 0%, transparent 40%), radial-gradient(circle at 70% 50%, rgba(49,120,198,0.15) 0%, transparent 40%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, var(--js), var(--ts)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; }
+    .badge-js { background: var(--js); color: #000; padding: 0.5rem 1.25rem; border-radius: 25px; font-weight: 600; }
+    .badge-ts { background: var(--ts); color: #fff; padding: 0.5rem 1.25rem; border-radius: 25px; font-weight: 600; }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-num { width: 40px; height: 40px; background: linear-gradient(135deg, var(--js), var(--ts)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-header .lang-badge { margin-left: auto; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .lang-js { background: var(--js); color: #000; }
+    .lang-ts { background: var(--ts); color: #fff; }
+    .lang-bash { background: var(--accent); color: #000; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .type { color: #e5c07b; } .err { color: #ef4444; text-decoration: wavy underline; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-js { border-color: var(--js); background: linear-gradient(135deg, rgba(247,223,30,0.08), transparent); }
+    .card-ts { border-color: var(--ts); background: linear-gradient(135deg, rgba(49,120,198,0.08), transparent); }
+    .card-success { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.08), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.08), transparent); }
+    
+    .demo-container { background: var(--surface2); border-radius: 16px; padding: 1.5rem; margin: 1.5rem 0; }
+    .demo-preview { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; min-height: 200px; }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .compare-table th, .compare-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .compare-table th { background: var(--surface2); font-weight: 600; }
+    .compare-table th:nth-child(2) { color: var(--js); }
+    .compare-table th:nth-child(3) { color: var(--ts); }
+    .compare-table td { background: var(--surface); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-success { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; }
+    .flow-box.highlight { border-color: var(--primary); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    .step { display: flex; gap: 1rem; margin: 1.5rem 0; }
+    .step-num { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; flex-shrink: 0; }
+    .step-content { flex: 1; }
+    .step-content h4 { margin-bottom: 0.5rem; }
+    
+    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: start; margin: 1.5rem 0; }
+    .vs-divider { display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--warning); font-size: 1.5rem; padding-top: 2rem; }
+    @media (max-width: 900px) { .vs-container { grid-template-columns: 1fr; } .vs-divider { padding: 1rem 0; } }
+    
+    .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    @media (max-width: 768px) { .pros-cons { grid-template-columns: 1fr; } }
+    
+    /* Demo App Styles */
+    .demo-app { font-family: 'Outfit', sans-serif; }
+    .demo-app input { padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); color: var(--text); margin-right: 0.5rem; }
+    .demo-app button { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-family: inherit; margin: 0.25rem; }
+    .demo-app .btn-primary { background: var(--primary); color: var(--bg); }
+    .demo-app .btn-danger { background: var(--danger); color: white; }
+    .demo-app .btn-success { background: var(--accent); color: var(--bg); }
+    .demo-app ul { list-style: none; margin-top: 1rem; }
+    .demo-app li { background: var(--surface2); padding: 0.75rem 1rem; border-radius: 8px; margin: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; }
+    .demo-app .completed { text-decoration: line-through; opacity: 0.6; }
+    .demo-app .error { color: var(--danger); font-size: 0.85rem; margin-top: 0.5rem; }
+    .demo-app .stats { display: flex; gap: 1rem; margin-top: 1rem; padding: 1rem; background: var(--surface2); border-radius: 8px; }
+    .demo-app .stat { text-align: center; }
+    .demo-app .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    .demo-app .stat-label { font-size: 0.8rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="badge-js">JavaScript</span>
+        <span class="badge-ts">TypeScript</span>
+      </div>
+      <h1>JavaScript vs TypeScript in React</h1>
+      <p>Understanding the differences, when to use each, and how to set up projects</p>
+    </div>
+
+    <!-- Section 1: What is TypeScript -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-num">1</div>
+        <div class="section-title">What is TypeScript?</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--ts); margin-bottom: 1rem;">TypeScript = JavaScript + Types</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>TypeScript</strong> is a <em>superset</em> of JavaScript that adds optional <strong>static typing</strong>. 
+          It compiles down to plain JavaScript that runs anywhere JavaScript runs.
+        </p>
+
+        <div class="flow-diagram">
+          <div class="flow-box" style="border-color: var(--ts);">
+            <div style="font-size: 2rem;">📝</div>
+            <div style="font-weight: 600; color: var(--ts);">.ts / .tsx</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">TypeScript Code</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 2rem;">⚙️</div>
+            <div style="font-weight: 600;">Compiler</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">tsc / babel</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color: var(--js);">
+            <div style="font-size: 2rem;">📄</div>
+            <div style="font-weight: 600; color: var(--js);">.js</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">JavaScript Code</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 2rem;">🌐</div>
+            <div style="font-weight: 600;">Browser</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">Runs JS</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card card-js">
+            <h3 style="color: var(--js); margin-bottom: 1rem;">🟨 JavaScript</h3>
+            <ul style="color: var(--muted); padding-left: 1.25rem;">
+              <li>Dynamic typing (types checked at runtime)</li>
+              <li>More flexible, less verbose</li>
+              <li>Errors discovered when code runs</li>
+              <li>No compilation step needed</li>
+              <li>Smaller learning curve</li>
+            </ul>
+          </div>
+          <div class="card card-ts">
+            <h3 style="color: var(--ts); margin-bottom: 1rem;">🟦 TypeScript</h3>
+            <ul style="color: var(--muted); padding-left: 1.25rem;">
+              <li>Static typing (types checked at compile time)</li>
+              <li>More structured, explicit contracts</li>
+              <li>Errors caught before code runs</li>
+              <li>Requires compilation to JavaScript</li>
+              <li>Better IDE support & autocomplete</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Insight</div>
+          <div class="tip-content">
+            TypeScript doesn't change how JavaScript works at runtime. It only adds type checking during development 
+            and compilation. All types are <strong>erased</strong> when compiled to JavaScript!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Basic Differences -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-num">2</div>
+        <div class="section-title">Key Differences with Examples</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Side-by-Side Comparisons</h2>
+
+        <!-- Variables -->
+        <h3 style="color: var(--secondary); margin: 1.5rem 0 1rem;">1️⃣ Variables & Types</h3>
+        <div class="vs-container">
+          <div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; variables.js <span class="lang-badge lang-js">JS</span></div>
+              <div class="code-body"><pre><span class="cmt">// JavaScript - No type annotations</span>
+<span class="kw">let</span> name = <span class="str">"John"</span>
+<span class="kw">let</span> age = <span class="num">25</span>
+<span class="kw">let</span> isActive = <span class="kw">true</span>
+<span class="kw">let</span> items = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+
+<span class="cmt">// This works but might cause bugs</span>
+name = <span class="num">42</span>       <span class="cmt">// No error! 😱</span>
+age = <span class="str">"hello"</span>   <span class="cmt">// No error! 😱</span></pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; variables.ts <span class="lang-badge lang-ts">TS</span></div>
+              <div class="code-body"><pre><span class="cmt">// TypeScript - Explicit types</span>
+<span class="kw">let</span> name: <span class="type">string</span> = <span class="str">"John"</span>
+<span class="kw">let</span> age: <span class="type">number</span> = <span class="num">25</span>
+<span class="kw">let</span> isActive: <span class="type">boolean</span> = <span class="kw">true</span>
+<span class="kw">let</span> items: <span class="type">number[]</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+
+<span class="cmt">// TypeScript catches errors!</span>
+name = <span class="num err">42</span>       <span class="cmt">// ❌ Error: Type 'number' is not assignable</span>
+age = <span class="str err">"hello"</span>   <span class="cmt">// ❌ Error: Type 'string' is not assignable</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Functions -->
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">2️⃣ Functions</h3>
+        <div class="vs-container">
+          <div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; functions.js <span class="lang-badge lang-js">JS</span></div>
+              <div class="code-body"><pre><span class="cmt">// JavaScript function</span>
+<span class="kw">function</span> <span class="fn">calculateTotal</span>(price, quantity) {
+  <span class="kw">return</span> price * quantity
+}
+
+<span class="cmt">// No parameter validation</span>
+<span class="fn">calculateTotal</span>(<span class="str">"10"</span>, <span class="num">5</span>)   <span class="cmt">// Returns "1010101010" 😱</span>
+<span class="fn">calculateTotal</span>()            <span class="cmt">// Returns NaN 😱</span>
+
+<span class="cmt">// Arrow function</span>
+<span class="kw">const</span> <span class="fn">greet</span> = (name) => {
+  <span class="kw">return</span> <span class="str">`Hello, ${name}!`</span>
+}</pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; functions.ts <span class="lang-badge lang-ts">TS</span></div>
+              <div class="code-body"><pre><span class="cmt">// TypeScript function with types</span>
+<span class="kw">function</span> <span class="fn">calculateTotal</span>(price: <span class="type">number</span>, quantity: <span class="type">number</span>): <span class="type">number</span> {
+  <span class="kw">return</span> price * quantity
+}
+
+<span class="cmt">// TypeScript catches errors!</span>
+<span class="fn">calculateTotal</span>(<span class="str err">"10"</span>, <span class="num">5</span>)   <span class="cmt">// ❌ Error: Argument not assignable</span>
+<span class="fn">calculateTotal</span>()            <span class="cmt">// ❌ Error: Expected 2 arguments</span>
+
+<span class="cmt">// Arrow function with types</span>
+<span class="kw">const</span> <span class="fn">greet</span> = (name: <span class="type">string</span>): <span class="type">string</span> => {
+  <span class="kw">return</span> <span class="str">`Hello, ${name}!`</span>
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Objects & Interfaces -->
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">3️⃣ Objects & Interfaces</h3>
+        <div class="vs-container">
+          <div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; objects.js <span class="lang-badge lang-js">JS</span></div>
+              <div class="code-body"><pre><span class="cmt">// JavaScript object</span>
+<span class="kw">const</span> user = {
+  name: <span class="str">"John"</span>,
+  age: <span class="num">25</span>,
+  email: <span class="str">"john@example.com"</span>
+}
+
+<span class="cmt">// No structure enforcement</span>
+user.nam = <span class="str">"Jane"</span>  <span class="cmt">// Typo creates new property! 😱</span>
+user.age = <span class="str">"old"</span>   <span class="cmt">// Wrong type, no error 😱</span>
+
+<span class="cmt">// Missing property? Discovered at runtime</span>
+console.<span class="fn">log</span>(user.address)  <span class="cmt">// undefined</span></pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; objects.ts <span class="lang-badge lang-ts">TS</span></div>
+              <div class="code-body"><pre><span class="cmt">// TypeScript interface defines structure</span>
+<span class="kw">interface</span> <span class="type">User</span> {
+  name: <span class="type">string</span>
+  age: <span class="type">number</span>
+  email: <span class="type">string</span>
+  address?: <span class="type">string</span>  <span class="cmt">// Optional property</span>
+}
+
+<span class="kw">const</span> user: <span class="type">User</span> = {
+  name: <span class="str">"John"</span>,
+  age: <span class="num">25</span>,
+  email: <span class="str">"john@example.com"</span>
+}
+
+user.<span class="err">nam</span> = <span class="str">"Jane"</span>  <span class="cmt">// ❌ Error: Property 'nam' does not exist</span>
+user.age = <span class="str err">"old"</span>   <span class="cmt">// ❌ Error: Type 'string' not assignable</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrays -->
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">4️⃣ Arrays</h3>
+        <div class="vs-container">
+          <div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; arrays.js <span class="lang-badge lang-js">JS</span></div>
+              <div class="code-body"><pre><span class="cmt">// JavaScript arrays can mix types</span>
+<span class="kw">const</span> numbers = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+numbers.<span class="fn">push</span>(<span class="str">"four"</span>)  <span class="cmt">// No error! 😱</span>
+
+<span class="kw">const</span> mixed = [<span class="num">1</span>, <span class="str">"two"</span>, <span class="kw">true</span>, { x: <span class="num">1</span> }]  <span class="cmt">// Allowed</span>
+
+<span class="cmt">// No autocomplete for array items</span>
+<span class="kw">const</span> users = [
+  { name: <span class="str">"John"</span>, age: <span class="num">25</span> },
+  { name: <span class="str">"Jane"</span>, age: <span class="num">30</span> }
+]
+users[<span class="num">0</span>].nam  <span class="cmt">// undefined (typo not caught)</span></pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; arrays.ts <span class="lang-badge lang-ts">TS</span></div>
+              <div class="code-body"><pre><span class="cmt">// TypeScript enforces array types</span>
+<span class="kw">const</span> numbers: <span class="type">number[]</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+numbers.<span class="fn">push</span>(<span class="str err">"four"</span>)  <span class="cmt">// ❌ Error!</span>
+
+<span class="kw">const</span> mixed: (<span class="type">number</span> | <span class="type">string</span>)[] = [<span class="num">1</span>, <span class="str">"two"</span>]  <span class="cmt">// Union type</span>
+
+<span class="cmt">// Full autocomplete for array items!</span>
+<span class="kw">interface</span> <span class="type">User</span> { name: <span class="type">string</span>; age: <span class="type">number</span> }
+
+<span class="kw">const</span> users: <span class="type">User[]</span> = [
+  { name: <span class="str">"John"</span>, age: <span class="num">25</span> },
+  { name: <span class="str">"Jane"</span>, age: <span class="num">30</span> }
+]
+users[<span class="num">0</span>].<span class="err">nam</span>  <span class="cmt">// ❌ Error: Property 'nam' does not exist</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <table class="compare-table" style="margin-top: 2rem;">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>JavaScript</th>
+              <th>TypeScript</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Type Checking</td>
+              <td>Runtime only</td>
+              <td>Compile time + Runtime</td>
+            </tr>
+            <tr>
+              <td>IDE Support</td>
+              <td>Basic autocomplete</td>
+              <td>Full IntelliSense</td>
+            </tr>
+            <tr>
+              <td>Refactoring</td>
+              <td>Manual, error-prone</td>
+              <td>Safe, automated</td>
+            </tr>
+            <tr>
+              <td>Documentation</td>
+              <td>Comments/JSDoc</td>
+              <td>Types ARE documentation</td>
+            </tr>
+            <tr>
+              <td>Learning Curve</td>
+              <td><span class="badge badge-success">Lower</span></td>
+              <td><span class="badge badge-warning">Higher</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 3: Creating React JS App -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-num">3</div>
+        <div class="section-title">Creating a React JavaScript App</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--js); margin-bottom: 1.5rem;">🟨 React + JavaScript Setup</h2>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Create the Project</h4>
+            <p style="color: var(--muted);">Use Vite (recommended) or Create React App</p>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Terminal <span class="lang-badge lang-bash">BASH</span></div>
+              <div class="code-body"><pre><span class="cmt"># Using Vite (Recommended - Faster)</span>
+npm create vite@latest my-react-js-app -- --template react
+
+<span class="cmt"># OR using Create React App</span>
+npx create-react-app my-react-js-app
+
+<span class="cmt"># Navigate to project</span>
+cd my-react-js-app</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Project Structure</h4>
+            <div class="code-block">
+              <div class="code-body"><pre>📁 my-react-js-app/
+├── 📁 node_modules/
+├── 📁 public/
+├── 📁 src/
+│   ├── 📄 App.jsx          <span class="cmt"># Main component (.jsx)</span>
+│   ├── 📄 App.css
+│   ├── 📄 main.jsx         <span class="cmt"># Entry point</span>
+│   └── 📄 index.css
+├── 📄 index.html
+├── 📄 package.json
+└── 📄 vite.config.js       <span class="cmt"># Vite configuration</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Sample Component (JavaScript)</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; src/components/UserCard.jsx <span class="lang-badge lang-js">JSX</span></div>
+              <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="cmt">// No type definitions needed</span>
+<span class="kw">function</span> <span class="fn">UserCard</span>({ user, onUpdate }) {
+  <span class="kw">const</span> [isEditing, setIsEditing] = <span class="fn">useState</span>(<span class="kw">false</span>)
+  <span class="kw">const</span> [name, setName] = <span class="fn">useState</span>(user.name)
+
+  <span class="kw">const</span> <span class="fn">handleSave</span> = () => {
+    <span class="fn">onUpdate</span>({ ...user, name })
+    <span class="fn">setIsEditing</span>(<span class="kw">false</span>)
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"user-card"</span><span class="tag">&gt;</span>
+      {isEditing ? (
+        <span class="tag">&lt;input</span>
+          <span class="attr">value</span>={name}
+          <span class="attr">onChange</span>={(e) => <span class="fn">setName</span>(e.target.value)}
+        <span class="tag">/&gt;</span>
+      ) : (
+        <span class="tag">&lt;h3&gt;</span>{user.name}<span class="tag">&lt;/h3&gt;</span>
+      )}
+      <span class="tag">&lt;p&gt;</span>Age: {user.age}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => isEditing ? <span class="fn">handleSave</span>() : <span class="fn">setIsEditing</span>(<span class="kw">true</span>)}<span class="tag">&gt;</span>
+        {isEditing ? <span class="str">'Save'</span> : <span class="str">'Edit'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> UserCard</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Run the App</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Terminal <span class="lang-badge lang-bash">BASH</span></div>
+              <div class="code-body"><pre><span class="cmt"># Install dependencies</span>
+npm install
+
+<span class="cmt"># Start development server</span>
+npm run dev
+
+<span class="cmt"># Open http://localhost:5173</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ JavaScript Pitfalls</div>
+          <div class="warning-content">
+            Without types, you won't get warnings if you pass wrong props, forget required props, 
+            or make typos in property names. These bugs are only discovered at runtime!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Creating React TS App -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-num">4</div>
+        <div class="section-title">Creating a React TypeScript App</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--ts); margin-bottom: 1.5rem;">🟦 React + TypeScript Setup</h2>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Create the Project</h4>
+            <p style="color: var(--muted);">Use the TypeScript template</p>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Terminal <span class="lang-badge lang-bash">BASH</span></div>
+              <div class="code-body"><pre><span class="cmt"># Using Vite with TypeScript (Recommended)</span>
+npm create vite@latest my-react-ts-app -- --template react-ts
+
+<span class="cmt"># OR using Create React App with TypeScript</span>
+npx create-react-app my-react-ts-app --template typescript
+
+<span class="cmt"># Navigate to project</span>
+cd my-react-ts-app</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Project Structure</h4>
+            <div class="code-block">
+              <div class="code-body"><pre>📁 my-react-ts-app/
+├── 📁 node_modules/
+├── 📁 public/
+├── 📁 src/
+│   ├── 📄 App.tsx          <span class="cmt"># Main component (.tsx)</span>
+│   ├── 📄 App.css
+│   ├── 📄 main.tsx         <span class="cmt"># Entry point</span>
+│   ├── 📄 index.css
+│   └── 📄 vite-env.d.ts    <span class="cmt"># Type declarations</span>
+├── 📄 index.html
+├── 📄 package.json
+├── 📄 <span style="color: var(--ts);">tsconfig.json</span>       <span class="cmt"># TypeScript configuration ⭐</span>
+└── 📄 vite.config.ts</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>TypeScript Configuration (tsconfig.json)</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; tsconfig.json <span class="lang-badge lang-ts">TS</span></div>
+              <div class="code-body"><pre>{
+  <span class="attr">"compilerOptions"</span>: {
+    <span class="attr">"target"</span>: <span class="str">"ES2020"</span>,
+    <span class="attr">"useDefineForClassFields"</span>: <span class="kw">true</span>,
+    <span class="attr">"lib"</span>: [<span class="str">"ES2020"</span>, <span class="str">"DOM"</span>, <span class="str">"DOM.Iterable"</span>],
+    <span class="attr">"module"</span>: <span class="str">"ESNext"</span>,
+    <span class="attr">"skipLibCheck"</span>: <span class="kw">true</span>,
+    <span class="attr">"strict"</span>: <span class="kw">true</span>,               <span class="cmt">// Enable strict type checking</span>
+    <span class="attr">"noEmit"</span>: <span class="kw">true</span>,
+    <span class="attr">"jsx"</span>: <span class="str">"react-jsx"</span>            <span class="cmt">// Enable JSX</span>
+  },
+  <span class="attr">"include"</span>: [<span class="str">"src"</span>]
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Sample Component (TypeScript)</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; src/components/UserCard.tsx <span class="lang-badge lang-ts">TSX</span></div>
+              <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="cmt">// Define types for User</span>
+<span class="kw">interface</span> <span class="type">User</span> {
+  id: <span class="type">number</span>
+  name: <span class="type">string</span>
+  age: <span class="type">number</span>
+  email?: <span class="type">string</span>  <span class="cmt">// Optional property</span>
+}
+
+<span class="cmt">// Define props interface</span>
+<span class="kw">interface</span> <span class="type">UserCardProps</span> {
+  user: <span class="type">User</span>
+  onUpdate: (user: <span class="type">User</span>) => <span class="type">void</span>
+}
+
+<span class="kw">function</span> <span class="fn">UserCard</span>({ user, onUpdate }: <span class="type">UserCardProps</span>) {
+  <span class="kw">const</span> [isEditing, setIsEditing] = <span class="fn">useState</span>&lt;<span class="type">boolean</span>&gt;(<span class="kw">false</span>)
+  <span class="kw">const</span> [name, setName] = <span class="fn">useState</span>&lt;<span class="type">string</span>&gt;(user.name)
+
+  <span class="kw">const</span> <span class="fn">handleSave</span> = (): <span class="type">void</span> => {
+    <span class="fn">onUpdate</span>({ ...user, name })
+    <span class="fn">setIsEditing</span>(<span class="kw">false</span>)
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"user-card"</span><span class="tag">&gt;</span>
+      {isEditing ? (
+        <span class="tag">&lt;input</span>
+          <span class="attr">value</span>={name}
+          <span class="attr">onChange</span>={(e: React.ChangeEvent&lt;HTMLInputElement&gt;) => 
+            <span class="fn">setName</span>(e.target.value)
+          }
+        <span class="tag">/&gt;</span>
+      ) : (
+        <span class="tag">&lt;h3&gt;</span>{user.name}<span class="tag">&lt;/h3&gt;</span>
+      )}
+      <span class="tag">&lt;p&gt;</span>Age: {user.age}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => isEditing ? <span class="fn">handleSave</span>() : <span class="fn">setIsEditing</span>(<span class="kw">true</span>)}<span class="tag">&gt;</span>
+        {isEditing ? <span class="str">'Save'</span> : <span class="str">'Edit'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> UserCard</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Using the Component (Type-Safe)</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; src/App.tsx <span class="lang-badge lang-ts">TSX</span></div>
+              <div class="code-body"><pre><span class="kw">import</span> UserCard <span class="kw">from</span> <span class="str">'./components/UserCard'</span>
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> user = { id: <span class="num">1</span>, name: <span class="str">"John"</span>, age: <span class="num">25</span> }
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      {<span class="cmt">/* ✅ Correct usage - TypeScript validates props */</span>}
+      <span class="tag">&lt;UserCard</span> 
+        <span class="attr">user</span>={user} 
+        <span class="attr">onUpdate</span>={(updated) => console.<span class="fn">log</span>(updated)} 
+      <span class="tag">/&gt;</span>
+      
+      {<span class="cmt">/* ❌ Error: Property 'age' is missing */</span>}
+      <span class="tag">&lt;UserCard</span> 
+        <span class="attr">user</span>={{ <span class="err">id: 1, name: "Jane"</span> }} 
+        <span class="attr">onUpdate</span>={() => {}} 
+      <span class="tag">/&gt;</span>
+      
+      {<span class="cmt">/* ❌ Error: Property 'onUpdate' is missing */</span>}
+      <span class="tag err">&lt;UserCard</span> <span class="attr">user</span>={user} <span class="tag err">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 TypeScript Benefits</div>
+          <div class="tip-content">
+            IDE shows errors <strong>immediately</strong> as you type! No need to run the app to discover bugs. 
+            Autocomplete shows all available properties and methods.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Working Demo Apps -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-num">5</div>
+        <div class="section-title">🎮 Working Demo: Todo App Comparison</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">See the Difference in Action</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Below are two identical Todo apps - one showing how it would be written in JavaScript, 
+          and one in TypeScript. The TypeScript version includes all the type annotations!
+        </p>
+
+        <div class="grid-2">
+          <!-- JavaScript Version -->
+          <div>
+            <h3 style="color: var(--js); margin-bottom: 1rem;">🟨 JavaScript Version</h3>
+            <div class="demo-container">
+              <div class="demo-preview" id="js-demo"></div>
+            </div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; TodoApp.jsx <span class="lang-badge lang-js">JS</span></div>
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">TodoApp</span>() {
+  <span class="kw">const</span> [todos, setTodos] = <span class="fn">useState</span>([])
+  <span class="kw">const</span> [input, setInput] = <span class="fn">useState</span>(<span class="str">''</span>)
+
+  <span class="cmt">// No parameter types</span>
+  <span class="kw">const</span> <span class="fn">addTodo</span> = () => {
+    <span class="kw">if</span> (!input.trim()) <span class="kw">return</span>
+    <span class="fn">setTodos</span>([...todos, {
+      id: Date.<span class="fn">now</span>(),
+      text: input,
+      completed: <span class="kw">false</span>
+    }])
+    <span class="fn">setInput</span>(<span class="str">''</span>)
+  }
+
+  <span class="cmt">// id could be anything!</span>
+  <span class="kw">const</span> <span class="fn">toggleTodo</span> = (id) => {
+    <span class="fn">setTodos</span>(todos.<span class="fn">map</span>(todo =>
+      todo.id === id 
+        ? { ...todo, completed: !todo.completed }
+        : todo
+    ))
+  }
+
+  <span class="kw">const</span> <span class="fn">deleteTodo</span> = (id) => {
+    <span class="fn">setTodos</span>(todos.<span class="fn">filter</span>(t => t.id !== id))
+  }
+
+  <span class="kw">return</span> (<span class="cmt">/* JSX */</span>)
+}</pre></div>
+            </div>
+          </div>
+
+          <!-- TypeScript Version -->
+          <div>
+            <h3 style="color: var(--ts); margin-bottom: 1rem;">🟦 TypeScript Version</h3>
+            <div class="demo-container">
+              <div class="demo-preview" id="ts-demo"></div>
+            </div>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; TodoApp.tsx <span class="lang-badge lang-ts">TS</span></div>
+              <div class="code-body"><pre><span class="cmt">// Define Todo type</span>
+<span class="kw">interface</span> <span class="type">Todo</span> {
+  id: <span class="type">number</span>
+  text: <span class="type">string</span>
+  completed: <span class="type">boolean</span>
+}
+
+<span class="kw">function</span> <span class="fn">TodoApp</span>(): <span class="type">JSX.Element</span> {
+  <span class="kw">const</span> [todos, setTodos] = <span class="fn">useState</span>&lt;<span class="type">Todo[]</span>&gt;([])
+  <span class="kw">const</span> [input, setInput] = <span class="fn">useState</span>&lt;<span class="type">string</span>&gt;(<span class="str">''</span>)
+
+  <span class="cmt">// Return type is void</span>
+  <span class="kw">const</span> <span class="fn">addTodo</span> = (): <span class="type">void</span> => {
+    <span class="kw">if</span> (!input.trim()) <span class="kw">return</span>
+    <span class="fn">setTodos</span>([...todos, {
+      id: Date.<span class="fn">now</span>(),
+      text: input,
+      completed: <span class="kw">false</span>
+    }])
+    <span class="fn">setInput</span>(<span class="str">''</span>)
+  }
+
+  <span class="cmt">// id must be number</span>
+  <span class="kw">const</span> <span class="fn">toggleTodo</span> = (id: <span class="type">number</span>): <span class="type">void</span> => {
+    <span class="fn">setTodos</span>(todos.<span class="fn">map</span>((todo: <span class="type">Todo</span>) =>
+      todo.id === id 
+        ? { ...todo, completed: !todo.completed }
+        : todo
+    ))
+  }
+
+  <span class="kw">const</span> <span class="fn">deleteTodo</span> = (id: <span class="type">number</span>): <span class="type">void</span> => {
+    <span class="fn">setTodos</span>(todos.<span class="fn">filter</span>((t: <span class="type">Todo</span>) => t.id !== id))
+  }
+
+  <span class="kw">return</span> (<span class="cmt">/* TSX */</span>)
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🔍 Key Differences Highlighted</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>JavaScript</th>
+              <th>TypeScript</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>State Type</td>
+              <td><code>useState([])</code></td>
+              <td><code>useState&lt;Todo[]&gt;([])</code></td>
+            </tr>
+            <tr>
+              <td>Function Params</td>
+              <td><code>(id)</code></td>
+              <td><code>(id: number)</code></td>
+            </tr>
+            <tr>
+              <td>Return Types</td>
+              <td>Implicit</td>
+              <td><code>: void</code>, <code>: JSX.Element</code></td>
+            </tr>
+            <tr>
+              <td>Object Shape</td>
+              <td>Any shape allowed</td>
+              <td>Must match <code>interface Todo</code></td>
+            </tr>
+            <tr>
+              <td>IDE Error Detection</td>
+              <td>None until runtime</td>
+              <td>Immediate red underlines</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 6: Pros & Cons -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-num">6</div>
+        <div class="section-title">Pros & Cons Comparison</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Making the Right Choice</h2>
+
+        <div class="grid-2">
+          <!-- JavaScript Pros/Cons -->
+          <div>
+            <h3 style="color: var(--js); margin-bottom: 1rem;">🟨 JavaScript</h3>
+            <div class="card card-success" style="margin-bottom: 1rem;">
+              <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ Pros</h4>
+              <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+                <li><strong>Lower learning curve</strong> - Just learn JavaScript</li>
+                <li><strong>Faster initial development</strong> - No type definitions</li>
+                <li><strong>More flexible</strong> - Quick prototyping</li>
+                <li><strong>No compilation step</strong> - Direct execution</li>
+                <li><strong>Smaller bundle size</strong> - No type overhead</li>
+                <li><strong>Easier for beginners</strong> - Less syntax to learn</li>
+                <li><strong>Massive ecosystem</strong> - All libraries work</li>
+              </ul>
+            </div>
+            <div class="card card-danger">
+              <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ Cons</h4>
+              <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+                <li><strong>Runtime errors</strong> - Bugs discovered late</li>
+                <li><strong>No autocomplete</strong> - Limited IDE support</li>
+                <li><strong>Refactoring nightmare</strong> - Easy to break things</li>
+                <li><strong>Poor documentation</strong> - Props unclear</li>
+                <li><strong>Team scalability</strong> - Hard to maintain</li>
+                <li><strong>Type coercion bugs</strong> - "1" + 1 = "11"</li>
+                <li><strong>No compile-time checks</strong> - Typos slip through</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- TypeScript Pros/Cons -->
+          <div>
+            <h3 style="color: var(--ts); margin-bottom: 1rem;">🟦 TypeScript</h3>
+            <div class="card card-success" style="margin-bottom: 1rem;">
+              <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ Pros</h4>
+              <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+                <li><strong>Catch errors early</strong> - Before code runs</li>
+                <li><strong>Amazing IDE support</strong> - Full autocomplete</li>
+                <li><strong>Self-documenting</strong> - Types = documentation</li>
+                <li><strong>Safe refactoring</strong> - Compiler catches breaks</li>
+                <li><strong>Better for teams</strong> - Clear contracts</li>
+                <li><strong>Fewer runtime bugs</strong> - Type safety</li>
+                <li><strong>Future-proof</strong> - Industry standard</li>
+              </ul>
+            </div>
+            <div class="card card-danger">
+              <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ Cons</h4>
+              <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+                <li><strong>Learning curve</strong> - New syntax to learn</li>
+                <li><strong>More verbose</strong> - Extra type annotations</li>
+                <li><strong>Setup complexity</strong> - tsconfig, types</li>
+                <li><strong>Compilation required</strong> - Extra build step</li>
+                <li><strong>Some libraries lack types</strong> - Need @types</li>
+                <li><strong>Can slow down prototyping</strong></li>
+                <li><strong>Type errors can be cryptic</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🎯 When to Use What?</h3>
+        <div class="grid-2">
+          <div class="card card-js">
+            <h4 style="color: var(--js); margin-bottom: 0.75rem;">Choose JavaScript When:</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Building quick prototypes</li>
+              <li>Small, simple projects</li>
+              <li>Learning React fundamentals</li>
+              <li>Solo projects with limited scope</li>
+              <li>Tight deadlines for MVPs</li>
+              <li>Team is new to programming</li>
+            </ul>
+          </div>
+          <div class="card card-ts">
+            <h4 style="color: var(--ts); margin-bottom: 0.75rem;">Choose TypeScript When:</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Building production applications</li>
+              <li>Medium to large projects</li>
+              <li>Working with a team</li>
+              <li>Long-term maintainability matters</li>
+              <li>Complex state management</li>
+              <li>API integrations with defined schemas</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip" style="margin-top: 2rem;">
+          <div class="tip-title">💡 Industry Trend</div>
+          <div class="tip-content">
+            <strong>Most companies now prefer TypeScript</strong> for new React projects. 
+            According to surveys, 80%+ of React developers use TypeScript in 2024. 
+            Learning TypeScript is a valuable investment for your career!
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📊 Decision Matrix</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th>Recommendation</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Learning React</td>
+              <td><span class="badge" style="background: var(--js); color: #000;">JavaScript</span></td>
+              <td>Focus on React concepts first</td>
+            </tr>
+            <tr>
+              <td>Personal Portfolio</td>
+              <td><span class="badge" style="background: var(--js); color: #000;">JavaScript</span></td>
+              <td>Quick and simple</td>
+            </tr>
+            <tr>
+              <td>Startup MVP</td>
+              <td><span class="badge" style="background: var(--ts); color: #fff;">TypeScript</span></td>
+              <td>Better for growth</td>
+            </tr>
+            <tr>
+              <td>Enterprise App</td>
+              <td><span class="badge" style="background: var(--ts); color: #fff;">TypeScript</span></td>
+              <td>Type safety essential</td>
+            </tr>
+            <tr>
+              <td>Team Project</td>
+              <td><span class="badge" style="background: var(--ts); color: #fff;">TypeScript</span></td>
+              <td>Clear contracts</td>
+            </tr>
+            <tr>
+              <td>Quick Script/Tool</td>
+              <td><span class="badge" style="background: var(--js); color: #000;">JavaScript</span></td>
+              <td>Speed matters more</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 7: Summary -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-num">✓</div>
+        <div class="section-title">Summary & Quick Reference</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🎯 Quick Reference Guide</h2>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Cheat Sheet: JS vs TS Syntax</div>
+          <div class="code-body"><pre><span class="cmt">// ========== VARIABLES ==========</span>
+<span class="cmt">// JavaScript</span>
+<span class="kw">let</span> name = <span class="str">"John"</span>
+<span class="cmt">// TypeScript</span>
+<span class="kw">let</span> name: <span class="type">string</span> = <span class="str">"John"</span>
+
+<span class="cmt">// ========== FUNCTIONS ==========</span>
+<span class="cmt">// JavaScript</span>
+<span class="kw">const</span> <span class="fn">add</span> = (a, b) => a + b
+<span class="cmt">// TypeScript</span>
+<span class="kw">const</span> <span class="fn">add</span> = (a: <span class="type">number</span>, b: <span class="type">number</span>): <span class="type">number</span> => a + b
+
+<span class="cmt">// ========== ARRAYS ==========</span>
+<span class="cmt">// JavaScript</span>
+<span class="kw">const</span> nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+<span class="cmt">// TypeScript</span>
+<span class="kw">const</span> nums: <span class="type">number[]</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+
+<span class="cmt">// ========== OBJECTS ==========</span>
+<span class="cmt">// JavaScript</span>
+<span class="kw">const</span> user = { name: <span class="str">"John"</span>, age: <span class="num">25</span> }
+<span class="cmt">// TypeScript</span>
+<span class="kw">interface</span> <span class="type">User</span> { name: <span class="type">string</span>; age: <span class="type">number</span> }
+<span class="kw">const</span> user: <span class="type">User</span> = { name: <span class="str">"John"</span>, age: <span class="num">25</span> }
+
+<span class="cmt">// ========== REACT COMPONENT ==========</span>
+<span class="cmt">// JavaScript (.jsx)</span>
+<span class="kw">function</span> <span class="fn">Button</span>({ label, onClick }) {
+  <span class="kw">return</span> <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onClick}<span class="tag">&gt;</span>{label}<span class="tag">&lt;/button&gt;</span>
+}
+<span class="cmt">// TypeScript (.tsx)</span>
+<span class="kw">interface</span> <span class="type">ButtonProps</span> {
+  label: <span class="type">string</span>
+  onClick: () => <span class="type">void</span>
+}
+<span class="kw">function</span> <span class="fn">Button</span>({ label, onClick }: <span class="type">ButtonProps</span>) {
+  <span class="kw">return</span> <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onClick}<span class="tag">&gt;</span>{label}<span class="tag">&lt;/button&gt;</span>
+}
+
+<span class="cmt">// ========== REACT HOOKS ==========</span>
+<span class="cmt">// JavaScript</span>
+<span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>)
+<span class="cmt">// TypeScript</span>
+<span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>&lt;<span class="type">number</span>&gt;(<span class="num">0</span>)
+
+<span class="cmt">// ========== EVENT HANDLERS ==========</span>
+<span class="cmt">// JavaScript</span>
+<span class="kw">const</span> <span class="fn">handleChange</span> = (e) => <span class="fn">setValue</span>(e.target.value)
+<span class="cmt">// TypeScript</span>
+<span class="kw">const</span> <span class="fn">handleChange</span> = (e: <span class="type">React.ChangeEvent</span>&lt;<span class="type">HTMLInputElement</span>&gt;) => 
+  <span class="fn">setValue</span>(e.target.value)</pre></div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 2rem;">
+          <div class="card card-js">
+            <h4 style="color: var(--js); margin-bottom: 0.75rem;">🟨 Create JS React App</h4>
+            <code style="display: block; color: var(--muted); font-size: 0.9rem;">
+              npm create vite@latest app -- --template react
+            </code>
+          </div>
+          <div class="card card-ts">
+            <h4 style="color: var(--ts); margin-bottom: 0.75rem;">🟦 Create TS React App</h4>
+            <code style="display: block; color: var(--muted); font-size: 0.9rem;">
+              npm create vite@latest app -- --template react-ts
+            </code>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(247,223,30,0.1), rgba(49,120,198,0.1)); border-radius: 16px;">
+          <h3 style="margin-bottom: 0.5rem;">🎉 You Now Understand JS vs TS in React!</h3>
+          <p style="color: var(--muted);">Start with what's comfortable, but consider TypeScript for serious projects!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- React Demo Apps -->
+  <script type="text/babel">
+    const { useState } = React;
+
+    // JavaScript-style Todo App
+    function JSTodoApp() {
+      const [todos, setTodos] = useState([
+        { id: 1, text: 'Learn JavaScript', completed: true },
+        { id: 2, text: 'Learn React', completed: false }
+      ]);
+      const [input, setInput] = useState('');
+
+      const addTodo = () => {
+        if (!input.trim()) return;
+        setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
+        setInput('');
+      };
+
+      const toggleTodo = (id) => {
+        setTodos(todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+      };
+
+      const deleteTodo = (id) => {
+        setTodos(todos.filter(t => t.id !== id));
+      };
+
+      const completedCount = todos.filter(t => t.completed).length;
+
+      return (
+        <div className="demo-app">
+          <h4 style={{ color: '#f7df1e', marginBottom: '1rem' }}>📝 JS Todo App</h4>
+          <div style={{ display: 'flex', marginBottom: '1rem' }}>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+              placeholder="Add a task..."
+              style={{ flex: 1 }}
+            />
+            <button className="btn-primary" onClick={addTodo}>Add</button>
+          </div>
+          <ul>
+            {todos.map(todo => (
+              <li key={todo.id} className={todo.completed ? 'completed' : ''}>
+                <span onClick={() => toggleTodo(todo.id)} style={{ cursor: 'pointer' }}>
+                  {todo.completed ? '✅' : '⬜'} {todo.text}
+                </span>
+                <button className="btn-danger" onClick={() => deleteTodo(todo.id)}>×</button>
+              </li>
+            ))}
+          </ul>
+          <div className="stats">
+            <div className="stat">
+              <div className="stat-value">{todos.length}</div>
+              <div className="stat-label">Total</div>
+            </div>
+            <div className="stat">
+              <div className="stat-value">{completedCount}</div>
+              <div className="stat-label">Done</div>
+            </div>
+          </div>
+          <p style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '1rem' }}>
+            ⚠️ No type checking - runtime errors possible
+          </p>
+        </div>
+      );
+    }
+
+    // TypeScript-style Todo App (visual representation)
+    function TSTodoApp() {
+      const [todos, setTodos] = useState([
+        { id: 1, text: 'Learn TypeScript', completed: true },
+        { id: 2, text: 'Build Type-Safe Apps', completed: false }
+      ]);
+      const [input, setInput] = useState('');
+
+      const addTodo = () => {
+        if (!input.trim()) return;
+        setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
+        setInput('');
+      };
+
+      const toggleTodo = (id) => {
+        setTodos(todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+      };
+
+      const deleteTodo = (id) => {
+        setTodos(todos.filter(t => t.id !== id));
+      };
+
+      const completedCount = todos.filter(t => t.completed).length;
+
+      return (
+        <div className="demo-app">
+          <h4 style={{ color: '#3178c6', marginBottom: '1rem' }}>📝 TS Todo App</h4>
+          <div style={{ display: 'flex', marginBottom: '1rem' }}>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+              placeholder="Add a task..."
+              style={{ flex: 1 }}
+            />
+            <button className="btn-primary" onClick={addTodo}>Add</button>
+          </div>
+          <ul>
+            {todos.map(todo => (
+              <li key={todo.id} className={todo.completed ? 'completed' : ''}>
+                <span onClick={() => toggleTodo(todo.id)} style={{ cursor: 'pointer' }}>
+                  {todo.completed ? '✅' : '⬜'} {todo.text}
+                </span>
+                <button className="btn-danger" onClick={() => deleteTodo(todo.id)}>×</button>
+              </li>
+            ))}
+          </ul>
+          <div className="stats">
+            <div className="stat">
+              <div className="stat-value">{todos.length}</div>
+              <div className="stat-label">Total</div>
+            </div>
+            <div className="stat">
+              <div className="stat-value">{completedCount}</div>
+              <div className="stat-label">Done</div>
+            </div>
+          </div>
+          <p style={{ color: '#34d399', fontSize: '0.8rem', marginTop: '1rem' }}>
+            ✅ Type-safe: All errors caught at compile time
+          </p>
+        </div>
+      );
+    }
+
+    // Render demos
+    ReactDOM.createRoot(document.getElementById('js-demo')).render(<JSTodoApp />);
+    ReactDOM.createRoot(document.getElementById('ts-demo')).render(<TSTodoApp />);
+  </script>
+
+  <script>
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

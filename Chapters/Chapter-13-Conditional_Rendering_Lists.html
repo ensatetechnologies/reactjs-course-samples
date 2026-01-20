@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conditional Rendering & Lists in React - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb; --conditional: #f472b6; --lists: #fb923c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(244,114,182,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(251,146,60,0.15) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--conditional), var(--lists)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-conditional { background: var(--conditional); color: white; }
+    .badge-lists { background: var(--lists); color: white; }
+    .badge-react { background: #20232a; color: var(--react); }
+    
+    .part-divider { background: linear-gradient(135deg, var(--surface2), var(--surface)); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem 2rem; margin: 2.5rem 0; text-align: center; }
+    .part-divider h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .part-divider p { color: var(--muted); }
+    .part-divider.conditional { border-color: var(--conditional); background: linear-gradient(135deg, rgba(244,114,182,0.1), transparent); }
+    .part-divider.conditional h2 { color: var(--conditional); }
+    .part-divider.lists { border-color: var(--lists); background: linear-gradient(135deg, rgba(251,146,60,0.1), transparent); }
+    .part-divider.lists h2 { color: var(--lists); }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; }
+    .icon-intro { background: linear-gradient(135deg, var(--primary), #0891b2); color: #000; }
+    .icon-ifelse { background: linear-gradient(135deg, var(--conditional), #db2777); color: white; }
+    .icon-ternary { background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; }
+    .icon-and { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    .icon-switch { background: linear-gradient(135deg, var(--warning), #d97706); color: white; }
+    .icon-patterns { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
+    .icon-map { background: linear-gradient(135deg, var(--lists), #ea580c); color: white; }
+    .icon-keys { background: linear-gradient(135deg, #ec4899, #db2777); color: white; }
+    .icon-filter { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; }
+    .icon-nested { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; }
+    .icon-project { background: linear-gradient(135deg, var(--react), #0891b2); color: #000; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-badge { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .prop { color: #e5c07b; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+    .card-conditional { border-color: var(--conditional); background: linear-gradient(135deg, rgba(244,114,182,0.08), transparent); }
+    .card-lists { border-color: var(--lists); background: linear-gradient(135deg, rgba(251,146,60,0.08), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--conditional); box-shadow: 0 0 20px rgba(244,114,182,0.2); }
+    .flow-box.list { border-color: var(--lists); box-shadow: 0 0 20px rgba(251,146,60,0.2); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    .highlight-box { background: linear-gradient(135deg, rgba(244,114,182,0.1), rgba(251,146,60,0.05)); border: 1px solid rgba(244,114,182,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    
+    h2 { color: var(--conditional); margin-bottom: 1rem; }
+    h3 { color: var(--primary); margin: 1.5rem 0 1rem; }
+    
+    .method-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; transition: all 0.3s; }
+    .method-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .method-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .method-name { font-weight: 600; margin-bottom: 0.25rem; }
+    .method-desc { color: var(--muted); font-size: 0.85rem; }
+    
+    .vs-container { display: flex; align-items: stretch; gap: 1rem; margin: 1rem 0; }
+    .vs-box { flex: 1; padding: 1rem; border-radius: 12px; }
+    .vs-box.good { background: rgba(52,211,153,0.1); border: 1px solid var(--accent); }
+    .vs-box.bad { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); }
+    .vs-divider { display: flex; align-items: center; font-weight: 700; color: var(--warning); }
+    @media (max-width: 768px) { .vs-container { flex-direction: column; } .vs-divider { justify-content: center; padding: 0.5rem; } }
+    
+    .render-output { background: var(--surface2); border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+    .render-output-title { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-conditional">🔀 Conditional</span>
+        <span class="hero-badge badge-lists">📋 Lists</span>
+        <span class="hero-badge badge-react">⚛️ React</span>
+      </div>
+      <h1>Conditional Rendering & Lists</h1>
+      <p>Complete Guide: Dynamic UI Based on Data and Conditions</p>
+    </div>
+
+    <!-- ==================== PART 1: CONDITIONAL RENDERING ==================== -->
+    <div class="part-divider conditional">
+      <h2>🔀 Part 1: Conditional Rendering</h2>
+      <p>Show or hide content based on conditions</p>
+    </div>
+
+    <!-- Section 1: Introduction -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-intro">💡</div>
+        <div class="section-title">Introduction to Conditional Rendering</div>
+        <span class="section-badge" style="background: rgba(244,114,182,0.2); color: var(--conditional);">Basics</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>What is Conditional Rendering?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Conditional rendering</strong> means showing different UI elements based on certain conditions.
+          Just like JavaScript's <code>if</code> statements, React lets you render different things depending on the state.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--conditional); margin-bottom: 0.75rem;">🎯 Real-World Examples</h4>
+          <ul style="color: var(--muted); padding-left: 1.25rem;">
+            <li><strong>Login/Logout button</strong> - Show "Login" if not authenticated, "Logout" if authenticated</li>
+            <li><strong>Loading spinner</strong> - Show spinner while fetching data, content when loaded</li>
+            <li><strong>Error messages</strong> - Show only when there's an error</li>
+            <li><strong>Empty states</strong> - Show "No items" when list is empty</li>
+            <li><strong>Admin features</strong> - Show only for users with admin role</li>
+          </ul>
+        </div>
+
+        <h3>🔄 Conditional Rendering Methods</h3>
+        <div class="grid-4">
+          <div class="method-card">
+            <div class="method-icon">🔀</div>
+            <div class="method-name">if/else</div>
+            <div class="method-desc">Full statements outside JSX</div>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">❓</div>
+            <div class="method-name">Ternary</div>
+            <div class="method-desc">condition ? A : B</div>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">➕</div>
+            <div class="method-name">&& Operator</div>
+            <div class="method-desc">condition && element</div>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">🔢</div>
+            <div class="method-name">switch</div>
+            <div class="method-desc">Multiple conditions</div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Concept</div>
+          <div class="tip-content">
+            In React, you can't use <code>if</code> statements directly inside JSX (the return statement).
+            You need to use expressions like ternary operators or the && operator, or put the if statement before the return.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: if/else -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-ifelse">🔀</div>
+        <div class="section-title">if/else Statements</div>
+        <span class="section-badge" style="background: rgba(244,114,182,0.2); color: var(--conditional);">Conditional</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Using if/else for Conditional Rendering</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The most straightforward approach: use regular JavaScript <code>if/else</code> statements 
+          <strong>before</strong> the return statement.
+        </p>
+
+        <h3>📝 Basic if/else Pattern</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; if/else Before Return</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Greeting</span>({ isLoggedIn, userName }) {
+  <span class="cmt">// if/else BEFORE the return statement</span>
+  <span class="kw">if</span> (isLoggedIn) {
+    <span class="kw">return</span> (
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>Welcome back, {userName}!<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;button&gt;</span>Logout<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    );
+  } <span class="kw">else</span> {
+    <span class="kw">return</span> (
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>Please log in<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;button&gt;</span>Login<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    );
+  }
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;Greeting</span> <span class="attr">isLoggedIn</span>={<span class="kw">true</span>} <span class="attr">userName</span>=<span class="str">"John"</span> <span class="tag">/&gt;</span>
+<span class="cmt">// → Renders: "Welcome back, John!" with Logout button</span>
+
+<span class="tag">&lt;Greeting</span> <span class="attr">isLoggedIn</span>={<span class="kw">false</span>} <span class="tag">/&gt;</span>
+<span class="cmt">// → Renders: "Please log in" with Login button</span></pre></div>
+        </div>
+
+        <h3>🎯 Early Return Pattern</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Early Return (Guard Clause)</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StudentProfile</span>({ student, isLoading, error }) {
+  <span class="cmt">// Handle loading state first</span>
+  <span class="kw">if</span> (isLoading) {
+    <span class="kw">return</span> <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"spinner"</span><span class="tag">&gt;</span>Loading...<span class="tag">&lt;/div&gt;</span>;
+  }
+
+  <span class="cmt">// Handle error state</span>
+  <span class="kw">if</span> (error) {
+    <span class="kw">return</span> <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"error"</span><span class="tag">&gt;</span>Error: {error.message}<span class="tag">&lt;/div&gt;</span>;
+  }
+
+  <span class="cmt">// Handle no data</span>
+  <span class="kw">if</span> (!student) {
+    <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>No student found<span class="tag">&lt;/div&gt;</span>;
+  }
+
+  <span class="cmt">// Main render - only reached if all checks pass</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"profile"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>{student.name}<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Age: {student.age}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Grade: {student.grade}<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📦 Assigning to Variable</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Variable Assignment Pattern</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StatusBadge</span>({ status }) {
+  <span class="cmt">// Determine content based on condition</span>
+  <span class="kw">let</span> badgeContent;
+  <span class="kw">let</span> badgeClass;
+
+  <span class="kw">if</span> (status === <span class="str">'active'</span>) {
+    badgeContent = <span class="str">'✓ Active'</span>;
+    badgeClass = <span class="str">'badge-success'</span>;
+  } <span class="kw">else if</span> (status === <span class="str">'pending'</span>) {
+    badgeContent = <span class="str">'⏳ Pending'</span>;
+    badgeClass = <span class="str">'badge-warning'</span>;
+  } <span class="kw">else if</span> (status === <span class="str">'inactive'</span>) {
+    badgeContent = <span class="str">'✗ Inactive'</span>;
+    badgeClass = <span class="str">'badge-danger'</span>;
+  } <span class="kw">else</span> {
+    badgeContent = <span class="str">'Unknown'</span>;
+    badgeClass = <span class="str">'badge-default'</span>;
+  }
+
+  <span class="cmt">// Single return with the determined values</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;span</span> <span class="attr">className</span>={<span class="str">`badge ${badgeClass}`</span>}<span class="tag">&gt;</span>
+      {badgeContent}
+    <span class="tag">&lt;/span&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 When to Use if/else</div>
+          <div class="note-content">
+            • Complex conditions with multiple branches<br>
+            • When you need to execute code before rendering<br>
+            • Early returns for loading/error states<br>
+            • When rendering completely different components
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Ternary Operator -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-ternary">❓</div>
+        <div class="section-title">Ternary Operator (? :)</div>
+        <span class="section-badge" style="background: rgba(244,114,182,0.2); color: var(--conditional);">Conditional</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Inline Conditional with Ternary</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The <strong>ternary operator</strong> is the most common way to conditionally render in JSX.
+          It works inline and returns one of two values based on a condition.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--secondary); margin-bottom: 0.5rem;">Syntax</h4>
+          <code style="font-size: 1.1rem; color: var(--text);">condition <span style="color: var(--warning);">?</span> <span style="color: var(--accent);">ifTrue</span> <span style="color: var(--warning);">:</span> <span style="color: var(--danger);">ifFalse</span></code>
+        </div>
+
+        <h3>📝 Basic Ternary Examples</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Ternary in JSX</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">UserGreeting</span>({ isLoggedIn, userName }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* Simple text ternary */}</span>
+      <span class="tag">&lt;h1&gt;</span>
+        {isLoggedIn ? <span class="str">`Welcome, ${userName}!`</span> : <span class="str">'Please log in'</span>}
+      <span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Element ternary */}</span>
+      {isLoggedIn ? (
+        <span class="tag">&lt;button&gt;</span>Logout<span class="tag">&lt;/button&gt;</span>
+      ) : (
+        <span class="tag">&lt;button&gt;</span>Login<span class="tag">&lt;/button&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// More examples</span>
+<span class="kw">function</span> <span class="fn">Examples</span>({ count, isAdmin, theme }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* Conditional class */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>={isAdmin ? <span class="str">'admin-panel'</span> : <span class="str">'user-panel'</span>}<span class="tag">&gt;</span>
+        Panel
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Conditional style */}</span>
+      <span class="tag">&lt;p</span> <span class="attr">style</span>={{ <span class="prop">color</span>: count > <span class="num">10</span> ? <span class="str">'green'</span> : <span class="str">'red'</span> }}<span class="tag">&gt;</span>
+        Count: {count}
+      <span class="tag">&lt;/p&gt;</span>
+      
+      <span class="cmt">{/* Conditional attribute */}</span>
+      <span class="tag">&lt;button</span> <span class="attr">disabled</span>={count === <span class="num">0</span> ? <span class="kw">true</span> : <span class="kw">false</span>}<span class="tag">&gt;</span>
+        Submit
+      <span class="tag">&lt;/button&gt;</span>
+      
+      <span class="cmt">{/* Multiple elements with fragment */}</span>
+      {theme === <span class="str">'dark'</span> ? (
+        <span class="tag">&lt;&gt;</span>
+          <span class="tag">&lt;h2&gt;</span>Dark Mode<span class="tag">&lt;/h2&gt;</span>
+          <span class="tag">&lt;p&gt;</span>Eyes friendly!<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;/&gt;</span>
+      ) : (
+        <span class="tag">&lt;&gt;</span>
+          <span class="tag">&lt;h2&gt;</span>Light Mode<span class="tag">&lt;/h2&gt;</span>
+          <span class="tag">&lt;p&gt;</span>Bright and clear!<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;/&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Practical Example: Student Card</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected, onSelect }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> 
+      <span class="attr">className</span>={<span class="str">`card ${isSelected ? 'selected' : ''}`</span>}
+      <span class="attr">onClick</span>={() => <span class="fn">onSelect</span>(student.id)}
+    <span class="tag">&gt;</span>
+      <span class="cmt">{/* Avatar or placeholder */}</span>
+      {student.avatar ? (
+        <span class="tag">&lt;img</span> <span class="attr">src</span>={student.avatar} <span class="attr">alt</span>={student.name} <span class="tag">/&gt;</span>
+      ) : (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"avatar-placeholder"</span><span class="tag">&gt;</span>
+          {student.name[<span class="num">0</span>]}
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+      
+      <span class="tag">&lt;h3&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+      
+      <span class="cmt">{/* Grade with conditional color */}</span>
+      <span class="tag">&lt;span</span> 
+        <span class="attr">className</span>={<span class="str">`grade ${student.grade === 'A' ? 'excellent' : 'normal'}`</span>}
+      <span class="tag">&gt;</span>
+        Grade: {student.grade}
+      <span class="tag">&lt;/span&gt;</span>
+      
+      <span class="cmt">{/* Conditional badge */}</span>
+      {student.isTopStudent ? (
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"badge gold"</span><span class="tag">&gt;</span>⭐ Top Student<span class="tag">&lt;/span&gt;</span>
+      ) : (
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"badge"</span><span class="tag">&gt;</span>Student<span class="tag">&lt;/span&gt;</span>
+      )}
+      
+      <span class="cmt">{/* Selection indicator */}</span>
+      <span class="tag">&lt;button&gt;</span>
+        {isSelected ? <span class="str">'✓ Selected'</span> : <span class="str">'Select'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>⚠️ Nested Ternaries (Avoid!)</h3>
+        <div class="vs-container">
+          <div class="vs-box bad">
+            <h4 style="color: var(--danger); margin-bottom: 0.5rem;">❌ Hard to Read</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="cmt">// Nested ternaries - confusing!</span>
+{status === <span class="str">'loading'</span> 
+  ? <span class="tag">&lt;Spinner</span> <span class="tag">/&gt;</span>
+  : status === <span class="str">'error'</span>
+    ? <span class="tag">&lt;Error</span> <span class="tag">/&gt;</span>
+    : status === <span class="str">'empty'</span>
+      ? <span class="tag">&lt;Empty</span> <span class="tag">/&gt;</span>
+      : <span class="tag">&lt;Content</span> <span class="tag">/&gt;</span>}</pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">→</div>
+          <div class="vs-box good">
+            <h4 style="color: var(--accent); margin-bottom: 0.5rem;">✅ Use Early Returns</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="cmt">// Much cleaner!</span>
+<span class="kw">if</span> (status === <span class="str">'loading'</span>) <span class="kw">return</span> <span class="tag">&lt;Spinner</span> <span class="tag">/&gt;</span>;
+<span class="kw">if</span> (status === <span class="str">'error'</span>) <span class="kw">return</span> <span class="tag">&lt;Error</span> <span class="tag">/&gt;</span>;
+<span class="kw">if</span> (status === <span class="str">'empty'</span>) <span class="kw">return</span> <span class="tag">&lt;Empty</span> <span class="tag">/&gt;</span>;
+<span class="kw">return</span> <span class="tag">&lt;Content</span> <span class="tag">/&gt;</span>;</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: && Operator -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-and">➕</div>
+        <div class="section-title">Logical && Operator</div>
+        <span class="section-badge" style="background: rgba(244,114,182,0.2); color: var(--conditional);">Conditional</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Show Something OR Nothing</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The <strong>&&</strong> operator is perfect when you want to show something <em>only if</em> a condition is true,
+          and nothing otherwise. No "else" needed!
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--accent); margin-bottom: 0.5rem;">How It Works</h4>
+          <p style="color: var(--muted);">
+            <code>condition && element</code><br>
+            • If condition is <strong>truthy</strong> → returns element<br>
+            • If condition is <strong>falsy</strong> → returns false (renders nothing)
+          </p>
+        </div>
+
+        <h3>📝 Basic && Examples</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; && Operator Usage</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Notifications</span>({ messages, isAdmin, unreadCount }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* Show badge only if there are unread messages */}</span>
+      {unreadCount > <span class="num">0</span> && (
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"badge"</span><span class="tag">&gt;</span>{unreadCount} new<span class="tag">&lt;/span&gt;</span>
+      )}
+      
+      <span class="cmt">{/* Show admin panel only for admins */}</span>
+      {isAdmin && (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"admin-panel"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;h3&gt;</span>Admin Controls<span class="tag">&lt;/h3&gt;</span>
+          <span class="tag">&lt;button&gt;</span>Delete All<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+      
+      <span class="cmt">{/* Show messages only if array has items */}</span>
+      {messages.length > <span class="num">0</span> && (
+        <span class="tag">&lt;ul&gt;</span>
+          {messages.<span class="fn">map</span>(msg => (
+            <span class="tag">&lt;li</span> <span class="attr">key</span>={msg.id}<span class="tag">&gt;</span>{msg.text}<span class="tag">&lt;/li&gt;</span>
+          ))}
+        <span class="tag">&lt;/ul&gt;</span>
+      )}
+      
+      <span class="cmt">{/* Show warning only if condition met */}</span>
+      {messages.length === <span class="num">0</span> && (
+        <span class="tag">&lt;p&gt;</span>No messages yet!<span class="tag">&lt;/p&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Common Use Cases</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Practical && Examples</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StudentDashboard</span>({ student, achievements, isLoading }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* Loading indicator */}</span>
+      {isLoading && <span class="tag">&lt;Spinner</span> <span class="tag">/&gt;</span>}
+      
+      <span class="cmt">{/* Error message */}</span>
+      {student.hasWarning && (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"warning"</span><span class="tag">&gt;</span>
+          ⚠️ Attendance below 80%
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+      
+      <span class="cmt">{/* Optional field */}</span>
+      {student.email && (
+        <span class="tag">&lt;p&gt;</span>Email: {student.email}<span class="tag">&lt;/p&gt;</span>
+      )}
+      
+      <span class="cmt">{/* Achievements section - only if has any */}</span>
+      {achievements && achievements.length > <span class="num">0</span> && (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"achievements"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;h3&gt;</span>🏆 Achievements<span class="tag">&lt;/h3&gt;</span>
+          {achievements.<span class="fn">map</span>(a => (
+            <span class="tag">&lt;span</span> <span class="attr">key</span>={a.id} <span class="attr">className</span>=<span class="str">"badge"</span><span class="tag">&gt;</span>{a.name}<span class="tag">&lt;/span&gt;</span>
+          ))}
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+      
+      <span class="cmt">{/* Premium features for paid users */}</span>
+      {student.isPremium && (
+        <span class="tag">&lt;&gt;</span>
+          <span class="tag">&lt;AdvancedStats</span> <span class="attr">studentId</span>={student.id} <span class="tag">/&gt;</span>
+          <span class="tag">&lt;ExportButton</span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>⚠️ Gotcha: The Zero Problem</h3>
+        <div class="danger">
+          <div class="danger-title">🚨 Watch Out for Numbers!</div>
+          <div class="danger-content">
+            If the left side is <code>0</code>, React will render <code>0</code> instead of nothing!
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; The Zero Gotcha</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">MessageCount</span>({ count }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* ❌ WRONG - Will render "0" when count is 0 */}</span>
+      {count && <span class="tag">&lt;span&gt;</span>{count} messages<span class="tag">&lt;/span&gt;</span>}
+      
+      <span class="cmt">{/* ✅ CORRECT - Explicitly check for > 0 */}</span>
+      {count > <span class="num">0</span> && <span class="tag">&lt;span&gt;</span>{count} messages<span class="tag">&lt;/span&gt;</span>}
+      
+      <span class="cmt">{/* ✅ ALSO CORRECT - Convert to boolean */}</span>
+      {!!count && <span class="tag">&lt;span&gt;</span>{count} messages<span class="tag">&lt;/span&gt;</span>}
+      
+      <span class="cmt">{/* ✅ OR use ternary for "else" case */}</span>
+      {count > <span class="num">0</span> ? <span class="tag">&lt;span&gt;</span>{count} messages<span class="tag">&lt;/span&gt;</span> : <span class="tag">&lt;span&gt;</span>No messages<span class="tag">&lt;/span&gt;</span>}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>⚖️ && vs Ternary</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Use Case</th>
+              <th>&&</th>
+              <th>Ternary</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Show or nothing</td>
+              <td><span class="badge badge-accent">✓ Best</span></td>
+              <td>Works but verbose</td>
+            </tr>
+            <tr>
+              <td>Show A or B</td>
+              <td>❌ Can't do</td>
+              <td><span class="badge badge-accent">✓ Best</span></td>
+            </tr>
+            <tr>
+              <td>Conditional class/style</td>
+              <td>❌ Can't do</td>
+              <td><span class="badge badge-accent">✓ Best</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 5: Switch & Object Mapping -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-switch">🔢</div>
+        <div class="section-title">Switch & Object Mapping</div>
+        <span class="section-badge" style="background: rgba(244,114,182,0.2); color: var(--conditional);">Conditional</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Handling Multiple Conditions</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          When you have many possible values (like status codes or types), 
+          <code>switch</code> statements or object mapping are cleaner than many if/else blocks.
+        </p>
+
+        <h3>🔢 Switch Statement</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Switch Pattern</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StatusIcon</span>({ status }) {
+  <span class="cmt">// Switch BEFORE return</span>
+  <span class="kw">const</span> <span class="fn">getStatusContent</span> = () => {
+    <span class="kw">switch</span> (status) {
+      <span class="kw">case</span> <span class="str">'loading'</span>:
+        <span class="kw">return</span> <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"loading"</span><span class="tag">&gt;</span>⏳ Loading...<span class="tag">&lt;/span&gt;</span>;
+      
+      <span class="kw">case</span> <span class="str">'success'</span>:
+        <span class="kw">return</span> <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"success"</span><span class="tag">&gt;</span>✅ Success!<span class="tag">&lt;/span&gt;</span>;
+      
+      <span class="kw">case</span> <span class="str">'error'</span>:
+        <span class="kw">return</span> <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"error"</span><span class="tag">&gt;</span>❌ Error!<span class="tag">&lt;/span&gt;</span>;
+      
+      <span class="kw">case</span> <span class="str">'warning'</span>:
+        <span class="kw">return</span> <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"warning"</span><span class="tag">&gt;</span>⚠️ Warning<span class="tag">&lt;/span&gt;</span>;
+      
+      <span class="kw">default</span>:
+        <span class="kw">return</span> <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"unknown"</span><span class="tag">&gt;</span>❓ Unknown<span class="tag">&lt;/span&gt;</span>;
+    }
+  };
+
+  <span class="kw">return</span> <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"status"</span><span class="tag">&gt;</span>{<span class="fn">getStatusContent</span>()}<span class="tag">&lt;/div&gt;</span>;
+}</pre></div>
+        </div>
+
+        <h3>📦 Object Mapping (Cleaner!)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Object Map Pattern</div>
+          <div class="code-body"><pre><span class="cmt">// Define mapping outside component</span>
+<span class="kw">const</span> STATUS_CONFIG = {
+  <span class="prop">loading</span>: { <span class="prop">icon</span>: <span class="str">'⏳'</span>, <span class="prop">text</span>: <span class="str">'Loading...'</span>, <span class="prop">className</span>: <span class="str">'loading'</span> },
+  <span class="prop">success</span>: { <span class="prop">icon</span>: <span class="str">'✅'</span>, <span class="prop">text</span>: <span class="str">'Success!'</span>, <span class="prop">className</span>: <span class="str">'success'</span> },
+  <span class="prop">error</span>:   { <span class="prop">icon</span>: <span class="str">'❌'</span>, <span class="prop">text</span>: <span class="str">'Error!'</span>, <span class="prop">className</span>: <span class="str">'error'</span> },
+  <span class="prop">warning</span>: { <span class="prop">icon</span>: <span class="str">'⚠️'</span>, <span class="prop">text</span>: <span class="str">'Warning'</span>, <span class="prop">className</span>: <span class="str">'warning'</span> },
+};
+
+<span class="kw">function</span> <span class="fn">StatusIcon</span>({ status }) {
+  <span class="cmt">// Get config or default</span>
+  <span class="kw">const</span> config = STATUS_CONFIG[status] || { 
+    <span class="prop">icon</span>: <span class="str">'❓'</span>, 
+    <span class="prop">text</span>: <span class="str">'Unknown'</span>, 
+    <span class="prop">className</span>: <span class="str">'unknown'</span> 
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;span</span> <span class="attr">className</span>={config.className}<span class="tag">&gt;</span>
+      {config.icon} {config.text}
+    <span class="tag">&lt;/span&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;StatusIcon</span> <span class="attr">status</span>=<span class="str">"success"</span> <span class="tag">/&gt;</span>  <span class="cmt">// → ✅ Success!</span>
+<span class="tag">&lt;StatusIcon</span> <span class="attr">status</span>=<span class="str">"error"</span> <span class="tag">/&gt;</span>    <span class="cmt">// → ❌ Error!</span></pre></div>
+        </div>
+
+        <h3>🎨 Component Mapping</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Mapping to Different Components</div>
+          <div class="code-body"><pre><span class="kw">import</span> { AlertCircle, CheckCircle, XCircle, Clock } <span class="kw">from</span> <span class="str">'lucide-react'</span>;
+
+<span class="cmt">// Map status to components</span>
+<span class="kw">const</span> STATUS_ICONS = {
+  <span class="prop">pending</span>: Clock,
+  <span class="prop">approved</span>: CheckCircle,
+  <span class="prop">rejected</span>: XCircle,
+  <span class="prop">review</span>: AlertCircle,
+};
+
+<span class="kw">const</span> STATUS_COLORS = {
+  <span class="prop">pending</span>: <span class="str">'#fbbf24'</span>,
+  <span class="prop">approved</span>: <span class="str">'#22c55e'</span>,
+  <span class="prop">rejected</span>: <span class="str">'#ef4444'</span>,
+  <span class="prop">review</span>: <span class="str">'#3b82f6'</span>,
+};
+
+<span class="kw">function</span> <span class="fn">ApplicationStatus</span>({ status }) {
+  <span class="cmt">// Get the component (or a default)</span>
+  <span class="kw">const</span> IconComponent = STATUS_ICONS[status] || AlertCircle;
+  <span class="kw">const</span> color = STATUS_COLORS[status] || <span class="str">'#6b7280'</span>;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"status-badge"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;IconComponent</span> <span class="attr">size</span>={<span class="num">20</span>} <span class="attr">color</span>={color} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;span</span> <span class="attr">style</span>={{ <span class="prop">color</span> }}<span class="tag">&gt;</span>{status}<span class="tag">&lt;/span&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Object Mapping Benefits</div>
+          <div class="tip-content">
+            • Easier to read than long switch/if chains<br>
+            • Configuration can be defined elsewhere (even fetched from API)<br>
+            • Easy to add new cases without changing component logic<br>
+            • Great for status indicators, icons, colors, labels
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PART 2: RENDERING LISTS ==================== -->
+    <div class="part-divider lists">
+      <h2>📋 Part 2: Rendering Lists</h2>
+      <p>Display arrays of data as UI elements</p>
+    </div>
+
+    <!-- Section 6: map() Method -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-map">🗺️</div>
+        <div class="section-title">Rendering Lists with map()</div>
+        <span class="section-badge" style="background: rgba(251,146,60,0.2); color: var(--lists);">Lists</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--lists);">Transforming Arrays to Elements</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The <code>map()</code> method transforms each item in an array into a React element.
+          It's the standard way to render lists in React.
+        </p>
+
+        <div class="highlight-box" style="background: linear-gradient(135deg, rgba(251,146,60,0.1), transparent); border-color: rgba(251,146,60,0.3);">
+          <h4 style="color: var(--lists); margin-bottom: 0.5rem;">The Pattern</h4>
+          <code style="font-size: 1rem; color: var(--text);">
+            {array.<span style="color: var(--fn);">map</span>(item => <span style="color: var(--tag)">&lt;Element</span> <span style="color: var(--attr);">key</span>=<span style="color: var(--str)">{item.id}</span><span style="color: var(--tag)">&gt;</span>{item.value}<span style="color: var(--tag)">&lt;/Element&gt;</span>)}
+          </code>
+        </div>
+
+        <h3>📝 Basic List Rendering</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Simple List</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StudentList</span>() {
+  <span class="kw">const</span> students = [
+    { <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">name</span>: <span class="str">'John'</span>, <span class="prop">grade</span>: <span class="str">'A'</span> },
+    { <span class="prop">id</span>: <span class="num">2</span>, <span class="prop">name</span>: <span class="str">'Jane'</span>, <span class="prop">grade</span>: <span class="str">'B'</span> },
+    { <span class="prop">id</span>: <span class="num">3</span>, <span class="prop">name</span>: <span class="str">'Bob'</span>, <span class="prop">grade</span>: <span class="str">'A'</span> },
+  ];
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {students.<span class="fn">map</span>(student => (
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={student.id}<span class="tag">&gt;</span>
+          {student.name} - Grade: {student.grade}
+        <span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}
+
+<span class="cmt">// Renders:</span>
+<span class="cmt">// • John - Grade: A</span>
+<span class="cmt">// • Jane - Grade: B</span>
+<span class="cmt">// • Bob - Grade: A</span></pre></div>
+        </div>
+
+        <h3>🎴 Rendering Component Lists</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; List of Components</div>
+          <div class="code-body"><pre><span class="cmt">// StudentCard component</span>
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, onSelect }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card"</span> <span class="attr">onClick</span>={() => <span class="fn">onSelect</span>(student.id)}<span class="tag">&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Age: {student.age}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"grade"</span><span class="tag">&gt;</span>Grade: {student.grade}<span class="tag">&lt;/span&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Parent component rendering list</span>
+<span class="kw">function</span> <span class="fn">StudentGrid</span>({ students }) {
+  <span class="kw">const</span> [selectedId, setSelectedId] = <span class="fn">useState</span>(<span class="kw">null</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"grid"</span><span class="tag">&gt;</span>
+      {students.<span class="fn">map</span>(student => (
+        <span class="tag">&lt;StudentCard</span>
+          <span class="attr">key</span>={student.id}
+          <span class="attr">student</span>={student}
+          <span class="attr">onSelect</span>={setSelectedId}
+        <span class="tag">/&gt;</span>
+      ))}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📊 Different Data Types</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Various List Types</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">ListExamples</span>() {
+  <span class="cmt">// Array of strings</span>
+  <span class="kw">const</span> fruits = [<span class="str">'Apple'</span>, <span class="str">'Banana'</span>, <span class="str">'Cherry'</span>];
+  
+  <span class="cmt">// Array of numbers</span>
+  <span class="kw">const</span> scores = [<span class="num">95</span>, <span class="num">87</span>, <span class="num">92</span>, <span class="num">78</span>];
+  
+  <span class="cmt">// Array of objects</span>
+  <span class="kw">const</span> users = [
+    { <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">name</span>: <span class="str">'Alice'</span> },
+    { <span class="prop">id</span>: <span class="num">2</span>, <span class="prop">name</span>: <span class="str">'Bob'</span> },
+  ];
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* Strings - use value or index as key */}</span>
+      <span class="tag">&lt;ul&gt;</span>
+        {fruits.<span class="fn">map</span>((fruit, index) => (
+          <span class="tag">&lt;li</span> <span class="attr">key</span>={index}<span class="tag">&gt;</span>{fruit}<span class="tag">&lt;/li&gt;</span>
+        ))}
+      <span class="tag">&lt;/ul&gt;</span>
+      
+      <span class="cmt">{/* Numbers - transform while mapping */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"scores"</span><span class="tag">&gt;</span>
+        {scores.<span class="fn">map</span>((score, index) => (
+          <span class="tag">&lt;span</span> 
+            <span class="attr">key</span>={index}
+            <span class="attr">className</span>={score >= <span class="num">90</span> ? <span class="str">'high'</span> : <span class="str">'normal'</span>}
+          <span class="tag">&gt;</span>
+            {score}
+          <span class="tag">&lt;/span&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Objects - use unique id as key */}</span>
+      <span class="tag">&lt;div&gt;</span>
+        {users.<span class="fn">map</span>(user => (
+          <span class="tag">&lt;div</span> <span class="attr">key</span>={user.id}<span class="tag">&gt;</span>
+            {user.name}
+          <span class="tag">&lt;/div&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Keys -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-keys">🔑</div>
+        <div class="section-title">Understanding Keys</div>
+        <span class="section-badge" style="background: rgba(251,146,60,0.2); color: var(--lists);">Lists</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--lists);">Why Keys Matter</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Keys help React identify which items have changed, been added, or removed.
+          They are <strong>essential</strong> for efficient list rendering and preventing bugs.
+        </p>
+
+        <h3>🔑 What is a Key?</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📋</div>
+            <div style="font-weight: 600;">Array</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">[A, B, C]</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box list">
+            <div style="font-size: 1.5rem;">🔑</div>
+            <div style="font-weight: 600; color: var(--lists);">Keys</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Unique identifiers</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">⚛️</div>
+            <div style="font-weight: 600;">React</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Tracks changes</div>
+          </div>
+        </div>
+
+        <h3>✅ Good Key Choices</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Good Keys</div>
+          <div class="code-body"><pre><span class="cmt">// ✅ BEST: Database ID (guaranteed unique)</span>
+{students.<span class="fn">map</span>(student => (
+  <span class="tag">&lt;StudentCard</span> <span class="attr">key</span>={student.id} <span class="attr">student</span>={student} <span class="tag">/&gt;</span>
+))}
+
+<span class="cmt">// ✅ GOOD: UUID or unique identifier</span>
+{items.<span class="fn">map</span>(item => (
+  <span class="tag">&lt;Item</span> <span class="attr">key</span>={item.uuid} <span class="attr">data</span>={item} <span class="tag">/&gt;</span>
+))}
+
+<span class="cmt">// ✅ GOOD: Unique string value (if guaranteed unique)</span>
+{countries.<span class="fn">map</span>(country => (
+  <span class="tag">&lt;option</span> <span class="attr">key</span>={country.code} <span class="attr">value</span>={country.code}<span class="tag">&gt;</span>
+    {country.name}
+  <span class="tag">&lt;/option&gt;</span>
+))}
+
+<span class="cmt">// ✅ OK: Index (only for static lists that never reorder)</span>
+{staticMenuItems.<span class="fn">map</span>((item, index) => (
+  <span class="tag">&lt;MenuItem</span> <span class="attr">key</span>={index} <span class="attr">item</span>={item} <span class="tag">/&gt;</span>
+))}</pre></div>
+        </div>
+
+        <h3>❌ Bad Key Choices</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Bad Keys</div>
+          <div class="code-body"><pre><span class="cmt">// ❌ BAD: Random number (changes every render!)</span>
+{items.<span class="fn">map</span>(item => (
+  <span class="tag">&lt;Item</span> <span class="attr">key</span>={Math.<span class="fn">random</span>()} <span class="attr">data</span>={item} <span class="tag">/&gt;</span>  <span class="cmt">// NEVER do this!</span>
+))}
+
+<span class="cmt">// ❌ BAD: Index for dynamic lists (will cause bugs)</span>
+{todoList.<span class="fn">map</span>((todo, index) => (
+  <span class="tag">&lt;TodoItem</span> <span class="attr">key</span>={index} <span class="attr">todo</span>={todo} <span class="tag">/&gt;</span>  <span class="cmt">// Buggy if list changes!</span>
+))}
+
+<span class="cmt">// ❌ BAD: Non-unique values</span>
+{students.<span class="fn">map</span>(student => (
+  <span class="tag">&lt;StudentCard</span> <span class="attr">key</span>={student.grade} <span class="attr">student</span>={student} <span class="tag">/&gt;</span>  <span class="cmt">// Multiple A's!</span>
+))}</pre></div>
+        </div>
+
+        <h3>🐛 What Happens Without Good Keys?</h3>
+        <div class="danger">
+          <div class="danger-title">🚨 Index Key Bug Example</div>
+          <div class="danger-content">
+            When using index as key for a dynamic list that can be reordered, React gets confused about which item is which.
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; The Index Key Bug</div>
+          <div class="code-body"><pre><span class="cmt">// Initial list: [A, B, C] with indexes [0, 1, 2]</span>
+<span class="cmt">// User deletes B</span>
+<span class="cmt">// New list: [A, C] with indexes [0, 1]</span>
+
+<span class="cmt">// ❌ With index keys:</span>
+<span class="cmt">// React thinks: "key 0 is A (same), key 1 is now C (was B)"</span>
+<span class="cmt">// React updates B's content to C instead of removing B!</span>
+<span class="cmt">// This causes input state, animations, etc. to be wrong</span>
+
+<span class="cmt">// ✅ With unique ID keys:</span>
+<span class="cmt">// React knows: "id-A still exists, id-B is gone, id-C still exists"</span>
+<span class="cmt">// React correctly removes B's element</span></pre></div>
+        </div>
+
+        <h3>🔑 Key Rules Summary</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Rule</th>
+              <th>Explanation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Must be unique</strong></td>
+              <td>Among siblings (not globally)</td>
+            </tr>
+            <tr>
+              <td><strong>Must be stable</strong></td>
+              <td>Same item = same key across renders</td>
+            </tr>
+            <tr>
+              <td><strong>Use IDs when possible</strong></td>
+              <td>Database IDs, UUIDs are best</td>
+            </tr>
+            <tr>
+              <td><strong>Index only for static lists</strong></td>
+              <td>Never add, remove, or reorder</td>
+            </tr>
+            <tr>
+              <td><strong>Don't generate in render</strong></td>
+              <td>No Math.random() or Date.now()</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 8: Filtering & Sorting -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon icon-filter">🔍</div>
+        <div class="section-title">Filtering & Sorting Lists</div>
+        <span class="section-badge" style="background: rgba(251,146,60,0.2); color: var(--lists);">Lists</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--lists);">Transforming Lists Before Rendering</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Often you need to filter, sort, or transform data before displaying it.
+          Chain array methods before <code>map()</code> to achieve this.
+        </p>
+
+        <h3>🔍 Filtering Lists</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Filter Examples</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">FilteredStudentList</span>({ students }) {
+  <span class="kw">const</span> [gradeFilter, setGradeFilter] = <span class="fn">useState</span>(<span class="str">'all'</span>);
+  <span class="kw">const</span> [searchTerm, setSearchTerm] = <span class="fn">useState</span>(<span class="str">''</span>);
+
+  <span class="cmt">// Filter the array based on state</span>
+  <span class="kw">const</span> filteredStudents = students
+    <span class="cmt">// Filter by grade</span>
+    .<span class="fn">filter</span>(student => {
+      <span class="kw">if</span> (gradeFilter === <span class="str">'all'</span>) <span class="kw">return true</span>;
+      <span class="kw">return</span> student.grade === gradeFilter;
+    })
+    <span class="cmt">// Filter by search term</span>
+    .<span class="fn">filter</span>(student => {
+      <span class="kw">if</span> (!searchTerm) <span class="kw">return true</span>;
+      <span class="kw">return</span> student.name.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(searchTerm.<span class="fn">toLowerCase</span>());
+    });
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* Filter controls */}</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">type</span>=<span class="str">"text"</span>
+        <span class="attr">placeholder</span>=<span class="str">"Search by name..."</span>
+        <span class="attr">value</span>={searchTerm}
+        <span class="attr">onChange</span>={(e) => <span class="fn">setSearchTerm</span>(e.target.value)}
+      <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;select</span> <span class="attr">value</span>={gradeFilter} <span class="attr">onChange</span>={(e) => <span class="fn">setGradeFilter</span>(e.target.value)}<span class="tag">&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"all"</span><span class="tag">&gt;</span>All Grades<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"A"</span><span class="tag">&gt;</span>Grade A<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"B"</span><span class="tag">&gt;</span>Grade B<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"C"</span><span class="tag">&gt;</span>Grade C<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;/select&gt;</span>
+      
+      <span class="cmt">{/* Show count */}</span>
+      <span class="tag">&lt;p&gt;</span>Showing {filteredStudents.length} of {students.length} students<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="cmt">{/* Render filtered list */}</span>
+      <span class="tag">&lt;ul&gt;</span>
+        {filteredStudents.<span class="fn">map</span>(student => (
+          <span class="tag">&lt;li</span> <span class="attr">key</span>={student.id}<span class="tag">&gt;</span>{student.name} - {student.grade}<span class="tag">&lt;/li&gt;</span>
+        ))}
+      <span class="tag">&lt;/ul&gt;</span>
+      
+      <span class="cmt">{/* Empty state */}</span>
+      {filteredStudents.length === <span class="num">0</span> && (
+        <span class="tag">&lt;p&gt;</span>No students match your filters<span class="tag">&lt;/p&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📊 Sorting Lists</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Sort Examples</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">SortableStudentList</span>({ students }) {
+  <span class="kw">const</span> [sortBy, setSortBy] = <span class="fn">useState</span>(<span class="str">'name'</span>);
+  <span class="kw">const</span> [sortOrder, setSortOrder] = <span class="fn">useState</span>(<span class="str">'asc'</span>);
+
+  <span class="cmt">// Sort the array</span>
+  <span class="kw">const</span> sortedStudents = [...students].<span class="fn">sort</span>((a, b) => {
+    <span class="kw">let</span> comparison = <span class="num">0</span>;
+    
+    <span class="kw">switch</span> (sortBy) {
+      <span class="kw">case</span> <span class="str">'name'</span>:
+        comparison = a.name.<span class="fn">localeCompare</span>(b.name);
+        <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'age'</span>:
+        comparison = a.age - b.age;
+        <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'grade'</span>:
+        comparison = a.grade.<span class="fn">localeCompare</span>(b.grade);
+        <span class="kw">break</span>;
+      <span class="kw">default</span>:
+        comparison = <span class="num">0</span>;
+    }
+    
+    <span class="cmt">// Reverse for descending order</span>
+    <span class="kw">return</span> sortOrder === <span class="str">'asc'</span> ? comparison : -comparison;
+  });
+
+  <span class="kw">const</span> <span class="fn">toggleSort</span> = (field) => {
+    <span class="kw">if</span> (sortBy === field) {
+      <span class="fn">setSortOrder</span>(sortOrder === <span class="str">'asc'</span> ? <span class="str">'desc'</span> : <span class="str">'asc'</span>);
+    } <span class="kw">else</span> {
+      <span class="fn">setSortBy</span>(field);
+      <span class="fn">setSortOrder</span>(<span class="str">'asc'</span>);
+    }
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;table&gt;</span>
+      <span class="tag">&lt;thead&gt;</span>
+        <span class="tag">&lt;tr&gt;</span>
+          <span class="tag">&lt;th</span> <span class="attr">onClick</span>={() => <span class="fn">toggleSort</span>(<span class="str">'name'</span>)}<span class="tag">&gt;</span>
+            Name {sortBy === <span class="str">'name'</span> && (sortOrder === <span class="str">'asc'</span> ? <span class="str">'↑'</span> : <span class="str">'↓'</span>)}
+          <span class="tag">&lt;/th&gt;</span>
+          <span class="tag">&lt;th</span> <span class="attr">onClick</span>={() => <span class="fn">toggleSort</span>(<span class="str">'age'</span>)}<span class="tag">&gt;</span>
+            Age {sortBy === <span class="str">'age'</span> && (sortOrder === <span class="str">'asc'</span> ? <span class="str">'↑'</span> : <span class="str">'↓'</span>)}
+          <span class="tag">&lt;/th&gt;</span>
+          <span class="tag">&lt;th</span> <span class="attr">onClick</span>={() => <span class="fn">toggleSort</span>(<span class="str">'grade'</span>)}<span class="tag">&gt;</span>
+            Grade {sortBy === <span class="str">'grade'</span> && (sortOrder === <span class="str">'asc'</span> ? <span class="str">'↑'</span> : <span class="str">'↓'</span>)}
+          <span class="tag">&lt;/th&gt;</span>
+        <span class="tag">&lt;/tr&gt;</span>
+      <span class="tag">&lt;/thead&gt;</span>
+      <span class="tag">&lt;tbody&gt;</span>
+        {sortedStudents.<span class="fn">map</span>(student => (
+          <span class="tag">&lt;tr</span> <span class="attr">key</span>={student.id}<span class="tag">&gt;</span>
+            <span class="tag">&lt;td&gt;</span>{student.name}<span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>{student.age}<span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>{student.grade}<span class="tag">&lt;/td&gt;</span>
+          <span class="tag">&lt;/tr&gt;</span>
+        ))}
+      <span class="tag">&lt;/tbody&gt;</span>
+    <span class="tag">&lt;/table&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Don't Mutate Original Array!</div>
+          <div class="warning-content">
+            <code>sort()</code> mutates the original array! Always create a copy first with <code>[...array]</code> or <code>array.slice()</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9: Complete Example -->
+    <div class="section" id="s9">
+      <div class="section-header" onclick="toggleSection('s9')">
+        <div class="section-icon icon-project">🚀</div>
+        <div class="section-title">Complete Example: Student Dashboard</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Putting It All Together</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          A complete example combining conditional rendering and list handling.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentDashboard.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Status configuration</span>
+<span class="kw">const</span> GRADE_CONFIG = {
+  <span class="str">'A'</span>: { <span class="prop">color</span>: <span class="str">'#22c55e'</span>, <span class="prop">label</span>: <span class="str">'Excellent'</span> },
+  <span class="str">'B'</span>: { <span class="prop">color</span>: <span class="str">'#3b82f6'</span>, <span class="prop">label</span>: <span class="str">'Good'</span> },
+  <span class="str">'C'</span>: { <span class="prop">color</span>: <span class="str">'#f59e0b'</span>, <span class="prop">label</span>: <span class="str">'Average'</span> },
+  <span class="str">'D'</span>: { <span class="prop">color</span>: <span class="str">'#ef4444'</span>, <span class="prop">label</span>: <span class="str">'Needs Work'</span> },
+};
+
+<span class="cmt">// Student Card Component</span>
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected, onSelect, onDelete }) {
+  <span class="kw">const</span> gradeInfo = GRADE_CONFIG[student.grade] || { <span class="prop">color</span>: <span class="str">'#6b7280'</span>, <span class="prop">label</span>: <span class="str">'Unknown'</span> };
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> 
+      <span class="attr">className</span>={<span class="str">`card ${isSelected ? 'selected' : ''}`</span>}
+      <span class="attr">onClick</span>={() => <span class="fn">onSelect</span>(student.id)}
+    <span class="tag">&gt;</span>
+      <span class="cmt">{/* Avatar or initials */}</span>
+      {student.avatar ? (
+        <span class="tag">&lt;img</span> <span class="attr">src</span>={student.avatar} <span class="attr">alt</span>={student.name} <span class="attr">className</span>=<span class="str">"avatar"</span> <span class="tag">/&gt;</span>
+      ) : (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"avatar-placeholder"</span><span class="tag">&gt;</span>
+          {student.name.<span class="fn">split</span>(<span class="str">' '</span>).<span class="fn">map</span>(n => n[<span class="num">0</span>]).<span class="fn">join</span>(<span class="str">''</span>)}
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+      
+      <span class="tag">&lt;h3&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Age: {student.age}<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="cmt">{/* Grade badge with color */}</span>
+      <span class="tag">&lt;span</span> 
+        <span class="attr">className</span>=<span class="str">"grade-badge"</span>
+        <span class="attr">style</span>={{ <span class="prop">backgroundColor</span>: gradeInfo.color }}
+      <span class="tag">&gt;</span>
+        Grade {student.grade} - {gradeInfo.label}
+      <span class="tag">&lt;/span&gt;</span>
+      
+      <span class="cmt">{/* Conditional badges */}</span>
+      {student.isHonorRoll && (
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"badge honor"</span><span class="tag">&gt;</span>🏆 Honor Roll<span class="tag">&lt;/span&gt;</span>
+      )}
+      
+      {student.attendance < <span class="num">80</span> && (
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"badge warning"</span><span class="tag">&gt;</span>⚠️ Low Attendance<span class="tag">&lt;/span&gt;</span>
+      )}
+      
+      <span class="cmt">{/* Actions */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"actions"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={(e) => { e.<span class="fn">stopPropagation</span>(); <span class="fn">onDelete</span>(student.id); }}<span class="tag">&gt;</span>
+          Delete
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Main Dashboard Component</span>
+<span class="kw">function</span> <span class="fn">StudentDashboard</span>() {
+  <span class="cmt">// State</span>
+  <span class="kw">const</span> [students, setStudents] = <span class="fn">useState</span>([
+    { <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">name</span>: <span class="str">'Alice Johnson'</span>, <span class="prop">age</span>: <span class="num">16</span>, <span class="prop">grade</span>: <span class="str">'A'</span>, <span class="prop">isHonorRoll</span>: <span class="kw">true</span>, <span class="prop">attendance</span>: <span class="num">95</span> },
+    { <span class="prop">id</span>: <span class="num">2</span>, <span class="prop">name</span>: <span class="str">'Bob Smith'</span>, <span class="prop">age</span>: <span class="num">17</span>, <span class="prop">grade</span>: <span class="str">'B'</span>, <span class="prop">isHonorRoll</span>: <span class="kw">false</span>, <span class="prop">attendance</span>: <span class="num">88</span> },
+    { <span class="prop">id</span>: <span class="num">3</span>, <span class="prop">name</span>: <span class="str">'Carol White'</span>, <span class="prop">age</span>: <span class="num">16</span>, <span class="prop">grade</span>: <span class="str">'A'</span>, <span class="prop">isHonorRoll</span>: <span class="kw">true</span>, <span class="prop">attendance</span>: <span class="num">92</span> },
+    { <span class="prop">id</span>: <span class="num">4</span>, <span class="prop">name</span>: <span class="str">'David Brown'</span>, <span class="prop">age</span>: <span class="num">15</span>, <span class="prop">grade</span>: <span class="str">'C'</span>, <span class="prop">isHonorRoll</span>: <span class="kw">false</span>, <span class="prop">attendance</span>: <span class="num">75</span> },
+  ]);
+  
+  <span class="kw">const</span> [selectedId, setSelectedId] = <span class="fn">useState</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> [filter, setFilter] = <span class="fn">useState</span>(<span class="str">'all'</span>);
+  <span class="kw">const</span> [searchTerm, setSearchTerm] = <span class="fn">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [isLoading, setIsLoading] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="cmt">// Filter and search</span>
+  <span class="kw">const</span> filteredStudents = students
+    .<span class="fn">filter</span>(s => filter === <span class="str">'all'</span> || s.grade === filter)
+    .<span class="fn">filter</span>(s => s.name.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(searchTerm.<span class="fn">toLowerCase</span>()));
+
+  <span class="cmt">// Handlers</span>
+  <span class="kw">const</span> <span class="fn">deleteStudent</span> = (id) => {
+    <span class="fn">setStudents</span>(prev => prev.<span class="fn">filter</span>(s => s.id !== id));
+    <span class="kw">if</span> (selectedId === id) <span class="fn">setSelectedId</span>(<span class="kw">null</span>);
+  };
+
+  <span class="cmt">// Loading state</span>
+  <span class="kw">if</span> (isLoading) {
+    <span class="kw">return</span> <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"loading"</span><span class="tag">&gt;</span>Loading students...<span class="tag">&lt;/div&gt;</span>;
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"dashboard"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Student Dashboard<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Stats */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stats"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div&gt;</span>Total: {students.length}<span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;div&gt;</span>Honor Roll: {students.<span class="fn">filter</span>(s => s.isHonorRoll).length}<span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;div&gt;</span>Low Attendance: {students.<span class="fn">filter</span>(s => s.attendance < <span class="num">80</span>).length}<span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Controls */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"controls"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;input</span>
+          <span class="attr">type</span>=<span class="str">"text"</span>
+          <span class="attr">placeholder</span>=<span class="str">"Search students..."</span>
+          <span class="attr">value</span>={searchTerm}
+          <span class="attr">onChange</span>={(e) => <span class="fn">setSearchTerm</span>(e.target.value)}
+        <span class="tag">/&gt;</span>
+        
+        <span class="tag">&lt;select</span> <span class="attr">value</span>={filter} <span class="attr">onChange</span>={(e) => <span class="fn">setFilter</span>(e.target.value)}<span class="tag">&gt;</span>
+          <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"all"</span><span class="tag">&gt;</span>All Grades<span class="tag">&lt;/option&gt;</span>
+          {Object.<span class="fn">keys</span>(GRADE_CONFIG).<span class="fn">map</span>(grade => (
+            <span class="tag">&lt;option</span> <span class="attr">key</span>={grade} <span class="attr">value</span>={grade}<span class="tag">&gt;</span>Grade {grade}<span class="tag">&lt;/option&gt;</span>
+          ))}
+        <span class="tag">&lt;/select&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="cmt">{/* Results count */}</span>
+      <span class="tag">&lt;p&gt;</span>
+        Showing {filteredStudents.length} of {students.length} students
+        {searchTerm && <span class="str">` matching "${searchTerm}"`</span>}
+      <span class="tag">&lt;/p&gt;</span>
+      
+      <span class="cmt">{/* Student grid or empty state */}</span>
+      {filteredStudents.length > <span class="num">0</span> ? (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"grid"</span><span class="tag">&gt;</span>
+          {filteredStudents.<span class="fn">map</span>(student => (
+            <span class="tag">&lt;StudentCard</span>
+              <span class="attr">key</span>={student.id}
+              <span class="attr">student</span>={student}
+              <span class="attr">isSelected</span>={student.id === selectedId}
+              <span class="attr">onSelect</span>={setSelectedId}
+              <span class="attr">onDelete</span>={deleteStudent}
+            <span class="tag">/&gt;</span>
+          ))}
+        <span class="tag">&lt;/div&gt;</span>
+      ) : (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"empty-state"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;p&gt;</span>No students found<span class="tag">&lt;/p&gt;</span>
+          {(searchTerm || filter !== <span class="str">'all'</span>) && (
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => { <span class="fn">setSearchTerm</span>(<span class="str">''</span>); <span class="fn">setFilter</span>(<span class="str">'all'</span>); }}<span class="tag">&gt;</span>
+              Clear Filters
+            <span class="tag">&lt;/button&gt;</span>
+          )}
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentDashboard;</pre></div>
+        </div>
+
+        <h3>📋 Summary Cheat Sheet</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Method</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Show A or B</td>
+              <td>Ternary</td>
+              <td><code>{isX ? &lt;A/&gt; : &lt;B/&gt;}</code></td>
+            </tr>
+            <tr>
+              <td>Show or nothing</td>
+              <td>&&</td>
+              <td><code>{isX && &lt;A/&gt;}</code></td>
+            </tr>
+            <tr>
+              <td>Complex conditions</td>
+              <td>if/else + return</td>
+              <td>Before return statement</td>
+            </tr>
+            <tr>
+              <td>Many cases</td>
+              <td>Object map</td>
+              <td><code>CONFIG[type]</code></td>
+            </tr>
+            <tr>
+              <td>Render array</td>
+              <td>map()</td>
+              <td><code>{arr.map(x => ...)}</code></td>
+            </tr>
+            <tr>
+              <td>Filter list</td>
+              <td>filter().map()</td>
+              <td><code>{arr.filter().map()}</code></td>
+            </tr>
+            <tr>
+              <td>Sort list</td>
+              <td>[...arr].sort().map()</td>
+              <td>Copy first, then sort!</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 Best Practices</div>
+          <div class="tip-content">
+            1. <strong>Always use unique keys</strong> for list items<br>
+            2. <strong>Don't nest ternaries</strong> - use early returns<br>
+            3. <strong>Handle empty states</strong> - show meaningful messages<br>
+            4. <strong>Handle loading states</strong> - show loading indicators<br>
+            5. <strong>Extract complex conditions</strong> into variables<br>
+            6. <strong>Use object mapping</strong> for multiple similar conditions
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(244,114,182,0.1), rgba(251,146,60,0.05)); border-radius: 16px; border: 1px solid var(--border);">
+      <h3 style="color: var(--conditional); margin-bottom: 0.5rem;">🎉 You've Mastered Conditional Rendering & Lists!</h3>
+      <p style="color: var(--muted);">From simple ternaries to complex filtered, sorted lists!</p>
+      <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+        <span class="badge badge-secondary">if/else</span>
+        <span class="badge badge-primary">Ternary</span>
+        <span class="badge badge-accent">&& Operator</span>
+        <span class="badge badge-warning">map()</span>
+        <span class="badge badge-danger">Keys</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

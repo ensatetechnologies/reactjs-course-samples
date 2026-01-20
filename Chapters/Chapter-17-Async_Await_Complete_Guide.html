@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asynchronous Programming in React | async/await Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --async: #f472b6; --await: #38bdf8; --promise: #fb923c; --fetch: #4ade80;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    /* Hero Section */
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(244,114,182,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(56,189,248,0.15) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--async), var(--await)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero-icon { font-size: 4rem; margin-bottom: 0.5rem; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-async { background: var(--async); color: white; }
+    .badge-await { background: var(--await); color: #000; }
+    .badge-promise { background: var(--promise); color: #000; }
+    .badge-fetch { background: var(--fetch); color: #000; }
+    
+    /* Section Styles */
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; }
+    .icon-intro { background: linear-gradient(135deg, var(--async), #db2777); }
+    .icon-callback { background: linear-gradient(135deg, var(--warning), #d97706); }
+    .icon-promise { background: linear-gradient(135deg, var(--promise), #ea580c); }
+    .icon-async { background: linear-gradient(135deg, var(--await), #0284c7); }
+    .icon-error { background: linear-gradient(135deg, var(--danger), #b91c1c); }
+    .icon-fetch { background: linear-gradient(135deg, var(--fetch), #16a34a); }
+    .icon-react { background: linear-gradient(135deg, #61dafb, #0891b2); }
+    .icon-app { background: linear-gradient(135deg, var(--secondary), #7c3aed); }
+    .icon-tips { background: linear-gradient(135deg, var(--accent), #059669); }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-badge { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    /* Code Blocks */
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    /* Syntax Highlighting */
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .prop { color: #e5c07b; } .op { color: #56b6c2; } .async { color: #f472b6; font-weight: bold; } .await { color: #38bdf8; font-weight: bold; }
+    
+    /* Grid Layouts */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 500px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    /* Cards */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; transition: all 0.3s; }
+    .card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .card-async { border-color: var(--async); background: linear-gradient(135deg, rgba(244,114,182,0.08), transparent); }
+    .card-await { border-color: var(--await); background: linear-gradient(135deg, rgba(56,189,248,0.08), transparent); }
+    .card-promise { border-color: var(--promise); background: linear-gradient(135deg, rgba(251,146,60,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    
+    /* Info Boxes */
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    /* Visual Containers */
+    .visual-container { background: var(--surface2); border: 2px solid var(--border); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .visual-title { color: var(--primary); font-weight: 600; margin-bottom: 1.5rem; text-align: center; font-size: 1.1rem; }
+    
+    /* Timeline Flow */
+    .timeline { position: relative; padding: 1rem 0; }
+    .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, var(--async), var(--await), var(--accent)); border-radius: 2px; transform: translateX(-50%); }
+    .timeline-item { display: flex; align-items: center; margin: 1.5rem 0; position: relative; }
+    .timeline-item:nth-child(odd) { flex-direction: row-reverse; }
+    .timeline-item:nth-child(odd) .timeline-content { text-align: right; margin-right: 2rem; margin-left: 0; }
+    .timeline-item:nth-child(even) .timeline-content { margin-left: 2rem; }
+    .timeline-dot { width: 20px; height: 20px; background: var(--primary); border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); z-index: 1; border: 3px solid var(--bg); }
+    .timeline-content { flex: 1; max-width: 45%; }
+    .timeline-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+    
+    /* Flow Diagram */
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 1.5rem; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { transform: translateY(-3px); }
+    .flow-box.sync { border-color: var(--muted); }
+    .flow-box.async-box { border-color: var(--async); box-shadow: 0 0 20px rgba(244,114,182,0.2); }
+    .flow-box.await-box { border-color: var(--await); box-shadow: 0 0 20px rgba(56,189,248,0.2); }
+    .flow-box.result { border-color: var(--accent); box-shadow: 0 0 20px rgba(52,211,153,0.2); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    /* Concept Cards */
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.3s; }
+    .concept-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .concept-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .concept-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem; }
+    .concept-desc { color: var(--muted); font-size: 0.85rem; }
+    
+    /* VS Container */
+    .vs-container { display: flex; align-items: stretch; gap: 1rem; margin: 1rem 0; }
+    .vs-box { flex: 1; padding: 1rem; border-radius: 12px; }
+    .vs-box.good { background: rgba(52,211,153,0.1); border: 1px solid var(--accent); }
+    .vs-box.bad { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); }
+    .vs-box.old { background: rgba(251,191,36,0.1); border: 1px solid var(--warning); }
+    .vs-box.new { background: rgba(56,189,248,0.1); border: 1px solid var(--await); }
+    .vs-divider { display: flex; align-items: center; font-weight: 700; color: var(--warning); }
+    @media (max-width: 768px) { .vs-container { flex-direction: column; } .vs-divider { justify-content: center; padding: 0.5rem; } }
+    
+    /* Badges */
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    /* Demo Container */
+    .demo-container { background: var(--surface2); border: 2px solid var(--border); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .demo-title { color: var(--primary); font-weight: 600; margin-bottom: 1rem; text-align: center; }
+    
+    /* App Preview */
+    .app-preview { background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .app-header { background: var(--surface); padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .app-title { font-weight: 600; color: var(--text); }
+    .app-body { padding: 1.5rem; }
+    
+    /* Buttons */
+    .btn { padding: 0.75rem 1.25rem; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 0.95rem; font-weight: 600; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: var(--bg); }
+    .btn-primary:hover { background: #06b6d4; transform: translateY(-2px); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 2px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--primary); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-accent { background: var(--accent); color: var(--bg); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    
+    /* User Cards */
+    .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .user-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; }
+    .user-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .user-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .user-info { flex: 1; }
+    .user-name { font-weight: 600; font-size: 0.95rem; }
+    .user-email { color: var(--muted); font-size: 0.8rem; }
+    
+    /* Loading States */
+    .loading-spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 2rem auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .skeleton { background: linear-gradient(90deg, var(--surface2) 25%, var(--surface) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    
+    /* Status Indicator */
+    .status { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; }
+    .status.pending { background: rgba(251,191,36,0.1); color: var(--warning); }
+    .status.success { background: rgba(52,211,153,0.1); color: var(--accent); }
+    .status.error { background: rgba(239,68,68,0.1); color: var(--danger); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status.pending .status-dot { background: var(--warning); animation: pulse 1s infinite; }
+    .status.success .status-dot { background: var(--accent); }
+    .status.error .status-dot { background: var(--danger); }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    
+    /* Table */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    /* Evolution Arrow */
+    .evolution { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 2rem 0; flex-wrap: wrap; }
+    .evolution-item { text-align: center; padding: 1rem; }
+    .evolution-arrow { font-size: 2rem; color: var(--primary); }
+    
+    /* Footer */
+    .footer { text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(244,114,182,0.1), rgba(56,189,248,0.05)); border-radius: 16px; border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="hero">
+      <div class="hero-icon">⏳</div>
+      <h1>Asynchronous Programming</h1>
+      <p>Master async/await to handle time-based operations in React</p>
+      <div class="hero-badges">
+        <span class="hero-badge badge-async">async</span>
+        <span class="hero-badge badge-await">await</span>
+        <span class="hero-badge badge-promise">Promises</span>
+        <span class="hero-badge badge-fetch">fetch API</span>
+      </div>
+    </div>
+
+    <!-- Section 1: Introduction -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-intro">⏳</div>
+        <div class="section-title">What is Asynchronous Programming?</div>
+        <span class="section-badge badge-primary">Foundation</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--async); margin-bottom: 1rem;">Understanding Sync vs Async</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          In <strong>synchronous</strong> code, each line waits for the previous one to complete.
+          In <strong>asynchronous</strong> code, some operations can run in the background while other code continues executing.
+        </p>
+
+        <h3 style="color: var(--primary);">🍳 Real-World Analogy: Making Breakfast</h3>
+        <div class="grid-2">
+          <div class="card" style="border-color: var(--muted);">
+            <h4 style="color: var(--muted);">Synchronous (Blocking)</h4>
+            <div style="font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem;">
+              <p>1. Start toasting bread... wait 3 min ⏳</p>
+              <p>2. Toast done! Now boil water... wait 5 min ⏳</p>
+              <p>3. Water boiled! Now make coffee... wait 2 min ⏳</p>
+              <p><strong>Total: 10 minutes</strong> 😴</p>
+            </div>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Asynchronous (Non-Blocking)</h4>
+            <div style="font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem;">
+              <p>1. Start toasting bread 🍞</p>
+              <p>2. Start boiling water ☕ (while toast is toasting)</p>
+              <p>3. Prepare coffee grounds (while both are working)</p>
+              <p><strong>Total: ~5 minutes</strong> 🚀</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">💻 In Code: Sync vs Async</h3>
+        <div class="visual-container">
+          <div class="visual-title">Synchronous Execution (Blocking)</div>
+          <div class="flow-diagram">
+            <div class="flow-box sync">
+              <div style="font-size: 1.5rem;">1️⃣</div>
+              <div>Line 1</div>
+              <div style="font-size: 0.75rem; color: var(--muted);">runs first</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box sync">
+              <div style="font-size: 1.5rem;">2️⃣</div>
+              <div>Line 2</div>
+              <div style="font-size: 0.75rem; color: var(--muted);">waits for 1</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box sync">
+              <div style="font-size: 1.5rem;">3️⃣</div>
+              <div>Line 3</div>
+              <div style="font-size: 0.75rem; color: var(--muted);">waits for 2</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Synchronous Code</div>
+          <div class="code-body"><pre>console.<span class="fn">log</span>(<span class="str">'1. Start'</span>);
+console.<span class="fn">log</span>(<span class="str">'2. Middle'</span>);    <span class="cmt">// Waits for line 1</span>
+console.<span class="fn">log</span>(<span class="str">'3. End'</span>);       <span class="cmt">// Waits for line 2</span>
+
+<span class="cmt">// Output:</span>
+<span class="cmt">// 1. Start</span>
+<span class="cmt">// 2. Middle</span>
+<span class="cmt">// 3. End</span></pre></div>
+        </div>
+
+        <div class="visual-container">
+          <div class="visual-title">Asynchronous Execution (Non-Blocking)</div>
+          <div class="flow-diagram">
+            <div class="flow-box sync">
+              <div style="font-size: 1.5rem;">1️⃣</div>
+              <div>Line 1</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box async-box">
+              <div style="font-size: 1.5rem;">⏳</div>
+              <div>Async Op</div>
+              <div style="font-size: 0.75rem; color: var(--async);">starts, doesn't block</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box sync">
+              <div style="font-size: 1.5rem;">3️⃣</div>
+              <div>Line 3</div>
+              <div style="font-size: 0.75rem; color: var(--muted);">runs immediately!</div>
+            </div>
+          </div>
+          <p style="text-align: center; color: var(--async); margin-top: 1rem;">
+            ↓ Later, when async operation completes... ↓
+          </p>
+          <div class="flow-diagram">
+            <div class="flow-box result">
+              <div style="font-size: 1.5rem;">2️⃣</div>
+              <div>Callback</div>
+              <div style="font-size: 0.75rem; color: var(--accent);">runs when ready</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Asynchronous Code</div>
+          <div class="code-body"><pre>console.<span class="fn">log</span>(<span class="str">'1. Start'</span>);
+
+<span class="fn">setTimeout</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">'2. Async operation done!'</span>);
+}, <span class="num">2000</span>);  <span class="cmt">// Runs after 2 seconds</span>
+
+console.<span class="fn">log</span>(<span class="str">'3. End'</span>);  <span class="cmt">// Doesn't wait!</span>
+
+<span class="cmt">// Output:</span>
+<span class="cmt">// 1. Start</span>
+<span class="cmt">// 3. End          ← Runs immediately!</span>
+<span class="cmt">// 2. Async operation done!  ← Runs after 2 seconds</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">🎯 Common Async Operations</h3>
+        <div class="grid-4">
+          <div class="concept-card">
+            <div class="concept-icon">🌐</div>
+            <div class="concept-name">API Calls</div>
+            <div class="concept-desc">Fetching data from servers</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⏰</div>
+            <div class="concept-name">Timers</div>
+            <div class="concept-desc">setTimeout, setInterval</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📁</div>
+            <div class="concept-name">File Operations</div>
+            <div class="concept-desc">Reading/writing files</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">💾</div>
+            <div class="concept-name">Database</div>
+            <div class="concept-desc">Queries and updates</div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Why Async Matters in React</div>
+          <div class="tip-content">
+            React apps frequently fetch data from APIs, load images, and perform other operations that take time.
+            Without async programming, your UI would <strong>freeze</strong> while waiting for these operations!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Evolution - Callbacks to Async/Await -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-callback">📜</div>
+        <div class="section-title">The Evolution: Callbacks → Promises → Async/Await</div>
+        <span class="section-badge badge-warning">History</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--warning); margin-bottom: 1rem;">📜 How JavaScript Async Evolved</h2>
+        
+        <div class="evolution">
+          <div class="evolution-item">
+            <div style="font-size: 2.5rem;">📞</div>
+            <div style="font-weight: 600; color: var(--warning);">Callbacks</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">ES5 (Old Way)</div>
+          </div>
+          <div class="evolution-arrow">→</div>
+          <div class="evolution-item">
+            <div style="font-size: 2.5rem;">🤝</div>
+            <div style="font-weight: 600; color: var(--promise);">Promises</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">ES6 (2015)</div>
+          </div>
+          <div class="evolution-arrow">→</div>
+          <div class="evolution-item">
+            <div style="font-size: 2.5rem;">✨</div>
+            <div style="font-weight: 600; color: var(--await);">Async/Await</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">ES2017 (Modern)</div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">1️⃣ Callbacks (The Old Way)</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          Pass a function to be called when the async operation completes.
+        </p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Callbacks - Simple Example</div>
+          <div class="code-body"><pre><span class="cmt">// Simulating an API call with setTimeout</span>
+<span class="kw">function</span> <span class="fn">fetchUser</span>(userId, callback) {
+  <span class="fn">setTimeout</span>(() => {
+    <span class="kw">const</span> user = { <span class="prop">id</span>: userId, <span class="prop">name</span>: <span class="str">'John'</span> };
+    <span class="fn">callback</span>(user);  <span class="cmt">// Call the callback with data</span>
+  }, <span class="num">1000</span>);
+}
+
+<span class="cmt">// Using it</span>
+<span class="fn">fetchUser</span>(<span class="num">1</span>, (user) => {
+  console.<span class="fn">log</span>(<span class="str">'Got user:'</span>, user);
+});</pre></div>
+        </div>
+
+        <div class="danger">
+          <div class="danger-title">😱 Callback Hell (Pyramid of Doom)</div>
+          <div class="danger-content">Nested callbacks become unreadable and hard to maintain!</div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Callback Hell - Avoid This!</div>
+          <div class="code-body"><pre><span class="cmt">// ❌ CALLBACK HELL - Hard to read and maintain!</span>
+<span class="fn">fetchUser</span>(<span class="num">1</span>, (user) => {
+  <span class="fn">fetchPosts</span>(user.id, (posts) => {
+    <span class="fn">fetchComments</span>(posts[<span class="num">0</span>].id, (comments) => {
+      <span class="fn">fetchReplies</span>(comments[<span class="num">0</span>].id, (replies) => {
+        console.<span class="fn">log</span>(replies);
+        <span class="cmt">// 😵 4 levels deep already!</span>
+      });
+    });
+  });
+});</pre></div>
+        </div>
+
+        <h3 style="color: var(--promise); margin: 2rem 0 1rem;">2️⃣ Promises (Better)</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          A Promise represents a future value. It can be <strong>pending</strong>, <strong>fulfilled</strong>, or <strong>rejected</strong>.
+        </p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Promises - Chainable!</div>
+          <div class="code-body"><pre><span class="cmt">// Creating a Promise</span>
+<span class="kw">function</span> <span class="fn">fetchUser</span>(userId) {
+  <span class="kw">return new</span> <span class="fn">Promise</span>((resolve, reject) => {
+    <span class="fn">setTimeout</span>(() => {
+      <span class="kw">const</span> user = { <span class="prop">id</span>: userId, <span class="prop">name</span>: <span class="str">'John'</span> };
+      <span class="fn">resolve</span>(user);  <span class="cmt">// Success!</span>
+      <span class="cmt">// reject(new Error('Failed'));  // Or fail</span>
+    }, <span class="num">1000</span>);
+  });
+}
+
+<span class="cmt">// Using Promises - Chainable with .then()</span>
+<span class="fn">fetchUser</span>(<span class="num">1</span>)
+  .<span class="fn">then</span>(user => <span class="fn">fetchPosts</span>(user.id))
+  .<span class="fn">then</span>(posts => <span class="fn">fetchComments</span>(posts[<span class="num">0</span>].id))
+  .<span class="fn">then</span>(comments => console.<span class="fn">log</span>(comments))
+  .<span class="fn">catch</span>(error => console.<span class="fn">error</span>(<span class="str">'Error:'</span>, error));
+
+<span class="cmt">// ✅ Much flatter! No more pyramid!</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--await); margin: 2rem 0 1rem;">3️⃣ Async/Await (Modern & Best!)</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          Syntactic sugar over Promises that makes async code look synchronous!
+        </p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Async/Await - Clean & Readable!</div>
+          <div class="code-body"><pre><span class="cmt">// ✅ ASYNC/AWAIT - Reads like synchronous code!</span>
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">loadUserData</span>() {
+  <span class="kw">const</span> user = <span class="await">await</span> <span class="fn">fetchUser</span>(<span class="num">1</span>);
+  <span class="kw">const</span> posts = <span class="await">await</span> <span class="fn">fetchPosts</span>(user.id);
+  <span class="kw">const</span> comments = <span class="await">await</span> <span class="fn">fetchComments</span>(posts[<span class="num">0</span>].id);
+  
+  console.<span class="fn">log</span>(comments);
+  <span class="kw">return</span> comments;
+}
+
+<span class="cmt">// So clean! 🎉</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📊 Comparison</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Callbacks</th>
+              <th>Promises</th>
+              <th>Async/Await</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Readability</td>
+              <td>❌ Poor (nesting)</td>
+              <td>✅ Good (chaining)</td>
+              <td>✅✅ Best (linear)</td>
+            </tr>
+            <tr>
+              <td>Error Handling</td>
+              <td>❌ Complex</td>
+              <td>✅ .catch()</td>
+              <td>✅✅ try/catch</td>
+            </tr>
+            <tr>
+              <td>Debugging</td>
+              <td>❌ Hard</td>
+              <td>✅ Better</td>
+              <td>✅✅ Easy</td>
+            </tr>
+            <tr>
+              <td>Modern React</td>
+              <td>❌ Avoid</td>
+              <td>✅ Acceptable</td>
+              <td>✅✅ Preferred</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 3: Promises Deep Dive -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-promise">🤝</div>
+        <div class="section-title">Understanding Promises</div>
+        <span class="section-badge" style="background: rgba(251,146,60,0.2); color: var(--promise);">Promises</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--promise); margin-bottom: 1rem;">🤝 Promises: The Foundation</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          A Promise is an object representing the eventual completion (or failure) of an asynchronous operation.
+          Understanding Promises is essential because <strong>async/await is built on top of them</strong>.
+        </p>
+
+        <h3 style="color: var(--primary);">📊 Promise States</h3>
+        <div class="visual-container">
+          <div class="visual-title">A Promise Can Be In One of Three States</div>
+          <div class="grid-3">
+            <div class="card" style="border-color: var(--warning);">
+              <div style="text-align: center;">
+                <div style="font-size: 2.5rem;">⏳</div>
+                <h4 style="color: var(--warning);">Pending</h4>
+                <p style="color: var(--muted); font-size: 0.85rem;">Initial state, neither fulfilled nor rejected</p>
+              </div>
+            </div>
+            <div class="card" style="border-color: var(--accent);">
+              <div style="text-align: center;">
+                <div style="font-size: 2.5rem;">✅</div>
+                <h4 style="color: var(--accent);">Fulfilled</h4>
+                <p style="color: var(--muted); font-size: 0.85rem;">Operation completed successfully</p>
+              </div>
+            </div>
+            <div class="card" style="border-color: var(--danger);">
+              <div style="text-align: center;">
+                <div style="font-size: 2.5rem;">❌</div>
+                <h4 style="color: var(--danger);">Rejected</h4>
+                <p style="color: var(--muted); font-size: 0.85rem;">Operation failed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📝 Creating Promises</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Promise Basics</div>
+          <div class="code-body"><pre><span class="cmt">// Creating a Promise</span>
+<span class="kw">const</span> myPromise = <span class="kw">new</span> <span class="fn">Promise</span>((resolve, reject) => {
+  <span class="cmt">// Do some async operation</span>
+  <span class="kw">const</span> success = <span class="kw">true</span>;
+  
+  <span class="kw">if</span> (success) {
+    <span class="fn">resolve</span>(<span class="str">'Operation successful!'</span>);  <span class="cmt">// Fulfilled</span>
+  } <span class="kw">else</span> {
+    <span class="fn">reject</span>(<span class="kw">new</span> <span class="fn">Error</span>(<span class="str">'Operation failed!'</span>));  <span class="cmt">// Rejected</span>
+  }
+});
+
+<span class="cmt">// Consuming a Promise</span>
+myPromise
+  .<span class="fn">then</span>(result => console.<span class="fn">log</span>(result))   <span class="cmt">// Handle success</span>
+  .<span class="fn">catch</span>(error => console.<span class="fn">error</span>(error))  <span class="cmt">// Handle error</span>
+  .<span class="fn">finally</span>(() => console.<span class="fn">log</span>(<span class="str">'Done!'</span>));   <span class="cmt">// Always runs</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">⏰ Simulating Async Operations</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Simulating API Calls</div>
+          <div class="code-body"><pre><span class="cmt">// Simulate fetching a user from database</span>
+<span class="kw">function</span> <span class="fn">fetchUser</span>(id) {
+  <span class="kw">return new</span> <span class="fn">Promise</span>((resolve, reject) => {
+    <span class="fn">setTimeout</span>(() => {
+      <span class="cmt">// Simulate success/failure</span>
+      <span class="kw">if</span> (id > <span class="num">0</span>) {
+        <span class="fn">resolve</span>({ <span class="prop">id</span>, <span class="prop">name</span>: <span class="str">'John Doe'</span>, <span class="prop">email</span>: <span class="str">'john@example.com'</span> });
+      } <span class="kw">else</span> {
+        <span class="fn">reject</span>(<span class="kw">new</span> <span class="fn">Error</span>(<span class="str">'Invalid user ID'</span>));
+      }
+    }, <span class="num">1500</span>);  <span class="cmt">// 1.5 second delay</span>
+  });
+}
+
+<span class="cmt">// Usage</span>
+<span class="fn">fetchUser</span>(<span class="num">1</span>)
+  .<span class="fn">then</span>(user => console.<span class="fn">log</span>(<span class="str">'User:'</span>, user))
+  .<span class="fn">catch</span>(err => console.<span class="fn">error</span>(<span class="str">'Error:'</span>, err.message));</pre></div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">🔗 Promise Chaining</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Chaining Multiple Operations</div>
+          <div class="code-body"><pre><span class="cmt">// Each .then() returns a new Promise</span>
+<span class="fn">fetchUser</span>(<span class="num">1</span>)
+  .<span class="fn">then</span>(user => {
+    console.<span class="fn">log</span>(<span class="str">'Got user:'</span>, user.name);
+    <span class="kw">return</span> <span class="fn">fetchUserPosts</span>(user.id);  <span class="cmt">// Return next Promise</span>
+  })
+  .<span class="fn">then</span>(posts => {
+    console.<span class="fn">log</span>(<span class="str">'Got posts:'</span>, posts.length);
+    <span class="kw">return</span> <span class="fn">fetchPostComments</span>(posts[<span class="num">0</span>].id);
+  })
+  .<span class="fn">then</span>(comments => {
+    console.<span class="fn">log</span>(<span class="str">'Got comments:'</span>, comments);
+  })
+  .<span class="fn">catch</span>(error => {
+    <span class="cmt">// Catches error from ANY step above!</span>
+    console.<span class="fn">error</span>(<span class="str">'Something went wrong:'</span>, error);
+  });</pre></div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">🚀 Promise Utility Methods</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Promise.all, Promise.race, etc.</div>
+          <div class="code-body"><pre><span class="cmt">// Promise.all - Wait for ALL promises to complete</span>
+<span class="kw">const</span> [user, posts, settings] = <span class="await">await</span> Promise.<span class="fn">all</span>([
+  <span class="fn">fetchUser</span>(<span class="num">1</span>),
+  <span class="fn">fetchPosts</span>(),
+  <span class="fn">fetchSettings</span>()
+]);
+<span class="cmt">// All three run in PARALLEL! 🚀</span>
+
+<span class="cmt">// Promise.race - First one to complete wins</span>
+<span class="kw">const</span> fastest = <span class="await">await</span> Promise.<span class="fn">race</span>([
+  <span class="fn">fetchFromServer1</span>(),
+  <span class="fn">fetchFromServer2</span>()
+]);
+
+<span class="cmt">// Promise.allSettled - Get all results, even if some fail</span>
+<span class="kw">const</span> results = <span class="await">await</span> Promise.<span class="fn">allSettled</span>([
+  <span class="fn">fetchUser</span>(<span class="num">1</span>),
+  <span class="fn">fetchUser</span>(-<span class="num">1</span>)  <span class="cmt">// This will fail</span>
+]);
+<span class="cmt">// [{status: 'fulfilled', value: {...}}, {status: 'rejected', reason: Error}]</span></pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Insight</div>
+          <div class="tip-content">
+            <code>async/await</code> is just syntactic sugar over Promises. 
+            Under the hood, an <code>async</code> function always returns a Promise!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Async/Await -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-async">✨</div>
+        <div class="section-title">Async/Await: The Modern Way</div>
+        <span class="section-badge" style="background: rgba(56,189,248,0.2); color: var(--await);">async/await</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--await); margin-bottom: 1rem;">✨ Async/Await Syntax</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <code class="async">async</code>/<code class="await">await</code> makes asynchronous code look and behave like synchronous code,
+          making it easier to read, write, and debug.
+        </p>
+
+        <h3 style="color: var(--primary);">📝 Basic Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Async/Await Basics</div>
+          <div class="code-body"><pre><span class="cmt">// 1. Mark function as async</span>
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">fetchData</span>() {
+  <span class="cmt">// 2. Use await to pause until Promise resolves</span>
+  <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.example.com/data'</span>);
+  <span class="kw">const</span> data = <span class="await">await</span> response.<span class="fn">json</span>();
+  
+  <span class="kw">return</span> data;  <span class="cmt">// Automatically wrapped in a Promise</span>
+}
+
+<span class="cmt">// Arrow function syntax</span>
+<span class="kw">const</span> <span class="fn">fetchData</span> = <span class="async">async</span> () => {
+  <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.example.com/data'</span>);
+  <span class="kw">return</span> response.<span class="fn">json</span>();
+};
+
+<span class="cmt">// Calling async function</span>
+<span class="fn">fetchData</span>().<span class="fn">then</span>(data => console.<span class="fn">log</span>(data));</pre></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card card-async">
+            <h4 style="color: var(--async);">async</h4>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1.25rem; margin-top: 0.5rem;">
+              <li>Placed before a function declaration</li>
+              <li>Makes function return a Promise</li>
+              <li>Enables use of <code>await</code> inside</li>
+            </ul>
+          </div>
+          <div class="card card-await">
+            <h4 style="color: var(--await);">await</h4>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1.25rem; margin-top: 0.5rem;">
+              <li>Can only be used inside <code>async</code> function</li>
+              <li>Pauses execution until Promise resolves</li>
+              <li>Returns the resolved value</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🔄 Converting Promises to Async/Await</h3>
+        <div class="vs-container">
+          <div class="vs-box old">
+            <h4 style="color: var(--warning); margin-bottom: 0.5rem;">Promise .then() Chain</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="fn">fetchUser</span>(<span class="num">1</span>)
+  .<span class="fn">then</span>(user => {
+    <span class="kw">return</span> <span class="fn">fetchPosts</span>(user.id);
+  })
+  .<span class="fn">then</span>(posts => {
+    console.<span class="fn">log</span>(posts);
+  })
+  .<span class="fn">catch</span>(error => {
+    console.<span class="fn">error</span>(error);
+  });</pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">→</div>
+          <div class="vs-box new">
+            <h4 style="color: var(--await); margin-bottom: 0.5rem;">Async/Await</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="async">async</span> <span class="kw">function</span> <span class="fn">loadData</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> user = <span class="await">await</span> <span class="fn">fetchUser</span>(<span class="num">1</span>);
+    <span class="kw">const</span> posts = <span class="await">await</span> <span class="fn">fetchPosts</span>(user.id);
+    console.<span class="fn">log</span>(posts);
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(error);
+  }
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">⚡ Sequential vs Parallel Execution</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Sequential vs Parallel</div>
+          <div class="code-body"><pre><span class="cmt">// ❌ SEQUENTIAL - Slow! Each waits for the previous</span>
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">sequential</span>() {
+  <span class="kw">const</span> user = <span class="await">await</span> <span class="fn">fetchUser</span>(<span class="num">1</span>);      <span class="cmt">// 1 second</span>
+  <span class="kw">const</span> posts = <span class="await">await</span> <span class="fn">fetchPosts</span>();      <span class="cmt">// 1 second</span>
+  <span class="kw">const</span> comments = <span class="await">await</span> <span class="fn">fetchComments</span>(); <span class="cmt">// 1 second</span>
+  <span class="cmt">// Total: 3 seconds! 🐌</span>
+}
+
+<span class="cmt">// ✅ PARALLEL - Fast! All start at the same time</span>
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">parallel</span>() {
+  <span class="kw">const</span> [user, posts, comments] = <span class="await">await</span> Promise.<span class="fn">all</span>([
+    <span class="fn">fetchUser</span>(<span class="num">1</span>),
+    <span class="fn">fetchPosts</span>(),
+    <span class="fn">fetchComments</span>()
+  ]);
+  <span class="cmt">// Total: ~1 second! 🚀</span>
+}
+
+<span class="cmt">// ✅ Start parallel, await later</span>
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">parallelAlt</span>() {
+  <span class="cmt">// Start all requests immediately (no await yet)</span>
+  <span class="kw">const</span> userPromise = <span class="fn">fetchUser</span>(<span class="num">1</span>);
+  <span class="kw">const</span> postsPromise = <span class="fn">fetchPosts</span>();
+  <span class="kw">const</span> commentsPromise = <span class="fn">fetchComments</span>();
+  
+  <span class="cmt">// Now await all of them</span>
+  <span class="kw">const</span> user = <span class="await">await</span> userPromise;
+  <span class="kw">const</span> posts = <span class="await">await</span> postsPromise;
+  <span class="kw">const</span> comments = <span class="await">await</span> commentsPromise;
+}</pre></div>
+        </div>
+
+        <div class="visual-container">
+          <div class="visual-title">Sequential vs Parallel Timing</div>
+          <div class="grid-2">
+            <div>
+              <h4 style="color: var(--danger); text-align: center;">❌ Sequential (3 seconds)</h4>
+              <div style="margin-top: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                  <span style="color: var(--muted); width: 80px;">User:</span>
+                  <div style="background: var(--async); height: 20px; width: 100px; border-radius: 4px;"></div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                  <span style="color: var(--muted); width: 80px;">Posts:</span>
+                  <div style="width: 100px;"></div>
+                  <div style="background: var(--await); height: 20px; width: 100px; border-radius: 4px;"></div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span style="color: var(--muted); width: 80px;">Comments:</span>
+                  <div style="width: 200px;"></div>
+                  <div style="background: var(--accent); height: 20px; width: 100px; border-radius: 4px;"></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4 style="color: var(--accent); text-align: center;">✅ Parallel (1 second)</h4>
+              <div style="margin-top: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                  <span style="color: var(--muted); width: 80px;">User:</span>
+                  <div style="background: var(--async); height: 20px; width: 100px; border-radius: 4px;"></div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                  <span style="color: var(--muted); width: 80px;">Posts:</span>
+                  <div style="background: var(--await); height: 20px; width: 100px; border-radius: 4px;"></div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span style="color: var(--muted); width: 80px;">Comments:</span>
+                  <div style="background: var(--accent); height: 20px; width: 100px; border-radius: 4px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 When to Use What</div>
+          <div class="tip-content">
+            <strong>Sequential:</strong> When each request depends on the previous one's result.<br>
+            <strong>Parallel:</strong> When requests are independent of each other.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Error Handling -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-error">🛡️</div>
+        <div class="section-title">Error Handling with try/catch</div>
+        <span class="section-badge badge-danger">Critical</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--danger); margin-bottom: 1rem;">🛡️ Handling Errors Gracefully</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Async operations can fail (network issues, server errors, etc.). 
+          <strong>Always handle errors</strong> to prevent your app from crashing!
+        </p>
+
+        <h3 style="color: var(--primary);">📝 try/catch Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Basic Error Handling</div>
+          <div class="code-body"><pre><span class="async">async</span> <span class="kw">function</span> <span class="fn">fetchUserData</span>() {
+  <span class="kw">try</span> {
+    <span class="cmt">// Code that might fail</span>
+    <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.example.com/user'</span>);
+    
+    <span class="cmt">// Check if response is OK (status 200-299)</span>
+    <span class="kw">if</span> (!response.ok) {
+      <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP error! status: ${response.status}`</span>);
+    }
+    
+    <span class="kw">const</span> data = <span class="await">await</span> response.<span class="fn">json</span>();
+    <span class="kw">return</span> data;
+    
+  } <span class="kw">catch</span> (error) {
+    <span class="cmt">// Handle the error</span>
+    console.<span class="fn">error</span>(<span class="str">'Failed to fetch user:'</span>, error.message);
+    <span class="kw">throw</span> error;  <span class="cmt">// Re-throw if needed</span>
+    
+  } <span class="kw">finally</span> {
+    <span class="cmt">// Always runs (optional)</span>
+    console.<span class="fn">log</span>(<span class="str">'Fetch attempt completed'</span>);
+  }
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🎯 Common Error Patterns</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Error Handling Patterns</div>
+          <div class="code-body"><pre><span class="cmt">// Pattern 1: Return default value on error</span>
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">getUsers</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(<span class="str">'/api/users'</span>);
+    <span class="kw">return await</span> response.<span class="fn">json</span>();
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(error);
+    <span class="kw">return</span> [];  <span class="cmt">// Return empty array as fallback</span>
+  }
+}
+
+<span class="cmt">// Pattern 2: Return error object</span>
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">fetchWithStatus</span>(url) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(url);
+    <span class="kw">const</span> data = <span class="await">await</span> response.<span class="fn">json</span>();
+    <span class="kw">return</span> { <span class="prop">success</span>: <span class="kw">true</span>, <span class="prop">data</span>, <span class="prop">error</span>: <span class="kw">null</span> };
+  } <span class="kw">catch</span> (error) {
+    <span class="kw">return</span> { <span class="prop">success</span>: <span class="kw">false</span>, <span class="prop">data</span>: <span class="kw">null</span>, <span class="prop">error</span>: error.message };
+  }
+}
+
+<span class="cmt">// Usage</span>
+<span class="kw">const</span> result = <span class="await">await</span> <span class="fn">fetchWithStatus</span>(<span class="str">'/api/users'</span>);
+<span class="kw">if</span> (result.success) {
+  console.<span class="fn">log</span>(result.data);
+} <span class="kw">else</span> {
+  console.<span class="fn">error</span>(result.error);
+}
+
+<span class="cmt">// Pattern 3: Custom error types</span>
+<span class="kw">class</span> <span class="fn">NetworkError</span> <span class="kw">extends</span> <span class="fn">Error</span> {
+  <span class="kw">constructor</span>(message, status) {
+    <span class="kw">super</span>(message);
+    <span class="kw">this</span>.name = <span class="str">'NetworkError'</span>;
+    <span class="kw">this</span>.status = status;
+  }
+}
+
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">fetchData</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(<span class="str">'/api/data'</span>);
+    <span class="kw">if</span> (!response.ok) {
+      <span class="kw">throw new</span> <span class="fn">NetworkError</span>(<span class="str">'Request failed'</span>, response.status);
+    }
+    <span class="kw">return await</span> response.<span class="fn">json</span>();
+  } <span class="kw">catch</span> (error) {
+    <span class="kw">if</span> (error <span class="kw">instanceof</span> <span class="fn">NetworkError</span>) {
+      console.<span class="fn">log</span>(<span class="str">'Network error:'</span>, error.status);
+    } <span class="kw">else</span> {
+      console.<span class="fn">log</span>(<span class="str">'Unknown error:'</span>, error);
+    }
+  }
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">⚠️ Error Handling with Promise.all</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Promise.all Error Handling</div>
+          <div class="code-body"><pre><span class="cmt">// ❌ Promise.all fails fast - if ONE fails, ALL fail</span>
+<span class="kw">try</span> {
+  <span class="kw">const</span> results = <span class="await">await</span> Promise.<span class="fn">all</span>([
+    <span class="fn">fetchUser</span>(<span class="num">1</span>),
+    <span class="fn">fetchUser</span>(-<span class="num">1</span>),  <span class="cmt">// This fails!</span>
+    <span class="fn">fetchUser</span>(<span class="num">2</span>)
+  ]);
+} <span class="kw">catch</span> (error) {
+  <span class="cmt">// Catches the first error, other results are lost! 😱</span>
+}
+
+<span class="cmt">// ✅ Promise.allSettled - Get all results regardless of failures</span>
+<span class="kw">const</span> results = <span class="await">await</span> Promise.<span class="fn">allSettled</span>([
+  <span class="fn">fetchUser</span>(<span class="num">1</span>),
+  <span class="fn">fetchUser</span>(-<span class="num">1</span>),  <span class="cmt">// This fails</span>
+  <span class="fn">fetchUser</span>(<span class="num">2</span>)
+]);
+
+results.<span class="fn">forEach</span>((result, index) => {
+  <span class="kw">if</span> (result.status === <span class="str">'fulfilled'</span>) {
+    console.<span class="fn">log</span>(<span class="str">`User ${index}:`</span>, result.value);
+  } <span class="kw">else</span> {
+    console.<span class="fn">error</span>(<span class="str">`User ${index} failed:`</span>, result.reason);
+  }
+});</pre></div>
+        </div>
+
+        <div class="danger">
+          <div class="danger-title">🚨 Common Mistakes</div>
+          <div class="danger-content">
+            <strong>1. Forgetting try/catch:</strong> Unhandled promise rejections can crash your app!<br>
+            <strong>2. Swallowing errors:</strong> Catching but not logging or handling properly.<br>
+            <strong>3. Not checking response.ok:</strong> Fetch doesn't throw on 404/500 errors!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Fetch API -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-fetch">🌐</div>
+        <div class="section-title">Fetching Data with fetch API</div>
+        <span class="section-badge badge-accent">API Calls</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--fetch); margin-bottom: 1rem;">🌐 The Fetch API</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The <code>fetch</code> API is the modern way to make HTTP requests in JavaScript.
+          It returns a Promise and works perfectly with async/await!
+        </p>
+
+        <h3 style="color: var(--primary);">📝 Basic GET Request</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; GET Request</div>
+          <div class="code-body"><pre><span class="cmt">// Simple GET request</span>
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">getUsers</span>() {
+  <span class="kw">try</span> {
+    <span class="cmt">// fetch returns a Response object</span>
+    <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/users'</span>);
+    
+    <span class="cmt">// Check if request was successful</span>
+    <span class="kw">if</span> (!response.ok) {
+      <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP error! status: ${response.status}`</span>);
+    }
+    
+    <span class="cmt">// Parse JSON body</span>
+    <span class="kw">const</span> users = <span class="await">await</span> response.<span class="fn">json</span>();
+    
+    <span class="kw">return</span> users;
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">'Fetch error:'</span>, error);
+    <span class="kw">throw</span> error;
+  }
+}
+
+<span class="cmt">// Using it</span>
+<span class="kw">const</span> users = <span class="await">await</span> <span class="fn">getUsers</span>();
+console.<span class="fn">log</span>(users);</pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📤 POST Request (Sending Data)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; POST Request</div>
+          <div class="code-body"><pre><span class="async">async</span> <span class="kw">function</span> <span class="fn">createUser</span>(userData) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/users'</span>, {
+      <span class="prop">method</span>: <span class="str">'POST'</span>,
+      <span class="prop">headers</span>: {
+        <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+      },
+      <span class="prop">body</span>: <span class="fn">JSON.stringify</span>(userData)
+    });
+    
+    <span class="kw">if</span> (!response.ok) {
+      <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Failed to create user'</span>);
+    }
+    
+    <span class="kw">const</span> newUser = <span class="await">await</span> response.<span class="fn">json</span>();
+    <span class="kw">return</span> newUser;
+    
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">'Create error:'</span>, error);
+    <span class="kw">throw</span> error;
+  }
+}
+
+<span class="cmt">// Usage</span>
+<span class="kw">const</span> newUser = <span class="await">await</span> <span class="fn">createUser</span>({
+  <span class="prop">name</span>: <span class="str">'John Doe'</span>,
+  <span class="prop">email</span>: <span class="str">'john@example.com'</span>
+});</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🔧 Complete CRUD Operations</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; API Helper Functions</div>
+          <div class="code-body"><pre><span class="kw">const</span> API_URL = <span class="str">'https://jsonplaceholder.typicode.com'</span>;
+
+<span class="cmt">// Generic fetch wrapper</span>
+<span class="async">async</span> <span class="kw">function</span> <span class="fn">apiRequest</span>(endpoint, options = {}) {
+  <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(<span class="str">`${API_URL}${endpoint}`</span>, {
+    <span class="prop">headers</span>: {
+      <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+      ...options.headers
+    },
+    ...options
+  });
+  
+  <span class="kw">if</span> (!response.ok) {
+    <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`API Error: ${response.status}`</span>);
+  }
+  
+  <span class="kw">return</span> response.<span class="fn">json</span>();
+}
+
+<span class="cmt">// GET - Read</span>
+<span class="kw">const</span> <span class="fn">getUsers</span> = () => <span class="fn">apiRequest</span>(<span class="str">'/users'</span>);
+<span class="kw">const</span> <span class="fn">getUser</span> = (id) => <span class="fn">apiRequest</span>(<span class="str">`/users/${id}`</span>);
+
+<span class="cmt">// POST - Create</span>
+<span class="kw">const</span> <span class="fn">createUser</span> = (data) => <span class="fn">apiRequest</span>(<span class="str">'/users'</span>, {
+  <span class="prop">method</span>: <span class="str">'POST'</span>,
+  <span class="prop">body</span>: <span class="fn">JSON.stringify</span>(data)
+});
+
+<span class="cmt">// PUT - Update</span>
+<span class="kw">const</span> <span class="fn">updateUser</span> = (id, data) => <span class="fn">apiRequest</span>(<span class="str">`/users/${id}`</span>, {
+  <span class="prop">method</span>: <span class="str">'PUT'</span>,
+  <span class="prop">body</span>: <span class="fn">JSON.stringify</span>(data)
+});
+
+<span class="cmt">// DELETE - Delete</span>
+<span class="kw">const</span> <span class="fn">deleteUser</span> = (id) => <span class="fn">apiRequest</span>(<span class="str">`/users/${id}`</span>, {
+  <span class="prop">method</span>: <span class="str">'DELETE'</span>
+});</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Remember: fetch quirks</div>
+          <div class="tip-content">
+            <strong>1.</strong> <code>fetch</code> only rejects on network errors, not HTTP errors (404, 500).<br>
+            <strong>2.</strong> Always check <code>response.ok</code> or <code>response.status</code>.<br>
+            <strong>3.</strong> <code>response.json()</code> is also async - needs await!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Async in React -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-react">⚛️</div>
+        <div class="section-title">Async/Await in React Components</div>
+        <span class="section-badge badge-primary">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: #61dafb; margin-bottom: 1rem;">⚛️ Using Async in React</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          In React, we typically fetch data when a component mounts. This is done using the
+          <code>useEffect</code> hook combined with async/await.
+        </p>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Important Rule</div>
+          <div class="warning-content">
+            <strong>useEffect callback cannot be async directly!</strong><br>
+            You must define an async function inside and call it.
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 1.5rem 0 1rem;">📝 Basic Data Fetching Pattern</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Data Fetching in React</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">UserList</span>() {
+  <span class="cmt">// State for data, loading, and error</span>
+  <span class="kw">const</span> [users, setUsers] = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [loading, setLoading] = <span class="fn">useState</span>(<span class="kw">true</span>);
+  <span class="kw">const</span> [error, setError] = <span class="fn">useState</span>(<span class="kw">null</span>);
+
+  <span class="fn">useEffect</span>(() => {
+    <span class="cmt">// ❌ Can't do this: useEffect(() => async () => {...})</span>
+    
+    <span class="cmt">// ✅ Define async function inside</span>
+    <span class="async">async</span> <span class="kw">function</span> <span class="fn">fetchUsers</span>() {
+      <span class="kw">try</span> {
+        setLoading(<span class="kw">true</span>);
+        <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(<span class="str">'https://jsonplaceholder.typicode.com/users'</span>);
+        
+        <span class="kw">if</span> (!response.ok) {
+          <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Failed to fetch users'</span>);
+        }
+        
+        <span class="kw">const</span> data = <span class="await">await</span> response.<span class="fn">json</span>();
+        <span class="fn">setUsers</span>(data);
+        <span class="fn">setError</span>(<span class="kw">null</span>);
+        
+      } <span class="kw">catch</span> (err) {
+        <span class="fn">setError</span>(err.message);
+        <span class="fn">setUsers</span>([]);
+      } <span class="kw">finally</span> {
+        <span class="fn">setLoading</span>(<span class="kw">false</span>);
+      }
+    }
+
+    <span class="fn">fetchUsers</span>();  <span class="cmt">// Call the async function</span>
+  }, []);  <span class="cmt">// Empty array = run once on mount</span>
+
+  <span class="cmt">// Render based on state</span>
+  <span class="kw">if</span> (loading) <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>Loading...<span class="tag">&lt;/div&gt;</span>;
+  <span class="kw">if</span> (error) <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>Error: {error}<span class="tag">&lt;/div&gt;</span>;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {users.<span class="fn">map</span>(user => (
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={user.id}<span class="tag">&gt;</span>{user.name}<span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🔄 Fetching on User Action</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Fetch on Button Click</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">SearchUsers</span>() {
+  <span class="kw">const</span> [query, setQuery] = <span class="fn">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [results, setResults] = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [loading, setLoading] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="cmt">// Async handler for search</span>
+  <span class="kw">const</span> <span class="fn">handleSearch</span> = <span class="async">async</span> () => {
+    <span class="kw">if</span> (!query.<span class="fn">trim</span>()) <span class="kw">return</span>;
+    
+    <span class="fn">setLoading</span>(<span class="kw">true</span>);
+    <span class="kw">try</span> {
+      <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(
+        <span class="str">`https://api.example.com/search?q=${query}`</span>
+      );
+      <span class="kw">const</span> data = <span class="await">await</span> response.<span class="fn">json</span>();
+      <span class="fn">setResults</span>(data);
+    } <span class="kw">catch</span> (error) {
+      console.<span class="fn">error</span>(<span class="str">'Search failed:'</span>, error);
+    } <span class="kw">finally</span> {
+      <span class="fn">setLoading</span>(<span class="kw">false</span>);
+    }
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">value</span>={query}
+        <span class="attr">onChange</span>={(e) => <span class="fn">setQuery</span>(e.target.value)}
+        <span class="attr">placeholder</span>=<span class="str">"Search users..."</span>
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleSearch} <span class="attr">disabled</span>={loading}<span class="tag">&gt;</span>
+        {loading ? <span class="str">'Searching...'</span> : <span class="str">'Search'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+      
+      <span class="tag">&lt;ul&gt;</span>
+        {results.<span class="fn">map</span>(user => (
+          <span class="tag">&lt;li</span> <span class="attr">key</span>={user.id}<span class="tag">&gt;</span>{user.name}<span class="tag">&lt;/li&gt;</span>
+        ))}
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🎨 Custom useFetch Hook</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Reusable Fetch Hook</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Custom hook for data fetching</span>
+<span class="kw">function</span> <span class="fn">useFetch</span>(url) {
+  <span class="kw">const</span> [data, setData] = <span class="fn">useState</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> [loading, setLoading] = <span class="fn">useState</span>(<span class="kw">true</span>);
+  <span class="kw">const</span> [error, setError] = <span class="fn">useState</span>(<span class="kw">null</span>);
+
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">let</span> isMounted = <span class="kw">true</span>;  <span class="cmt">// For cleanup</span>
+
+    <span class="async">async</span> <span class="kw">function</span> <span class="fn">fetchData</span>() {
+      <span class="kw">try</span> {
+        <span class="fn">setLoading</span>(<span class="kw">true</span>);
+        <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(url);
+        
+        <span class="kw">if</span> (!response.ok) {
+          <span class="kw">throw new</span> <span class="fn">Error</span>(response.statusText);
+        }
+        
+        <span class="kw">const</span> result = <span class="await">await</span> response.<span class="fn">json</span>();
+        
+        <span class="cmt">// Only update state if component is still mounted</span>
+        <span class="kw">if</span> (isMounted) {
+          <span class="fn">setData</span>(result);
+          <span class="fn">setError</span>(<span class="kw">null</span>);
+        }
+      } <span class="kw">catch</span> (err) {
+        <span class="kw">if</span> (isMounted) {
+          <span class="fn">setError</span>(err.message);
+        }
+      } <span class="kw">finally</span> {
+        <span class="kw">if</span> (isMounted) {
+          <span class="fn">setLoading</span>(<span class="kw">false</span>);
+        }
+      }
+    }
+
+    <span class="fn">fetchData</span>();
+
+    <span class="cmt">// Cleanup function</span>
+    <span class="kw">return</span> () => {
+      isMounted = <span class="kw">false</span>;
+    };
+  }, [url]);
+
+  <span class="kw">return</span> { data, loading, error };
+}
+
+<span class="cmt">// Usage - So clean!</span>
+<span class="kw">function</span> <span class="fn">UserList</span>() {
+  <span class="kw">const</span> { data: users, loading, error } = <span class="fn">useFetch</span>(
+    <span class="str">'https://jsonplaceholder.typicode.com/users'</span>
+  );
+
+  <span class="kw">if</span> (loading) <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>Loading...<span class="tag">&lt;/div&gt;</span>;
+  <span class="kw">if</span> (error) <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>Error: {error}<span class="tag">&lt;/div&gt;</span>;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {users?.<span class="fn">map</span>(user => <span class="tag">&lt;li</span> <span class="attr">key</span>={user.id}<span class="tag">&gt;</span>{user.name}<span class="tag">&lt;/li&gt;</span>)}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Preview: useEffect Deep Dive Coming Next!</div>
+          <div class="tip-content">
+            In Module 6, we'll explore useEffect in depth including cleanup, dependencies, and common patterns.
+            For now, just understand: <strong>useEffect + async function = data fetching in React!</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Complete Working App -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon icon-app">🚀</div>
+        <div class="section-title">Complete App: User Directory</div>
+        <span class="section-badge badge-secondary">Full App</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--secondary); margin-bottom: 1rem;">🚀 User Directory App</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          A complete app demonstrating async/await with real API calls, loading states, and error handling!
+        </p>
+
+        <!-- Live Demo -->
+        <div class="app-preview">
+          <div class="app-header">
+            <div class="app-title">👥 User Directory</div>
+            <div class="status" id="fetch-status">
+              <div class="status-dot"></div>
+              <span>Ready</span>
+            </div>
+          </div>
+          <div class="app-body">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="fetchUsers()" id="fetch-btn">
+                🔄 Fetch Users
+              </button>
+              <button class="btn btn-secondary" onclick="fetchSingleUser()" id="single-btn">
+                👤 Random User
+              </button>
+              <button class="btn btn-danger" onclick="simulateError()">
+                ❌ Simulate Error
+              </button>
+            </div>
+            
+            <div id="user-container">
+              <p style="color: var(--muted); text-align: center; padding: 2rem;">
+                Click "Fetch Users" to load data from API
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📝 Complete React Code</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; UserDirectory.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">UserDirectory</span>() {
+  <span class="kw">const</span> [users, setUsers] = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [loading, setLoading] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [error, setError] = <span class="fn">useState</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> [selectedUser, setSelectedUser] = <span class="fn">useState</span>(<span class="kw">null</span>);
+
+  <span class="cmt">// Fetch all users</span>
+  <span class="kw">const</span> <span class="fn">fetchUsers</span> = <span class="async">async</span> () => {
+    <span class="fn">setLoading</span>(<span class="kw">true</span>);
+    <span class="fn">setError</span>(<span class="kw">null</span>);
+    
+    <span class="kw">try</span> {
+      <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(
+        <span class="str">'https://jsonplaceholder.typicode.com/users'</span>
+      );
+      
+      <span class="kw">if</span> (!response.ok) {
+        <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP Error: ${response.status}`</span>);
+      }
+      
+      <span class="kw">const</span> data = <span class="await">await</span> response.<span class="fn">json</span>();
+      <span class="fn">setUsers</span>(data);
+      
+    } <span class="kw">catch</span> (err) {
+      <span class="fn">setError</span>(err.message);
+    } <span class="kw">finally</span> {
+      <span class="fn">setLoading</span>(<span class="kw">false</span>);
+    }
+  };
+
+  <span class="cmt">// Fetch single user details</span>
+  <span class="kw">const</span> <span class="fn">fetchUserDetails</span> = <span class="async">async</span> (userId) => {
+    <span class="kw">try</span> {
+      <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(
+        <span class="str">`https://jsonplaceholder.typicode.com/users/${userId}`</span>
+      );
+      <span class="kw">const</span> user = <span class="await">await</span> response.<span class="fn">json</span>();
+      <span class="fn">setSelectedUser</span>(user);
+    } <span class="kw">catch</span> (err) {
+      console.<span class="fn">error</span>(<span class="str">'Failed to fetch user details'</span>, err);
+    }
+  };
+
+  <span class="cmt">// Fetch user's posts (parallel example)</span>
+  <span class="kw">const</span> <span class="fn">fetchUserWithPosts</span> = <span class="async">async</span> (userId) => {
+    <span class="kw">try</span> {
+      <span class="cmt">// Parallel fetching!</span>
+      <span class="kw">const</span> [userRes, postsRes] = <span class="await">await</span> Promise.<span class="fn">all</span>([
+        <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/users/${userId}`</span>),
+        <span class="fn">fetch</span>(<span class="str">`https://jsonplaceholder.typicode.com/users/${userId}/posts`</span>)
+      ]);
+      
+      <span class="kw">const</span> user = <span class="await">await</span> userRes.<span class="fn">json</span>();
+      <span class="kw">const</span> posts = <span class="await">await</span> postsRes.<span class="fn">json</span>();
+      
+      <span class="fn">setSelectedUser</span>({ ...user, <span class="prop">posts</span> });
+      
+    } <span class="kw">catch</span> (err) {
+      <span class="fn">setError</span>(<span class="str">'Failed to fetch user data'</span>);
+    }
+  };
+
+  <span class="cmt">// Delete user (optimistic update)</span>
+  <span class="kw">const</span> <span class="fn">deleteUser</span> = <span class="async">async</span> (userId) => {
+    <span class="cmt">// Optimistic: Update UI immediately</span>
+    <span class="kw">const</span> previousUsers = [...users];
+    <span class="fn">setUsers</span>(users.<span class="fn">filter</span>(u => u.id !== userId));
+    
+    <span class="kw">try</span> {
+      <span class="kw">const</span> response = <span class="await">await</span> <span class="fn">fetch</span>(
+        <span class="str">`https://jsonplaceholder.typicode.com/users/${userId}`</span>,
+        { <span class="prop">method</span>: <span class="str">'DELETE'</span> }
+      );
+      
+      <span class="kw">if</span> (!response.ok) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Delete failed'</span>);
+      
+    } <span class="kw">catch</span> (err) {
+      <span class="cmt">// Rollback on error</span>
+      <span class="fn">setUsers</span>(previousUsers);
+      <span class="fn">setError</span>(<span class="str">'Failed to delete user'</span>);
+    }
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"user-directory"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>👥 User Directory<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={fetchUsers} <span class="attr">disabled</span>={loading}<span class="tag">&gt;</span>
+        {loading ? <span class="str">'Loading...'</span> : <span class="str">'Fetch Users'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+      
+      {error && <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"error"</span><span class="tag">&gt;</span>❌ {error}<span class="tag">&lt;/div&gt;</span>}
+      
+      {loading && <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"spinner"</span><span class="tag">&gt;</span>Loading...<span class="tag">&lt;/div&gt;</span>}
+      
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"user-grid"</span><span class="tag">&gt;</span>
+        {users.<span class="fn">map</span>(user => (
+          <span class="tag">&lt;div</span> <span class="attr">key</span>={user.id} <span class="attr">className</span>=<span class="str">"user-card"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;h3&gt;</span>{user.name}<span class="tag">&lt;/h3&gt;</span>
+            <span class="tag">&lt;p&gt;</span>{user.email}<span class="tag">&lt;/p&gt;</span>
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">fetchUserWithPosts</span>(user.id)}<span class="tag">&gt;</span>
+              View Details
+            <span class="tag">&lt;/button&gt;</span>
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">deleteUser</span>(user.id)}<span class="tag">&gt;</span>
+              Delete
+            <span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+      
+      {selectedUser && (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"user-details"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;h2&gt;</span>{selectedUser.name}<span class="tag">&lt;/h2&gt;</span>
+          <span class="tag">&lt;p&gt;</span>{selectedUser.email}<span class="tag">&lt;/p&gt;</span>
+          {selectedUser.posts && (
+            <span class="tag">&lt;div&gt;</span>
+              <span class="tag">&lt;h3&gt;</span>Posts ({selectedUser.posts.length})<span class="tag">&lt;/h3&gt;</span>
+              {selectedUser.posts.<span class="fn">slice</span>(<span class="num">0</span>, <span class="num">3</span>).<span class="fn">map</span>(post => (
+                <span class="tag">&lt;div</span> <span class="attr">key</span>={post.id}<span class="tag">&gt;</span>{post.title}<span class="tag">&lt;/div&gt;</span>
+              ))}
+            <span class="tag">&lt;/div&gt;</span>
+          )}
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> UserDirectory;</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9: Best Practices -->
+    <div class="section" id="s9">
+      <div class="section-header" onclick="toggleSection('s9')">
+        <div class="section-icon icon-tips">✨</div>
+        <div class="section-title">Best Practices & Common Mistakes</div>
+        <span class="section-badge badge-accent">Essential</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--accent); margin-bottom: 1rem;">✨ Async/Await Best Practices</h2>
+
+        <h3 style="color: var(--accent);">✅ Do's</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Always Handle Errors</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="async">async</span> <span class="kw">function</span> <span class="fn">fetchData</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> data = <span class="await">await</span> <span class="fn">fetch</span>(url);
+    <span class="kw">return</span> data.<span class="fn">json</span>();
+  } <span class="kw">catch</span> (error) {
+    <span class="cmt">// Always handle!</span>
+    console.<span class="fn">error</span>(error);
+  }
+}</pre></div>
+            </div>
+          </div>
+          
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Use Loading States</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="kw">const</span> [loading, setLoading] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+<span class="fn">setLoading</span>(<span class="kw">true</span>);
+<span class="kw">try</span> {
+  <span class="await">await</span> <span class="fn">fetchData</span>();
+} <span class="kw">finally</span> {
+  <span class="fn">setLoading</span>(<span class="kw">false</span>);
+}</pre></div>
+            </div>
+          </div>
+          
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Use Promise.all for Parallel</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// Run in parallel, not sequence</span>
+<span class="kw">const</span> [a, b, c] = <span class="await">await</span> Promise.<span class="fn">all</span>([
+  <span class="fn">fetchA</span>(),
+  <span class="fn">fetchB</span>(),
+  <span class="fn">fetchC</span>()
+]);</pre></div>
+            </div>
+          </div>
+          
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Check response.ok</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="kw">const</span> res = <span class="await">await</span> <span class="fn">fetch</span>(url);
+<span class="kw">if</span> (!res.ok) {
+  <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`${res.status}`</span>);
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--danger); margin: 2rem 0 1rem;">❌ Don'ts</h3>
+        <div class="grid-2">
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">Don't Forget await</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ Missing await!</span>
+<span class="kw">const</span> data = <span class="fn">fetchData</span>();
+<span class="cmt">// data is a Promise, not the result!</span>
+
+<span class="cmt">// ✅ Correct</span>
+<span class="kw">const</span> data = <span class="await">await</span> <span class="fn">fetchData</span>();</pre></div>
+            </div>
+          </div>
+          
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">Don't Use async useEffect Directly</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ Wrong!</span>
+<span class="fn">useEffect</span>(<span class="async">async</span> () => {
+  <span class="await">await</span> <span class="fn">fetchData</span>();
+}, []);
+
+<span class="cmt">// ✅ Correct</span>
+<span class="fn">useEffect</span>(() => {
+  <span class="async">async</span> <span class="kw">function</span> <span class="fn">load</span>() {
+    <span class="await">await</span> <span class="fn">fetchData</span>();
+  }
+  <span class="fn">load</span>();
+}, []);</pre></div>
+            </div>
+          </div>
+          
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">Don't Await in Loops (Sequential)</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ Slow! Sequential</span>
+<span class="kw">for</span> (<span class="kw">const</span> id <span class="kw">of</span> ids) {
+  <span class="await">await</span> <span class="fn">fetch</span>(id);
+}
+
+<span class="cmt">// ✅ Fast! Parallel</span>
+<span class="await">await</span> Promise.<span class="fn">all</span>(
+  ids.<span class="fn">map</span>(id => <span class="fn">fetch</span>(id))
+);</pre></div>
+            </div>
+          </div>
+          
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">Don't Ignore Cleanup</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ✅ Prevent memory leaks</span>
+<span class="fn">useEffect</span>(() => {
+  <span class="kw">let</span> cancelled = <span class="kw">false</span>;
+  
+  <span class="async">async</span> <span class="kw">function</span> <span class="fn">load</span>() {
+    <span class="kw">const</span> data = <span class="await">await</span> <span class="fn">fetch</span>();
+    <span class="kw">if</span> (!cancelled) <span class="fn">setData</span>(data);
+  }
+  
+  <span class="kw">return</span> () => { cancelled = <span class="kw">true</span>; };
+}, []);</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📋 Quick Reference</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Pattern</th>
+              <th>When to Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>await</code></td>
+              <td>Wait for a single async operation</td>
+            </tr>
+            <tr>
+              <td><code>Promise.all()</code></td>
+              <td>Run multiple independent operations in parallel</td>
+            </tr>
+            <tr>
+              <td><code>Promise.allSettled()</code></td>
+              <td>Get all results even if some fail</td>
+            </tr>
+            <tr>
+              <td><code>Promise.race()</code></td>
+              <td>Get first completed result</td>
+            </tr>
+            <tr>
+              <td><code>try/catch</code></td>
+              <td>Handle errors in async functions</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <h3 style="color: var(--await); margin-bottom: 0.5rem;">🎉 Async/Await Mastered!</h3>
+      <p style="color: var(--muted); margin-bottom: 1rem;">You're ready to fetch data and handle async operations in React!</p>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+        <span class="badge" style="background: rgba(244,114,182,0.2); color: var(--async);">async</span>
+        <span class="badge" style="background: rgba(56,189,248,0.2); color: var(--await);">await</span>
+        <span class="badge" style="background: rgba(251,146,60,0.2); color: var(--promise);">Promises</span>
+        <span class="badge badge-accent">try/catch</span>
+        <span class="badge badge-primary">fetch API</span>
+      </div>
+      <p style="color: var(--muted); margin-top: 1.5rem; font-size: 0.9rem;">
+        <strong>Next Up:</strong> Module 6 - useEffect & Lifecycle 🔄
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Toggle sections
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Demo: Status indicator
+    function updateStatus(status, text) {
+      const el = document.getElementById('fetch-status');
+      el.className = `status ${status}`;
+      el.innerHTML = `<div class="status-dot"></div><span>${text}</span>`;
+    }
+
+    // Demo: Fetch Users
+    async function fetchUsers() {
+      const container = document.getElementById('user-container');
+      const btn = document.getElementById('fetch-btn');
+      
+      btn.disabled = true;
+      updateStatus('pending', 'Fetching...');
+      
+      // Show loading
+      container.innerHTML = '<div class="loading-spinner"></div>';
+      
+      try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/users');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+        
+        const users = await response.json();
+        
+        // Simulate network delay for demo
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        updateStatus('success', 'Success!');
+        
+        container.innerHTML = `
+          <div class="user-grid">
+            ${users.slice(0, 6).map(user => `
+              <div class="user-card">
+                <div class="user-avatar">${user.name.charAt(0)}</div>
+                <div class="user-info">
+                  <div class="user-name">${user.name}</div>
+                  <div class="user-email">${user.email}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        
+      } catch (error) {
+        updateStatus('error', 'Failed!');
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--danger);">
+            ❌ Error: ${error.message}
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Demo: Fetch single random user
+    async function fetchSingleUser() {
+      const container = document.getElementById('user-container');
+      const btn = document.getElementById('single-btn');
+      
+      btn.disabled = true;
+      updateStatus('pending', 'Fetching user...');
+      
+      const randomId = Math.floor(Math.random() * 10) + 1;
+      
+      container.innerHTML = `
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <div class="skeleton" style="width: 50px; height: 50px; border-radius: 50%;"></div>
+          <div>
+            <div class="skeleton" style="width: 150px; height: 20px; margin-bottom: 8px;"></div>
+            <div class="skeleton" style="width: 200px; height: 16px;"></div>
+          </div>
+        </div>
+      `;
+      
+      try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/users/${randomId}`);
+        const user = await response.json();
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        updateStatus('success', 'Found!');
+        
+        container.innerHTML = `
+          <div class="user-card" style="max-width: 400px;">
+            <div class="user-avatar" style="font-size: 2rem; width: 60px; height: 60px;">${user.name.charAt(0)}</div>
+            <div class="user-info">
+              <div class="user-name" style="font-size: 1.2rem;">${user.name}</div>
+              <div class="user-email">${user.email}</div>
+              <div style="font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem;">
+                📍 ${user.address.city} | 🏢 ${user.company.name}
+              </div>
+            </div>
+          </div>
+        `;
+        
+      } catch (error) {
+        updateStatus('error', 'Error!');
+        container.innerHTML = `<div style="color: var(--danger);">❌ ${error.message}</div>`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Demo: Simulate error
+    async function simulateError() {
+      const container = document.getElementById('user-container');
+      
+      updateStatus('pending', 'Fetching...');
+      container.innerHTML = '<div class="loading-spinner"></div>';
+      
+      try {
+        // Intentionally bad URL
+        const response = await fetch('https://jsonplaceholder.typicode.com/invalid-endpoint');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status} - Not Found`);
+        }
+        
+      } catch (error) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        updateStatus('error', 'Failed!');
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">💥</div>
+            <div style="color: var(--danger); font-weight: 600; margin-bottom: 0.5rem;">
+              Error Caught!
+            </div>
+            <div style="color: var(--muted); font-size: 0.9rem;">
+              ${error.message}
+            </div>
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--surface); border-radius: 8px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--danger);">
+              catch (error) {<br>
+              &nbsp;&nbsp;// Handle error gracefully ✅<br>
+              &nbsp;&nbsp;setError(error.message);<br>
+              }
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fetch API - HTTP Requests</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>🌐 The Fetch API</h1>
+      <p>Making HTTP requests with async/await</p>
+    </header>
+
+    <main>
+      <!-- Overview -->
+      <section class="section">
+        <h2>💡 What is Fetch?</h2>
+        <p class="section-desc">The <code>fetch</code> API is the modern way to make HTTP requests in JavaScript. It returns a Promise and works perfectly with async/await!</p>
+        
+        <div class="methods-grid">
+          <div class="method-card get">
+            <div class="method-icon">📥</div>
+            <h3>GET</h3>
+            <p>Read data</p>
+          </div>
+          <div class="method-card post">
+            <div class="method-icon">📤</div>
+            <h3>POST</h3>
+            <p>Create data</p>
+          </div>
+          <div class="method-card put">
+            <div class="method-icon">✏️</div>
+            <h3>PUT</h3>
+            <p>Update data</p>
+          </div>
+          <div class="method-card delete">
+            <div class="method-icon">🗑️</div>
+            <h3>DELETE</h3>
+            <p>Remove data</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- GET Request Demo -->
+      <section class="section">
+        <h2>📥 GET Request - Fetching Data</h2>
+        
+        <div class="code-block">
+          <div class="code-header">
+            <span class="badge badge-get">GET</span>
+            Basic GET Request
+          </div>
+          <pre><code>async function getUsers() {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/users');
+    
+    // Check if request was successful
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    // Parse JSON body
+    const users = await response.json();
+    return users;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
+  }
+}</code></pre>
+        </div>
+
+        <div class="demo-controls">
+          <button id="fetchUsers" class="btn btn-get">
+            📥 Fetch Users
+          </button>
+          <button id="fetchSingleUser" class="btn btn-secondary">
+            👤 Fetch Single User
+          </button>
+        </div>
+
+        <div class="status-bar" id="getStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">Ready</span>
+        </div>
+
+        <div id="getOutput" class="output"></div>
+        
+        <div id="usersContainer" class="users-grid"></div>
+      </section>
+
+      <!-- POST Request Demo -->
+      <section class="section">
+        <h2>📤 POST Request - Creating Data</h2>
+        
+        <div class="code-block">
+          <div class="code-header">
+            <span class="badge badge-post">POST</span>
+            Create New Resource
+          </div>
+          <pre><code>async function createUser(userData) {
+  const response = await fetch('https://jsonplaceholder.typicode.com/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData)
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to create user');
+  }
+  
+  return await response.json();
+}</code></pre>
+        </div>
+
+        <div class="form-container">
+          <div class="form-group">
+            <label for="userName">Name:</label>
+            <input type="text" id="userName" placeholder="John Doe" value="Jane Smith">
+          </div>
+          <div class="form-group">
+            <label for="userEmail">Email:</label>
+            <input type="email" id="userEmail" placeholder="john@example.com" value="jane@example.com">
+          </div>
+          <button id="createUser" class="btn btn-post">
+            📤 Create User
+          </button>
+        </div>
+
+        <div class="status-bar" id="postStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">Ready</span>
+        </div>
+
+        <div id="postOutput" class="output"></div>
+      </section>
+
+      <!-- PUT Request Demo -->
+      <section class="section">
+        <h2>✏️ PUT Request - Updating Data</h2>
+        
+        <div class="code-block">
+          <div class="code-header">
+            <span class="badge badge-put">PUT</span>
+            Update Resource
+          </div>
+          <pre><code>async function updateUser(id, userData) {
+  const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData)
+  });
+  
+  if (!response.ok) throw new Error('Update failed');
+  return await response.json();
+}</code></pre>
+        </div>
+
+        <div class="form-container">
+          <div class="form-group">
+            <label for="updateId">User ID:</label>
+            <input type="number" id="updateId" value="1" min="1" max="10">
+          </div>
+          <div class="form-group">
+            <label for="updateName">New Name:</label>
+            <input type="text" id="updateName" placeholder="New name" value="Updated User">
+          </div>
+          <button id="updateUser" class="btn btn-put">
+            ✏️ Update User
+          </button>
+        </div>
+
+        <div class="status-bar" id="putStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">Ready</span>
+        </div>
+
+        <div id="putOutput" class="output"></div>
+      </section>
+
+      <!-- DELETE Request Demo -->
+      <section class="section">
+        <h2>🗑️ DELETE Request - Removing Data</h2>
+        
+        <div class="code-block">
+          <div class="code-header">
+            <span class="badge badge-delete">DELETE</span>
+            Remove Resource
+          </div>
+          <pre><code>async function deleteUser(id) {
+  const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+    method: 'DELETE'
+  });
+  
+  if (!response.ok) throw new Error('Delete failed');
+  return true; // DELETE usually returns empty response
+}</code></pre>
+        </div>
+
+        <div class="form-container">
+          <div class="form-group">
+            <label for="deleteId">User ID to Delete:</label>
+            <input type="number" id="deleteId" value="1" min="1" max="10">
+          </div>
+          <button id="deleteUser" class="btn btn-delete">
+            🗑️ Delete User
+          </button>
+        </div>
+
+        <div class="status-bar" id="deleteStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">Ready</span>
+        </div>
+
+        <div id="deleteOutput" class="output"></div>
+      </section>
+
+      <!-- Error Handling -->
+      <section class="section">
+        <h2>🛡️ Error Handling</h2>
+        <p class="section-desc">Fetch has quirks! It only rejects on network errors, not HTTP errors (404, 500).</p>
+        
+        <div class="tip-box warning">
+          <div class="tip-title">⚠️ Important: fetch() quirks</div>
+          <ul>
+            <li><code>fetch()</code> only rejects on network errors, not HTTP errors (404, 500)</li>
+            <li>Always check <code>response.ok</code> or <code>response.status</code></li>
+            <li><code>response.json()</code> is also async - needs await!</li>
+          </ul>
+        </div>
+
+        <div class="demo-controls">
+          <button id="fetch404" class="btn btn-danger">
+            ❌ Simulate 404 Error
+          </button>
+          <button id="fetchNetworkError" class="btn btn-danger">
+            🔌 Simulate Network Error
+          </button>
+        </div>
+
+        <div id="errorOutput" class="output"></div>
+      </section>
+
+      <!-- API Helper Pattern -->
+      <section class="section">
+        <h2>🔧 Complete API Helper</h2>
+        
+        <div class="code-block">
+          <div class="code-header">
+            <span class="badge badge-accent">Best Practice</span>
+            Reusable API Functions
+          </div>
+          <pre><code>const API_URL = 'https://jsonplaceholder.typicode.com';
+
+// Generic fetch wrapper
+async function apiRequest(endpoint, options = {}) {
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    },
+    ...options
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.status}`);
+  }
+  
+  return response.json();
+}
+
+// CRUD Operations
+const getUsers = () => apiRequest('/users');
+const getUser = (id) => apiRequest(`/users/${id}`);
+const createUser = (data) => apiRequest('/users', {
+  method: 'POST',
+  body: JSON.stringify(data)
+});
+const updateUser = (id, data) => apiRequest(`/users/${id}`, {
+  method: 'PUT',
+  body: JSON.stringify(data)
+});
+const deleteUser = (id) => apiRequest(`/users/${id}`, {
+  method: 'DELETE'
+});</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Chapter 17: Async/Await Complete Guide</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

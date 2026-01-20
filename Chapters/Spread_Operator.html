@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spread Operator (...) Complete Guide | JavaScript & React</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --spread: #f472b6; --array: #38bdf8; --object: #fb923c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    /* Hero Section */
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(244,114,182,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(56,189,248,0.15) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.8rem; background: linear-gradient(135deg, #fff, var(--spread), var(--array)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero .dots { font-size: 4rem; color: var(--spread); margin-bottom: 0.5rem; position: relative; letter-spacing: 0.5rem; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-spread { background: var(--spread); color: white; }
+    .badge-array { background: var(--array); color: #000; }
+    .badge-object { background: var(--object); color: #000; }
+    .badge-es6 { background: linear-gradient(135deg, var(--warning), var(--danger)); color: #000; }
+    
+    /* Section Styles */
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; }
+    .icon-intro { background: linear-gradient(135deg, var(--spread), #db2777); }
+    .icon-array { background: linear-gradient(135deg, var(--array), #0284c7); }
+    .icon-object { background: linear-gradient(135deg, var(--object), #ea580c); }
+    .icon-react { background: linear-gradient(135deg, #61dafb, #0891b2); }
+    .icon-visual { background: linear-gradient(135deg, var(--accent), #059669); }
+    .icon-app { background: linear-gradient(135deg, var(--secondary), #7c3aed); }
+    .icon-tips { background: linear-gradient(135deg, var(--warning), #d97706); }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-badge { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    /* Code Blocks */
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    /* Syntax Highlighting */
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .prop { color: #e5c07b; } .op { color: #56b6c2; } .spread { color: #f472b6; font-weight: bold; }
+    
+    /* Grid Layouts */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3 { grid-template-columns: 1fr; } }
+    
+    /* Cards */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; transition: all 0.3s; }
+    .card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .card-spread { border-color: var(--spread); background: linear-gradient(135deg, rgba(244,114,182,0.08), transparent); }
+    .card-array { border-color: var(--array); background: linear-gradient(135deg, rgba(56,189,248,0.08), transparent); }
+    .card-object { border-color: var(--object); background: linear-gradient(135deg, rgba(251,146,60,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    
+    /* Info Boxes */
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    /* Visualization Containers */
+    .visual-container { background: var(--surface2); border: 2px solid var(--border); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .visual-title { color: var(--primary); font-weight: 600; margin-bottom: 1.5rem; text-align: center; font-size: 1.1rem; }
+    
+    /* Array/Object Visual Boxes */
+    .visual-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+    .visual-box { display: flex; align-items: center; background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 0.75rem; gap: 0.5rem; }
+    .visual-box.array { border-color: var(--array); }
+    .visual-box.object { border-color: var(--object); }
+    .visual-box.result { border-color: var(--accent); box-shadow: 0 0 20px rgba(52,211,153,0.3); }
+    .visual-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
+    .visual-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+    .visual-item.num { background: rgba(209,154,102,0.2); border-color: #d19a66; color: #d19a66; }
+    .visual-item.str { background: rgba(152,195,121,0.2); border-color: #98c379; color: #98c379; }
+    .visual-item.prop { background: rgba(229,192,123,0.2); border-color: #e5c07b; color: #e5c07b; }
+    .visual-arrow { font-size: 2rem; color: var(--spread); }
+    .visual-spread { font-size: 1.5rem; color: var(--spread); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+    .visual-equals { font-size: 1.5rem; color: var(--muted); }
+    .bracket { font-size: 1.5rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .bracket.array { color: var(--array); }
+    .bracket.object { color: var(--object); }
+    
+    /* Animation for spread */
+    .spread-animation { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 1rem; }
+    .spread-dot { width: 12px; height: 12px; background: var(--spread); border-radius: 50%; animation: spreadPulse 1.5s ease-in-out infinite; }
+    .spread-dot:nth-child(2) { animation-delay: 0.2s; }
+    .spread-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes spreadPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+    }
+    
+    /* Interactive Demo */
+    .demo-container { background: var(--surface2); border: 2px solid var(--border); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .demo-title { color: var(--primary); font-weight: 600; margin-bottom: 1rem; text-align: center; }
+    
+    /* App Demo Styles */
+    .app-preview { background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .app-header { background: var(--surface); padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .app-title { font-weight: 600; color: var(--text); }
+    .app-body { padding: 1.5rem; }
+    
+    /* Task List Styles */
+    .task-input-group { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .task-input { flex: 1; padding: 0.75rem 1rem; background: var(--surface); border: 2px solid var(--border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 1rem; transition: border-color 0.2s; }
+    .task-input:focus { outline: none; border-color: var(--primary); }
+    .task-input::placeholder { color: var(--muted); }
+    .btn { padding: 0.75rem 1.25rem; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 0.95rem; font-weight: 600; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: var(--bg); }
+    .btn-primary:hover { background: #06b6d4; transform: translateY(-2px); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 2px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--primary); }
+    .btn-sm { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+    
+    .task-list { list-style: none; }
+    .task-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; transition: all 0.2s; }
+    .task-item:hover { border-color: var(--primary); }
+    .task-item.completed { opacity: 0.6; }
+    .task-item.completed .task-text { text-decoration: line-through; color: var(--muted); }
+    .task-checkbox { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+    .task-checkbox:hover { border-color: var(--primary); }
+    .task-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+    .task-checkbox.checked::after { content: '✓'; color: white; font-weight: bold; font-size: 0.85rem; }
+    .task-text { flex: 1; font-size: 1rem; }
+    .task-delete { background: none; border: none; color: var(--muted); cursor: pointer; padding: 0.25rem; font-size: 1.25rem; transition: color 0.2s; }
+    .task-delete:hover { color: var(--danger); }
+    
+    .task-stats { display: flex; gap: 1rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+    .stat-badge { background: var(--surface2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; }
+    .stat-badge span { color: var(--primary); font-weight: 600; }
+    
+    /* Comparison Table */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    /* VS Container */
+    .vs-container { display: flex; align-items: stretch; gap: 1rem; margin: 1rem 0; }
+    .vs-box { flex: 1; padding: 1rem; border-radius: 12px; }
+    .vs-box.good { background: rgba(52,211,153,0.1); border: 1px solid var(--accent); }
+    .vs-box.bad { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); }
+    .vs-divider { display: flex; align-items: center; font-weight: 700; color: var(--warning); }
+    @media (max-width: 768px) { .vs-container { flex-direction: column; } .vs-divider { justify-content: center; padding: 0.5rem; } }
+    
+    /* Badges */
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    
+    /* Footer */
+    .footer { text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(244,114,182,0.1), rgba(56,189,248,0.05)); border-radius: 16px; border: 1px solid var(--border); }
+    
+    /* Concept Cards */
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.3s; }
+    .concept-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .concept-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .concept-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem; }
+    .concept-desc { color: var(--muted); font-size: 0.85rem; }
+    
+    /* Step flow */
+    .step-flow { display: flex; flex-direction: column; gap: 1rem; }
+    .step-item { display: flex; gap: 1rem; align-items: flex-start; }
+    .step-num { min-width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--spread), var(--array)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+    .step-content { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="hero">
+      <div class="dots">...</div>
+      <h1>The Spread Operator</h1>
+      <p>Master the three magical dots that transform how you work with arrays and objects</p>
+      <div class="hero-badges">
+        <span class="hero-badge badge-spread">... Spread</span>
+        <span class="hero-badge badge-array">📦 Arrays</span>
+        <span class="hero-badge badge-object">🔧 Objects</span>
+        <span class="hero-badge badge-es6">ES6+</span>
+      </div>
+    </div>
+
+    <!-- Section 1: Introduction -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-intro">...</div>
+        <div class="section-title">What is the Spread Operator?</div>
+        <span class="section-badge badge-primary">Foundation</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--spread); margin-bottom: 1rem;">The Magic of Three Dots</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The spread operator (<code style="color: var(--spread); font-size: 1.2rem;">...</code>) is a powerful ES6 feature that "spreads" or "unpacks" 
+          elements from arrays or properties from objects. Think of it as <strong>opening a box and laying out all its contents</strong>.
+        </p>
+
+        <!-- Visual Animation -->
+        <div class="visual-container">
+          <div class="visual-title">🎯 Spread = Unpack Everything!</div>
+          <div class="spread-animation">
+            <div class="spread-dot"></div>
+            <div class="spread-dot"></div>
+            <div class="spread-dot"></div>
+          </div>
+          
+          <div class="visual-row">
+            <div>
+              <div class="visual-label">Original Array (Packed)</div>
+              <div class="visual-box array">
+                <span class="bracket array">[</span>
+                <span class="visual-item num">1</span>
+                <span class="visual-item num">2</span>
+                <span class="visual-item num">3</span>
+                <span class="bracket array">]</span>
+              </div>
+            </div>
+            
+            <div class="visual-arrow">→</div>
+            
+            <div>
+              <div class="visual-label">After Spread (Unpacked)</div>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <span class="visual-spread">...</span>
+                <span class="visual-item num">1</span>
+                <span class="visual-item num">2</span>
+                <span class="visual-item num">3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📝 Basic Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Spread Operator Basics</div>
+          <div class="code-body"><pre><span class="cmt">// The spread operator is three dots: ...</span>
+
+<span class="cmt">// With Arrays</span>
+<span class="kw">const</span> numbers = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+console.<span class="fn">log</span>(<span class="spread">...</span>numbers);  <span class="cmt">// Output: 1 2 3 (not [1, 2, 3])</span>
+
+<span class="cmt">// With Objects</span>
+<span class="kw">const</span> person = { <span class="prop">name</span>: <span class="str">'John'</span>, <span class="prop">age</span>: <span class="num">25</span> };
+<span class="kw">const</span> copy = { <span class="spread">...</span>person };  <span class="cmt">// Creates a new object with same properties</span>
+
+<span class="cmt">// With Strings (yes, it works!)</span>
+<span class="kw">const</span> word = <span class="str">'Hello'</span>;
+console.<span class="fn">log</span>([<span class="spread">...</span>word]);  <span class="cmt">// Output: ['H', 'e', 'l', 'l', 'o']</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">🎯 Three Main Use Cases</h3>
+        <div class="grid-3">
+          <div class="concept-card card-array">
+            <div class="concept-icon">📦</div>
+            <div class="concept-name" style="color: var(--array);">Copy Arrays</div>
+            <div class="concept-desc">Create new arrays without mutation</div>
+          </div>
+          <div class="concept-card card-object">
+            <div class="concept-icon">🔧</div>
+            <div class="concept-name" style="color: var(--object);">Copy Objects</div>
+            <div class="concept-desc">Clone objects with modifications</div>
+          </div>
+          <div class="concept-card card-spread">
+            <div class="concept-icon">🔗</div>
+            <div class="concept-name" style="color: var(--spread);">Merge/Combine</div>
+            <div class="concept-desc">Join arrays or objects together</div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Insight</div>
+          <div class="tip-content">
+            The spread operator creates <strong>shallow copies</strong>. This means it copies the first level of values, 
+            but nested objects/arrays are still referenced (not deep copied).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Spread with Arrays -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-array">📦</div>
+        <div class="section-title">Spread with Arrays</div>
+        <span class="section-badge" style="background: rgba(56,189,248,0.2); color: var(--array);">Arrays</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--array); margin-bottom: 1rem;">📦 Array Operations with Spread</h2>
+
+        <!-- Visual: Copy Array -->
+        <h3 style="color: var(--primary);">1. Copy an Array</h3>
+        <div class="visual-container">
+          <div class="visual-title">Creating a Copy (Not a Reference!)</div>
+          <div class="visual-row">
+            <div>
+              <div class="visual-label">original</div>
+              <div class="visual-box array">
+                <span class="bracket array">[</span>
+                <span class="visual-item num">1</span>
+                <span class="visual-item num">2</span>
+                <span class="visual-item num">3</span>
+                <span class="bracket array">]</span>
+              </div>
+            </div>
+            <div class="visual-arrow">→</div>
+            <div>
+              <div class="visual-label">copy = [...original]</div>
+              <div class="visual-box result">
+                <span class="bracket array">[</span>
+                <span class="visual-item num">1</span>
+                <span class="visual-item num">2</span>
+                <span class="visual-item num">3</span>
+                <span class="bracket array">]</span>
+              </div>
+            </div>
+          </div>
+          <p style="text-align: center; color: var(--accent); margin-top: 1rem;">✅ Different array in memory - changes to one don't affect the other!</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Copy Arrays</div>
+          <div class="code-body"><pre><span class="kw">const</span> original = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+
+<span class="cmt">// ❌ WRONG: This creates a reference, not a copy</span>
+<span class="kw">const</span> wrong = original;
+wrong.<span class="fn">push</span>(<span class="num">4</span>);
+console.<span class="fn">log</span>(original);  <span class="cmt">// [1, 2, 3, 4] - Original changed!</span>
+
+<span class="cmt">// ✅ CORRECT: Spread creates a true copy</span>
+<span class="kw">const</span> copy = [<span class="spread">...</span>original];
+copy.<span class="fn">push</span>(<span class="num">4</span>);
+console.<span class="fn">log</span>(original);  <span class="cmt">// [1, 2, 3] - Original unchanged!</span>
+console.<span class="fn">log</span>(copy);      <span class="cmt">// [1, 2, 3, 4]</span></pre></div>
+        </div>
+
+        <!-- Visual: Combine Arrays -->
+        <h3 style="color: var(--secondary); margin-top: 2rem;">2. Combine/Merge Arrays</h3>
+        <div class="visual-container">
+          <div class="visual-title">Merging Two Arrays</div>
+          <div class="visual-row">
+            <div>
+              <div class="visual-label">arr1</div>
+              <div class="visual-box array">
+                <span class="bracket array">[</span>
+                <span class="visual-item num">1</span>
+                <span class="visual-item num">2</span>
+                <span class="bracket array">]</span>
+              </div>
+            </div>
+            <span style="font-size: 1.5rem; color: var(--muted);">+</span>
+            <div>
+              <div class="visual-label">arr2</div>
+              <div class="visual-box array">
+                <span class="bracket array">[</span>
+                <span class="visual-item num">3</span>
+                <span class="visual-item num">4</span>
+                <span class="bracket array">]</span>
+              </div>
+            </div>
+            <div class="visual-equals">=</div>
+            <div>
+              <div class="visual-label">[...arr1, ...arr2]</div>
+              <div class="visual-box result">
+                <span class="bracket array">[</span>
+                <span class="visual-item num">1</span>
+                <span class="visual-item num">2</span>
+                <span class="visual-item num">3</span>
+                <span class="visual-item num">4</span>
+                <span class="bracket array">]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Combine Arrays</div>
+          <div class="code-body"><pre><span class="kw">const</span> fruits = [<span class="str">'🍎'</span>, <span class="str">'🍌'</span>];
+<span class="kw">const</span> veggies = [<span class="str">'🥕'</span>, <span class="str">'🥦'</span>];
+
+<span class="cmt">// Combine two arrays</span>
+<span class="kw">const</span> food = [<span class="spread">...</span>fruits, <span class="spread">...</span>veggies];
+console.<span class="fn">log</span>(food);  <span class="cmt">// ['🍎', '🍌', '🥕', '🥦']</span>
+
+<span class="cmt">// Add items in between</span>
+<span class="kw">const</span> mixed = [<span class="spread">...</span>fruits, <span class="str">'🍕'</span>, <span class="spread">...</span>veggies];
+console.<span class="fn">log</span>(mixed);  <span class="cmt">// ['🍎', '🍌', '🍕', '🥕', '🥦']</span>
+
+<span class="cmt">// Combine multiple arrays</span>
+<span class="kw">const</span> drinks = [<span class="str">'☕'</span>, <span class="str">'🧃'</span>];
+<span class="kw">const</span> all = [<span class="spread">...</span>fruits, <span class="spread">...</span>veggies, <span class="spread">...</span>drinks];
+console.<span class="fn">log</span>(all);  <span class="cmt">// ['🍎', '🍌', '🥕', '🥦', '☕', '🧃']</span></pre></div>
+        </div>
+
+        <!-- Visual: Add Elements -->
+        <h3 style="color: var(--accent); margin-top: 2rem;">3. Add Elements (Without Mutation)</h3>
+        <div class="visual-container">
+          <div class="visual-title">Adding to Beginning, Middle, or End</div>
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Add to beginning -->
+            <div class="visual-row" style="margin: 0;">
+              <div class="visual-box array">
+                <span class="bracket array">[</span>
+                <span class="visual-item num" style="background: rgba(52,211,153,0.3); border-color: var(--accent);">0</span>
+                <span style="color: var(--spread);">, ...</span>
+                <span class="visual-item num">1</span>
+                <span class="visual-item num">2</span>
+                <span class="visual-item num">3</span>
+                <span class="bracket array">]</span>
+              </div>
+              <span style="color: var(--muted);">→ Add to START</span>
+            </div>
+            
+            <!-- Add to end -->
+            <div class="visual-row" style="margin: 0;">
+              <div class="visual-box array">
+                <span class="bracket array">[</span>
+                <span style="color: var(--spread);">...</span>
+                <span class="visual-item num">1</span>
+                <span class="visual-item num">2</span>
+                <span class="visual-item num">3</span>
+                <span style="color: var(--spread);">, </span>
+                <span class="visual-item num" style="background: rgba(52,211,153,0.3); border-color: var(--accent);">4</span>
+                <span class="bracket array">]</span>
+              </div>
+              <span style="color: var(--muted);">→ Add to END</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Add Elements Immutably</div>
+          <div class="code-body"><pre><span class="kw">const</span> numbers = [<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>];
+
+<span class="cmt">// Add to beginning</span>
+<span class="kw">const</span> withFirst = [<span class="num">1</span>, <span class="spread">...</span>numbers];       <span class="cmt">// [1, 2, 3, 4]</span>
+
+<span class="cmt">// Add to end</span>
+<span class="kw">const</span> withLast = [<span class="spread">...</span>numbers, <span class="num">5</span>];        <span class="cmt">// [2, 3, 4, 5]</span>
+
+<span class="cmt">// Add to both</span>
+<span class="kw">const</span> withBoth = [<span class="num">1</span>, <span class="spread">...</span>numbers, <span class="num">5</span>];    <span class="cmt">// [1, 2, 3, 4, 5]</span>
+
+<span class="cmt">// Insert at specific position (using slice)</span>
+<span class="kw">const</span> arr = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">4</span>, <span class="num">5</span>];
+<span class="kw">const</span> withMiddle = [
+  <span class="spread">...</span>arr.<span class="fn">slice</span>(<span class="num">0</span>, <span class="num">2</span>),   <span class="cmt">// [1, 2]</span>
+  <span class="num">3</span>,                    <span class="cmt">// new element</span>
+  <span class="spread">...</span>arr.<span class="fn">slice</span>(<span class="num">2</span>)       <span class="cmt">// [4, 5]</span>
+];
+console.<span class="fn">log</span>(withMiddle);  <span class="cmt">// [1, 2, 3, 4, 5]</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--warning); margin-top: 2rem;">4. Pass Array as Function Arguments</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Function Arguments</div>
+          <div class="code-body"><pre><span class="kw">const</span> numbers = [<span class="num">5</span>, <span class="num">2</span>, <span class="num">8</span>, <span class="num">1</span>, <span class="num">9</span>];
+
+<span class="cmt">// Math.max expects individual arguments, not an array</span>
+<span class="cmt">// Math.max([5, 2, 8, 1, 9]) ❌ doesn't work</span>
+
+<span class="cmt">// Spread unpacks the array into arguments!</span>
+<span class="kw">const</span> max = Math.<span class="fn">max</span>(<span class="spread">...</span>numbers);  <span class="cmt">// Same as Math.max(5, 2, 8, 1, 9)</span>
+console.<span class="fn">log</span>(max);  <span class="cmt">// 9</span>
+
+<span class="kw">const</span> min = Math.<span class="fn">min</span>(<span class="spread">...</span>numbers);
+console.<span class="fn">log</span>(min);  <span class="cmt">// 1</span>
+
+<span class="cmt">// Works with any function</span>
+<span class="kw">function</span> <span class="fn">greet</span>(a, b, c) {
+  console.<span class="fn">log</span>(<span class="str">`Hello ${a}, ${b}, and ${c}!`</span>);
+}
+<span class="kw">const</span> names = [<span class="str">'Alice'</span>, <span class="str">'Bob'</span>, <span class="str">'Charlie'</span>];
+<span class="fn">greet</span>(<span class="spread">...</span>names);  <span class="cmt">// Hello Alice, Bob, and Charlie!</span></pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Spread with Objects -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-object">🔧</div>
+        <div class="section-title">Spread with Objects</div>
+        <span class="section-badge" style="background: rgba(251,146,60,0.2); color: var(--object);">Objects</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--object); margin-bottom: 1rem;">🔧 Object Operations with Spread</h2>
+
+        <!-- Visual: Copy Object -->
+        <h3 style="color: var(--primary);">1. Copy an Object</h3>
+        <div class="visual-container">
+          <div class="visual-title">Creating an Object Copy</div>
+          <div class="visual-row">
+            <div>
+              <div class="visual-label">original</div>
+              <div class="visual-box object">
+                <span class="bracket object">{</span>
+                <span class="visual-item prop">name: "John"</span>
+                <span class="visual-item prop">age: 25</span>
+                <span class="bracket object">}</span>
+              </div>
+            </div>
+            <div class="visual-arrow">→</div>
+            <div>
+              <div class="visual-label">copy = {...original}</div>
+              <div class="visual-box result">
+                <span class="bracket object">{</span>
+                <span class="visual-item prop">name: "John"</span>
+                <span class="visual-item prop">age: 25</span>
+                <span class="bracket object">}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Copy Objects</div>
+          <div class="code-body"><pre><span class="kw">const</span> original = { <span class="prop">name</span>: <span class="str">'John'</span>, <span class="prop">age</span>: <span class="num">25</span> };
+
+<span class="cmt">// ❌ WRONG: Creates a reference</span>
+<span class="kw">const</span> wrong = original;
+wrong.age = <span class="num">26</span>;
+console.<span class="fn">log</span>(original.age);  <span class="cmt">// 26 - Original changed!</span>
+
+<span class="cmt">// ✅ CORRECT: Spread creates a true copy</span>
+<span class="kw">const</span> copy = { <span class="spread">...</span>original };
+copy.age = <span class="num">30</span>;
+console.<span class="fn">log</span>(original.age);  <span class="cmt">// 25 - Original unchanged!</span>
+console.<span class="fn">log</span>(copy.age);      <span class="cmt">// 30</span></pre></div>
+        </div>
+
+        <!-- Visual: Update Object -->
+        <h3 style="color: var(--secondary); margin-top: 2rem;">2. Update Object Properties (Override)</h3>
+        <div class="visual-container">
+          <div class="visual-title">Updating Properties - Order Matters!</div>
+          <div class="visual-row">
+            <div>
+              <div class="visual-label">person</div>
+              <div class="visual-box object">
+                <span class="bracket object">{</span>
+                <span class="visual-item prop">name: "John"</span>
+                <span class="visual-item prop" style="background: rgba(239,68,68,0.2); border-color: var(--danger);">age: 25</span>
+                <span class="bracket object">}</span>
+              </div>
+            </div>
+            <div class="visual-arrow">→</div>
+            <div>
+              <div class="visual-label">{...person, age: 26}</div>
+              <div class="visual-box result">
+                <span class="bracket object">{</span>
+                <span class="visual-item prop">name: "John"</span>
+                <span class="visual-item prop" style="background: rgba(52,211,153,0.3); border-color: var(--accent);">age: 26</span>
+                <span class="bracket object">}</span>
+              </div>
+            </div>
+          </div>
+          <p style="text-align: center; color: var(--warning); margin-top: 1rem;">⚠️ Properties listed AFTER spread override existing ones!</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Update Properties</div>
+          <div class="code-body"><pre><span class="kw">const</span> person = { <span class="prop">name</span>: <span class="str">'John'</span>, <span class="prop">age</span>: <span class="num">25</span>, <span class="prop">city</span>: <span class="str">'Mumbai'</span> };
+
+<span class="cmt">// Update one property</span>
+<span class="kw">const</span> older = { <span class="spread">...</span>person, <span class="prop">age</span>: <span class="num">26</span> };
+console.<span class="fn">log</span>(older);  <span class="cmt">// { name: 'John', age: 26, city: 'Mumbai' }</span>
+
+<span class="cmt">// Update multiple properties</span>
+<span class="kw">const</span> moved = { <span class="spread">...</span>person, <span class="prop">age</span>: <span class="num">26</span>, <span class="prop">city</span>: <span class="str">'Delhi'</span> };
+console.<span class="fn">log</span>(moved);  <span class="cmt">// { name: 'John', age: 26, city: 'Delhi' }</span>
+
+<span class="cmt">// Add new properties</span>
+<span class="kw">const</span> withJob = { <span class="spread">...</span>person, <span class="prop">job</span>: <span class="str">'Developer'</span> };
+console.<span class="fn">log</span>(withJob);  <span class="cmt">// { name: 'John', age: 25, city: 'Mumbai', job: 'Developer' }</span>
+
+<span class="cmt">// ⚠️ ORDER MATTERS!</span>
+<span class="kw">const</span> test1 = { <span class="prop">age</span>: <span class="num">30</span>, <span class="spread">...</span>person };  <span class="cmt">// age will be 25 (person's age wins)</span>
+<span class="kw">const</span> test2 = { <span class="spread">...</span>person, <span class="prop">age</span>: <span class="num">30</span> };  <span class="cmt">// age will be 30 (30 wins)</span></pre></div>
+        </div>
+
+        <!-- Visual: Merge Objects -->
+        <h3 style="color: var(--accent); margin-top: 2rem;">3. Merge Multiple Objects</h3>
+        <div class="visual-container">
+          <div class="visual-title">Merging Objects Together</div>
+          <div class="visual-row">
+            <div>
+              <div class="visual-label">defaults</div>
+              <div class="visual-box object">
+                <span class="bracket object">{</span>
+                <span class="visual-item prop">theme: "light"</span>
+                <span class="visual-item prop">lang: "en"</span>
+                <span class="bracket object">}</span>
+              </div>
+            </div>
+            <span style="font-size: 1.5rem; color: var(--muted);">+</span>
+            <div>
+              <div class="visual-label">userPrefs</div>
+              <div class="visual-box object">
+                <span class="bracket object">{</span>
+                <span class="visual-item prop">theme: "dark"</span>
+                <span class="bracket object">}</span>
+              </div>
+            </div>
+            <div class="visual-equals">=</div>
+            <div>
+              <div class="visual-label">{...defaults, ...userPrefs}</div>
+              <div class="visual-box result">
+                <span class="bracket object">{</span>
+                <span class="visual-item prop" style="background: rgba(52,211,153,0.3); border-color: var(--accent);">theme: "dark"</span>
+                <span class="visual-item prop">lang: "en"</span>
+                <span class="bracket object">}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Merge Objects</div>
+          <div class="code-body"><pre><span class="cmt">// Common pattern: Default settings with overrides</span>
+<span class="kw">const</span> defaults = {
+  <span class="prop">theme</span>: <span class="str">'light'</span>,
+  <span class="prop">fontSize</span>: <span class="num">16</span>,
+  <span class="prop">language</span>: <span class="str">'en'</span>
+};
+
+<span class="kw">const</span> userPrefs = {
+  <span class="prop">theme</span>: <span class="str">'dark'</span>,
+  <span class="prop">fontSize</span>: <span class="num">18</span>
+};
+
+<span class="cmt">// Merge: user preferences override defaults</span>
+<span class="kw">const</span> settings = { <span class="spread">...</span>defaults, <span class="spread">...</span>userPrefs };
+console.<span class="fn">log</span>(settings);
+<span class="cmt">// { theme: 'dark', fontSize: 18, language: 'en' }</span>
+
+<span class="cmt">// Combine multiple objects</span>
+<span class="kw">const</span> obj1 = { <span class="prop">a</span>: <span class="num">1</span> };
+<span class="kw">const</span> obj2 = { <span class="prop">b</span>: <span class="num">2</span> };
+<span class="kw">const</span> obj3 = { <span class="prop">c</span>: <span class="num">3</span> };
+<span class="kw">const</span> merged = { <span class="spread">...</span>obj1, <span class="spread">...</span>obj2, <span class="spread">...</span>obj3 };
+console.<span class="fn">log</span>(merged);  <span class="cmt">// { a: 1, b: 2, c: 3 }</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--warning); margin-top: 2rem;">4. Remove Properties (with Destructuring)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Remove Properties</div>
+          <div class="code-body"><pre><span class="kw">const</span> user = {
+  <span class="prop">id</span>: <span class="num">1</span>,
+  <span class="prop">name</span>: <span class="str">'John'</span>,
+  <span class="prop">password</span>: <span class="str">'secret123'</span>,  <span class="cmt">// We want to remove this!</span>
+  <span class="prop">email</span>: <span class="str">'john@example.com'</span>
+};
+
+<span class="cmt">// Destructure to separate password, collect rest</span>
+<span class="kw">const</span> { <span class="prop">password</span>, <span class="spread">...</span>safeUser } = user;
+
+console.<span class="fn">log</span>(password);  <span class="cmt">// 'secret123' (extracted)</span>
+console.<span class="fn">log</span>(safeUser);   <span class="cmt">// { id: 1, name: 'John', email: 'john@example.com' }</span>
+
+<span class="cmt">// Remove multiple properties</span>
+<span class="kw">const</span> { <span class="prop">password</span>: _, <span class="prop">id</span>: __, <span class="spread">...</span>publicData } = user;
+console.<span class="fn">log</span>(publicData);  <span class="cmt">// { name: 'John', email: 'john@example.com' }</span></pre></div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Shallow Copy Warning</div>
+          <div class="warning-content">
+            Spread only creates a <strong>shallow copy</strong>. Nested objects are still referenced!
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Shallow Copy Problem</div>
+          <div class="code-body"><pre><span class="kw">const</span> original = {
+  <span class="prop">name</span>: <span class="str">'John'</span>,
+  <span class="prop">address</span>: {           <span class="cmt">// Nested object!</span>
+    <span class="prop">city</span>: <span class="str">'Mumbai'</span>,
+    <span class="prop">zip</span>: <span class="str">'400001'</span>
+  }
+};
+
+<span class="kw">const</span> copy = { <span class="spread">...</span>original };
+copy.address.city = <span class="str">'Delhi'</span>;
+
+console.<span class="fn">log</span>(original.address.city);  <span class="cmt">// 'Delhi' 😱 Original changed!</span>
+
+<span class="cmt">// Solution: Deep copy nested objects too</span>
+<span class="kw">const</span> deepCopy = {
+  <span class="spread">...</span>original,
+  <span class="prop">address</span>: { <span class="spread">...</span>original.address }  <span class="cmt">// Spread nested object</span>
+};
+deepCopy.address.city = <span class="str">'Delhi'</span>;
+console.<span class="fn">log</span>(original.address.city);  <span class="cmt">// 'Mumbai' ✅ Original safe!</span></pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Spread in React -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-react">⚛️</div>
+        <div class="section-title">Spread in React (State Updates)</div>
+        <span class="section-badge badge-primary">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: #61dafb; margin-bottom: 1rem;">⚛️ Spread is ESSENTIAL in React</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          React requires <strong>immutable state updates</strong>. You must create new objects/arrays 
+          instead of modifying existing ones. Spread is the key tool for this!
+        </p>
+
+        <h3 style="color: var(--primary);">Why Spread in React?</h3>
+        <div class="vs-container">
+          <div class="vs-box bad">
+            <h4 style="color: var(--danger); margin-bottom: 0.5rem;">❌ Mutation (WRONG)</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="cmt">// React won't detect this change!</span>
+<span class="kw">const</span> <span class="fn">updateAge</span> = () => {
+  user.age = <span class="num">26</span>;      <span class="cmt">// Mutating</span>
+  <span class="fn">setUser</span>(user);      <span class="cmt">// Same reference</span>
+};
+<span class="cmt">// ❌ UI won't update!</span></pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="vs-box good">
+            <h4 style="color: var(--accent); margin-bottom: 0.5rem;">✅ Spread (CORRECT)</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="cmt">// Create new object with spread!</span>
+<span class="kw">const</span> <span class="fn">updateAge</span> = () => {
+  <span class="fn">setUser</span>({
+    <span class="spread">...</span>user,          <span class="cmt">// Copy all</span>
+    <span class="prop">age</span>: <span class="num">26</span>           <span class="cmt">// Override age</span>
+  });
+};
+<span class="cmt">// ✅ UI updates!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📦 Array State Updates</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Array Operations in React</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">TaskList</span>() {
+  <span class="kw">const</span> [tasks, setTasks] = <span class="fn">useState</span>([
+    { <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">text</span>: <span class="str">'Learn React'</span>, <span class="prop">done</span>: <span class="kw">false</span> },
+    { <span class="prop">id</span>: <span class="num">2</span>, <span class="prop">text</span>: <span class="str">'Build Projects'</span>, <span class="prop">done</span>: <span class="kw">false</span> }
+  ]);
+
+  <span class="cmt">// ADD - spread existing, add new at end</span>
+  <span class="kw">const</span> <span class="fn">addTask</span> = (text) => {
+    <span class="kw">const</span> newTask = { <span class="prop">id</span>: Date.<span class="fn">now</span>(), <span class="prop">text</span>, <span class="prop">done</span>: <span class="kw">false</span> };
+    <span class="fn">setTasks</span>([<span class="spread">...</span>tasks, newTask]);
+  };
+
+  <span class="cmt">// REMOVE - filter creates new array</span>
+  <span class="kw">const</span> <span class="fn">removeTask</span> = (id) => {
+    <span class="fn">setTasks</span>(tasks.<span class="fn">filter</span>(task => task.id !== id));
+  };
+
+  <span class="cmt">// UPDATE - map creates new array with updated item</span>
+  <span class="kw">const</span> <span class="fn">toggleTask</span> = (id) => {
+    <span class="fn">setTasks</span>(tasks.<span class="fn">map</span>(task => 
+      task.id === id 
+        ? { <span class="spread">...</span>task, <span class="prop">done</span>: !task.done }  <span class="cmt">// Spread + update</span>
+        : task
+    ));
+  };
+
+  <span class="cmt">// EDIT TEXT</span>
+  <span class="kw">const</span> <span class="fn">editTask</span> = (id, newText) => {
+    <span class="fn">setTasks</span>(tasks.<span class="fn">map</span>(task =>
+      task.id === id
+        ? { <span class="spread">...</span>task, <span class="prop">text</span>: newText }
+        : task
+    ));
+  };
+
+  <span class="kw">return</span> <span class="cmt">/* ... */</span>;
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--object); margin: 2rem 0 1rem;">🔧 Object State Updates</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Object Operations in React</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">UserProfile</span>() {
+  <span class="kw">const</span> [user, setUser] = <span class="fn">useState</span>({
+    <span class="prop">name</span>: <span class="str">'John'</span>,
+    <span class="prop">email</span>: <span class="str">'john@example.com'</span>,
+    <span class="prop">settings</span>: {
+      <span class="prop">theme</span>: <span class="str">'light'</span>,
+      <span class="prop">notifications</span>: <span class="kw">true</span>
+    }
+  });
+
+  <span class="cmt">// Update simple property</span>
+  <span class="kw">const</span> <span class="fn">updateName</span> = (name) => {
+    <span class="fn">setUser</span>({ <span class="spread">...</span>user, <span class="prop">name</span> });
+  };
+
+  <span class="cmt">// Update nested property (need to spread nested too!)</span>
+  <span class="kw">const</span> <span class="fn">toggleTheme</span> = () => {
+    <span class="fn">setUser</span>({
+      <span class="spread">...</span>user,
+      <span class="prop">settings</span>: {
+        <span class="spread">...</span>user.settings,
+        <span class="prop">theme</span>: user.settings.theme === <span class="str">'light'</span> ? <span class="str">'dark'</span> : <span class="str">'light'</span>
+      }
+    });
+  };
+
+  <span class="cmt">// Update from form input</span>
+  <span class="kw">const</span> <span class="fn">handleChange</span> = (e) => {
+    <span class="kw">const</span> { <span class="prop">name</span>, <span class="prop">value</span> } = e.target;
+    <span class="fn">setUser</span>({ <span class="spread">...</span>user, [name]: value });  <span class="cmt">// Dynamic key!</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">name</span>=<span class="str">"name"</span>
+        <span class="attr">value</span>={user.name}
+        <span class="attr">onChange</span>={handleChange}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">name</span>=<span class="str">"email"</span>
+        <span class="attr">value</span>={user.email}
+        <span class="attr">onChange</span>={handleChange}
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">📋 Spread Props in JSX</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Spreading Props</div>
+          <div class="code-body"><pre><span class="cmt">// Pass all properties as props</span>
+<span class="kw">const</span> buttonProps = {
+  <span class="prop">className</span>: <span class="str">'btn-primary'</span>,
+  <span class="prop">disabled</span>: <span class="kw">false</span>,
+  <span class="prop">onClick</span>: handleClick
+};
+
+<span class="cmt">// Instead of writing each prop:</span>
+<span class="tag">&lt;button</span> <span class="attr">className</span>={buttonProps.className} <span class="attr">disabled</span>={buttonProps.disabled} ...<span class="tag">&gt;</span>
+
+<span class="cmt">// Spread them all at once!</span>
+<span class="tag">&lt;button</span> {<span class="spread">...</span>buttonProps}<span class="tag">&gt;</span>Click Me<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">// Override specific props</span>
+<span class="tag">&lt;button</span> {<span class="spread">...</span>buttonProps} <span class="attr">disabled</span>={<span class="kw">true</span>}<span class="tag">&gt;</span>Click Me<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">// Common pattern: Forward props to child</span>
+<span class="kw">function</span> <span class="fn">CustomButton</span>({ children, <span class="spread">...</span>props }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">className</span>=<span class="str">"custom-btn"</span> {<span class="spread">...</span>props}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 React Golden Rule</div>
+          <div class="tip-content">
+            Always treat state as <strong>read-only</strong>. Never modify state directly.
+            Use spread to create new copies with your changes!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Complete Working App -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-app">🚀</div>
+        <div class="section-title">Complete Working App: Task Manager</div>
+        <span class="section-badge badge-secondary">Full App</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--secondary); margin-bottom: 1rem;">🚀 Task Manager App</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          A complete task manager demonstrating ALL spread operator patterns!
+        </p>
+
+        <!-- Live Demo -->
+        <div class="app-preview">
+          <div class="app-header">
+            <div class="app-title">📝 Task Manager</div>
+            <span class="badge badge-accent" id="task-count-badge">0 tasks</span>
+          </div>
+          <div class="app-body">
+            <div class="task-input-group">
+              <input 
+                type="text" 
+                class="task-input" 
+                id="task-input" 
+                placeholder="What needs to be done?"
+                onkeypress="if(event.key === 'Enter') addTask()"
+              >
+              <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+            </div>
+            
+            <ul class="task-list" id="task-list">
+              <!-- Tasks will be rendered here -->
+            </ul>
+            
+            <div class="task-stats" id="task-stats">
+              <!-- Stats will be rendered here -->
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📝 Complete React Code</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; TaskManager.jsx - Complete App</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">TaskManager</span>() {
+  <span class="cmt">// State: array of task objects</span>
+  <span class="kw">const</span> [tasks, setTasks] = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [inputValue, setInputValue] = <span class="fn">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [filter, setFilter] = <span class="fn">useState</span>(<span class="str">'all'</span>); <span class="cmt">// 'all', 'active', 'completed'</span>
+
+  <span class="cmt">// ➕ ADD TASK - Spread existing array, add new task</span>
+  <span class="kw">const</span> <span class="fn">addTask</span> = () => {
+    <span class="kw">if</span> (!inputValue.<span class="fn">trim</span>()) <span class="kw">return</span>;
+    
+    <span class="kw">const</span> newTask = {
+      <span class="prop">id</span>: Date.<span class="fn">now</span>(),
+      <span class="prop">text</span>: inputValue.<span class="fn">trim</span>(),
+      <span class="prop">completed</span>: <span class="kw">false</span>,
+      <span class="prop">createdAt</span>: <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toLocaleTimeString</span>()
+    };
+    
+    <span class="cmt">// ✨ SPREAD: Create new array with all existing + new task</span>
+    <span class="fn">setTasks</span>([<span class="spread">...</span>tasks, newTask]);
+    <span class="fn">setInputValue</span>(<span class="str">''</span>);
+  };
+
+  <span class="cmt">// 🗑️ DELETE TASK - Filter creates new array without the task</span>
+  <span class="kw">const</span> <span class="fn">deleteTask</span> = (id) => {
+    <span class="fn">setTasks</span>(tasks.<span class="fn">filter</span>(task => task.id !== id));
+  };
+
+  <span class="cmt">// ✅ TOGGLE COMPLETE - Map + Spread to update specific task</span>
+  <span class="kw">const</span> <span class="fn">toggleTask</span> = (id) => {
+    <span class="fn">setTasks</span>(tasks.<span class="fn">map</span>(task =>
+      task.id === id
+        ? { <span class="spread">...</span>task, <span class="prop">completed</span>: !task.completed }  <span class="cmt">// ✨ SPREAD object</span>
+        : task
+    ));
+  };
+
+  <span class="cmt">// ✏️ EDIT TASK - Map + Spread to update text</span>
+  <span class="kw">const</span> <span class="fn">editTask</span> = (id, newText) => {
+    <span class="fn">setTasks</span>(tasks.<span class="fn">map</span>(task =>
+      task.id === id
+        ? { <span class="spread">...</span>task, <span class="prop">text</span>: newText }  <span class="cmt">// ✨ SPREAD + override</span>
+        : task
+    ));
+  };
+
+  <span class="cmt">// 🧹 CLEAR COMPLETED - Filter for active only</span>
+  <span class="kw">const</span> <span class="fn">clearCompleted</span> = () => {
+    <span class="fn">setTasks</span>(tasks.<span class="fn">filter</span>(task => !task.completed));
+  };
+
+  <span class="cmt">// 📊 Calculate statistics (derived state)</span>
+  <span class="kw">const</span> stats = {
+    <span class="prop">total</span>: tasks.length,
+    <span class="prop">completed</span>: tasks.<span class="fn">filter</span>(t => t.completed).length,
+    <span class="prop">active</span>: tasks.<span class="fn">filter</span>(t => !t.completed).length
+  };
+
+  <span class="cmt">// 🔍 Filter tasks for display</span>
+  <span class="kw">const</span> filteredTasks = tasks.<span class="fn">filter</span>(task => {
+    <span class="kw">if</span> (filter === <span class="str">'active'</span>) <span class="kw">return</span> !task.completed;
+    <span class="kw">if</span> (filter === <span class="str">'completed'</span>) <span class="kw">return</span> task.completed;
+    <span class="kw">return true</span>;
+  });
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"task-manager"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>📝 Task Manager<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Input Section */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"input-group"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;input</span>
+          <span class="attr">type</span>=<span class="str">"text"</span>
+          <span class="attr">value</span>={inputValue}
+          <span class="attr">onChange</span>={(e) => <span class="fn">setInputValue</span>(e.target.value)}
+          <span class="attr">onKeyPress</span>={(e) => e.key === <span class="str">'Enter'</span> && <span class="fn">addTask</span>()}
+          <span class="attr">placeholder</span>=<span class="str">"What needs to be done?"</span>
+        <span class="tag">/&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={addTask}<span class="tag">&gt;</span>Add Task<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="cmt">{/* Filter Buttons */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"filters"</span><span class="tag">&gt;</span>
+        {[<span class="str">'all'</span>, <span class="str">'active'</span>, <span class="str">'completed'</span>].<span class="fn">map</span>(f => (
+          <span class="tag">&lt;button</span>
+            <span class="attr">key</span>={f}
+            <span class="attr">className</span>={filter === f ? <span class="str">'active'</span> : <span class="str">''</span>}
+            <span class="attr">onClick</span>={() => <span class="fn">setFilter</span>(f)}
+          <span class="tag">&gt;</span>
+            {f.<span class="fn">charAt</span>(<span class="num">0</span>).<span class="fn">toUpperCase</span>() + f.<span class="fn">slice</span>(<span class="num">1</span>)}
+          <span class="tag">&lt;/button&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="cmt">{/* Task List */}</span>
+      <span class="tag">&lt;ul</span> <span class="attr">className</span>=<span class="str">"task-list"</span><span class="tag">&gt;</span>
+        {filteredTasks.<span class="fn">map</span>(task => (
+          <span class="tag">&lt;li</span>
+            <span class="attr">key</span>={task.id}
+            <span class="attr">className</span>={task.completed ? <span class="str">'completed'</span> : <span class="str">''</span>}
+          <span class="tag">&gt;</span>
+            <span class="tag">&lt;input</span>
+              <span class="attr">type</span>=<span class="str">"checkbox"</span>
+              <span class="attr">checked</span>={task.completed}
+              <span class="attr">onChange</span>={() => <span class="fn">toggleTask</span>(task.id)}
+            <span class="tag">/&gt;</span>
+            <span class="tag">&lt;span&gt;</span>{task.text}<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"time"</span><span class="tag">&gt;</span>{task.createdAt}<span class="tag">&lt;/span&gt;</span>
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">deleteTask</span>(task.id)}<span class="tag">&gt;</span>×<span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;/li&gt;</span>
+        ))}
+      <span class="tag">&lt;/ul&gt;</span>
+
+      <span class="cmt">{/* Statistics */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stats"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span&gt;</span>Total: {stats.total}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span&gt;</span>Active: {stats.active}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span&gt;</span>Completed: {stats.completed}<span class="tag">&lt;/span&gt;</span>
+        {stats.completed > <span class="num">0</span> && (
+          <span class="tag">&lt;button</span> <span class="attr">onClick</span>={clearCompleted}<span class="tag">&gt;</span>Clear Completed<span class="tag">&lt;/button&gt;</span>
+        )}
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> TaskManager;</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🎯 Spread Patterns Used</h3>
+        <div class="step-flow">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <strong style="color: var(--primary);">Add Item:</strong> <code>[...tasks, newTask]</code><br>
+              <span style="color: var(--muted);">Spread existing array, add new item at end</span>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <strong style="color: var(--secondary);">Remove Item:</strong> <code>tasks.filter(t => t.id !== id)</code><br>
+              <span style="color: var(--muted);">Filter creates new array without the item</span>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <strong style="color: var(--accent);">Update Item:</strong> <code>tasks.map(t => t.id === id ? {...t, completed: !t.completed} : t)</code><br>
+              <span style="color: var(--muted);">Map + Spread to update specific item</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Tips & Tricks -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-tips">💡</div>
+        <div class="section-title">Tips, Tricks & Common Mistakes</div>
+        <span class="section-badge badge-warning">Important</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--warning); margin-bottom: 1rem;">💡 Master the Spread Operator</h2>
+
+        <h3 style="color: var(--danger);">❌ Common Mistakes</h3>
+        <div class="grid-2">
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">1. Forgetting Nested Spread</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ Nested object still referenced</span>
+<span class="kw">const</span> copy = { <span class="spread">...</span>user };
+copy.address.city = <span class="str">'Delhi'</span>;
+<span class="cmt">// Original changed! 😱</span>
+
+<span class="cmt">// ✅ Spread nested objects too</span>
+<span class="kw">const</span> copy = {
+  <span class="spread">...</span>user,
+  <span class="prop">address</span>: { <span class="spread">...</span>user.address }
+};</pre></div>
+            </div>
+          </div>
+          
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">2. Wrong Order (Objects)</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ Override happens before spread</span>
+<span class="kw">const</span> result = { <span class="prop">age</span>: <span class="num">30</span>, <span class="spread">...</span>person };
+<span class="cmt">// person.age wins!</span>
+
+<span class="cmt">// ✅ Spread first, then override</span>
+<span class="kw">const</span> result = { <span class="spread">...</span>person, <span class="prop">age</span>: <span class="num">30</span> };
+<span class="cmt">// 30 wins!</span></pre></div>
+            </div>
+          </div>
+          
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">3. Spreading null/undefined</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// ❌ This throws an error!</span>
+<span class="kw">const</span> data = <span class="kw">null</span>;
+<span class="kw">const</span> copy = { <span class="spread">...</span>data }; <span class="cmt">// Error!</span>
+
+<span class="cmt">// ✅ Use fallback</span>
+<span class="kw">const</span> copy = { <span class="spread">...</span>(data || {}) };
+<span class="cmt">// Or optional chaining</span>
+<span class="kw">const</span> copy = { <span class="spread">...</span>(data ?? {}) };</pre></div>
+            </div>
+          </div>
+          
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">4. Thinking It's Deep Copy</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// Spread = SHALLOW copy only!</span>
+<span class="cmt">// For deep copy use:</span>
+
+<span class="cmt">// JSON method (simple objects)</span>
+<span class="kw">const</span> deep = <span class="fn">JSON.parse</span>(
+  <span class="fn">JSON.stringify</span>(original)
+);
+
+<span class="cmt">// Or structuredClone (modern)</span>
+<span class="kw">const</span> deep = <span class="fn">structuredClone</span>(original);</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">✨ Pro Tips</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Conditional Spreading</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// Add properties conditionally</span>
+<span class="kw">const</span> user = {
+  <span class="prop">name</span>: <span class="str">'John'</span>,
+  <span class="spread">...</span>(isAdmin && { <span class="prop">role</span>: <span class="str">'admin'</span> }),
+  <span class="spread">...</span>(age && { <span class="prop">age</span> })
+};</pre></div>
+            </div>
+          </div>
+          
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Convert to Array</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// String to array</span>
+[<span class="spread">...</span><span class="str">'hello'</span>] <span class="cmt">// ['h','e','l','l','o']</span>
+
+<span class="cmt">// Set to array (removes duplicates)</span>
+[<span class="spread">...</span><span class="kw">new</span> <span class="fn">Set</span>([<span class="num">1</span>,<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>])] <span class="cmt">// [1,2,3]</span>
+
+<span class="cmt">// NodeList to array</span>
+[<span class="spread">...</span>document.<span class="fn">querySelectorAll</span>(<span class="str">'div'</span>)]</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📋 Cheat Sheet</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Operation</th>
+              <th>Syntax</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Copy array</td>
+              <td><code>[...arr]</code></td>
+              <td>New array with same elements</td>
+            </tr>
+            <tr>
+              <td>Add to end</td>
+              <td><code>[...arr, newItem]</code></td>
+              <td>New array with item at end</td>
+            </tr>
+            <tr>
+              <td>Add to start</td>
+              <td><code>[newItem, ...arr]</code></td>
+              <td>New array with item at start</td>
+            </tr>
+            <tr>
+              <td>Merge arrays</td>
+              <td><code>[...arr1, ...arr2]</code></td>
+              <td>Combined array</td>
+            </tr>
+            <tr>
+              <td>Copy object</td>
+              <td><code>{...obj}</code></td>
+              <td>New object with same props</td>
+            </tr>
+            <tr>
+              <td>Update prop</td>
+              <td><code>{...obj, key: value}</code></td>
+              <td>New object with updated prop</td>
+            </tr>
+            <tr>
+              <td>Merge objects</td>
+              <td><code>{...obj1, ...obj2}</code></td>
+              <td>Combined object (later wins)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <h3 style="color: var(--spread); margin-bottom: 0.5rem;">🎉 Spread Operator Mastered!</h3>
+      <p style="color: var(--muted); margin-bottom: 1rem;">You now have the power of three dots ...</p>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+        <span class="badge" style="background: rgba(244,114,182,0.2); color: var(--spread);">... Spread</span>
+        <span class="badge" style="background: rgba(56,189,248,0.2); color: var(--array);">Arrays</span>
+        <span class="badge" style="background: rgba(251,146,60,0.2); color: var(--object);">Objects</span>
+        <span class="badge badge-primary">React State</span>
+        <span class="badge badge-secondary">Immutability</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle sections
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Task Manager Demo
+    let tasks = [];
+    let taskIdCounter = 1;
+
+    function renderTasks() {
+      const list = document.getElementById('task-list');
+      const stats = document.getElementById('task-stats');
+      const badge = document.getElementById('task-count-badge');
+      
+      if (tasks.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 2rem;">No tasks yet. Add one above! ☝️</p>';
+        stats.innerHTML = '';
+        badge.textContent = '0 tasks';
+        return;
+      }
+
+      list.innerHTML = tasks.map(task => `
+        <li class="task-item ${task.completed ? 'completed' : ''}">
+          <div 
+            class="task-checkbox ${task.completed ? 'checked' : ''}"
+            onclick="toggleTask(${task.id})"
+          ></div>
+          <span class="task-text">${task.text}</span>
+          <span style="color: var(--muted); font-size: 0.8rem;">${task.time}</span>
+          <button class="task-delete" onclick="deleteTask(${task.id})">×</button>
+        </li>
+      `).join('');
+
+      const completed = tasks.filter(t => t.completed).length;
+      const active = tasks.filter(t => !t.completed).length;
+      
+      stats.innerHTML = `
+        <span class="stat-badge">Total: <span>${tasks.length}</span></span>
+        <span class="stat-badge">Active: <span>${active}</span></span>
+        <span class="stat-badge">Done: <span>${completed}</span></span>
+        ${completed > 0 ? '<button class="btn btn-sm btn-secondary" onclick="clearCompleted()">Clear Done</button>' : ''}
+      `;
+      
+      badge.textContent = `${tasks.length} task${tasks.length !== 1 ? 's' : ''}`;
+    }
+
+    function addTask() {
+      const input = document.getElementById('task-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const newTask = {
+        id: taskIdCounter++,
+        text: text,
+        completed: false,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      // ✨ SPREAD: Add to array immutably
+      tasks = [...tasks, newTask];
+      
+      input.value = '';
+      renderTasks();
+    }
+
+    function deleteTask(id) {
+      // Filter creates new array
+      tasks = tasks.filter(task => task.id !== id);
+      renderTasks();
+    }
+
+    function toggleTask(id) {
+      // Map + Spread to update
+      tasks = tasks.map(task =>
+        task.id === id
+          ? { ...task, completed: !task.completed }
+          : task
+      );
+      renderTasks();
+    }
+
+    function clearCompleted() {
+      tasks = tasks.filter(task => !task.completed);
+      renderTasks();
+    }
+
+    // Initial render
+    renderTasks();
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

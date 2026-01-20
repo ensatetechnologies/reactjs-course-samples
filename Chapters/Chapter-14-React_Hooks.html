@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Hooks Deep Dive - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb; --js: #f7df1e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(97,218,251,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(167,139,250,0.1) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--react), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-react { background: #20232a; color: var(--react); }
+    .badge-hooks { background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; }
+    .icon-concept { background: linear-gradient(135deg, var(--react), #0891b2); color: white; }
+    .icon-usestate { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    .icon-useeffect { background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; }
+    .icon-useref { background: linear-gradient(135deg, var(--warning), #d97706); color: white; }
+    .icon-compare { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
+    .icon-project { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
+    .icon-workflow { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; }
+    .icon-advanced { background: linear-gradient(135deg, #818cf8, #4f46e5); color: white; }
+    .icon-custom { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .hook { color: #e5c07b; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-react { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--react); box-shadow: 0 0 20px rgba(97,218,251,0.2); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    .flow-arrow-down { color: var(--accent); font-size: 2rem; }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: start; margin: 1.5rem 0; }
+    .vs-divider { display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--warning); font-size: 1.5rem; padding-top: 2rem; }
+    @media (max-width: 900px) { .vs-container { grid-template-columns: 1fr; } .vs-divider { padding: 1rem 0; } }
+    
+    .highlight-box { background: linear-gradient(135deg, rgba(97,218,251,0.1), rgba(167,139,250,0.05)); border: 1px solid rgba(97,218,251,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    
+    .hook-card { background: var(--surface); border: 2px solid var(--border); border-radius: 16px; padding: 1.5rem; margin: 1rem 0; transition: all 0.3s; }
+    .hook-card:hover { border-color: var(--react); }
+    .hook-card h4 { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .hook-icon { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    
+    .lines-compare { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: var(--surface2); border-radius: 10px; }
+    .lines-bar { height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; }
+    .lines-label { min-width: 100px; font-size: 0.9rem; }
+    
+    .workflow-step { display: flex; gap: 1.5rem; margin: 1.5rem 0; align-items: flex-start; }
+    .step-number { width: 50px; height: 50px; background: linear-gradient(135deg, var(--react), var(--primary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; color: var(--bg); flex-shrink: 0; }
+    .step-content { flex: 1; }
+    .step-content h4 { color: var(--primary); margin-bottom: 0.5rem; }
+    
+    .file-structure { background: var(--surface2); border-radius: 12px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+    .file-structure .folder { color: var(--warning); }
+    .file-structure .file { color: var(--text); }
+    .file-structure .indent { margin-left: 1.5rem; }
+    
+    .lifecycle-diagram { background: var(--surface2); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .lifecycle-phase { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: var(--surface); border-radius: 10px; border-left: 4px solid var(--border); }
+    .lifecycle-phase.mount { border-left-color: var(--accent); }
+    .lifecycle-phase.update { border-left-color: var(--warning); }
+    .lifecycle-phase.unmount { border-left-color: var(--danger); }
+    
+    h2 { color: var(--react); margin-bottom: 1rem; }
+    h3 { color: var(--primary); margin: 1.5rem 0 1rem; }
+    
+    .rule-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
+    .rule-box h4 { color: var(--danger); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .rule-box ul { color: var(--muted); padding-left: 1.5rem; }
+    
+    .demo-output { background: #1a1a2e; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+    .demo-output h4 { color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-react">⚛️ React Hooks</span>
+        <span class="hero-badge badge-hooks">🪝 Complete Guide</span>
+      </div>
+      <h1>React Hooks Deep Dive</h1>
+      <p>Master useState, useEffect, useRef, and Custom Hooks</p>
+    </div>
+
+    <!-- Section 1: Understanding Hooks -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-concept">🪝</div>
+        <div class="section-title">Part 1: Understanding Hooks - What and Why</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>What Are Hooks?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Hooks</strong> are special functions that let you "hook into" React features from functional components. 
+          They allow you to use <strong>state</strong>, <strong>lifecycle</strong>, and other React features without writing classes.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--react); margin-bottom: 0.75rem;">🎯 Why Were Hooks Created?</h4>
+          <p style="color: var(--muted);">
+            Before Hooks (React 16.8, Feb 2019), you needed class components for state and lifecycle methods.
+            Hooks solve three major problems: <strong>Complex class syntax</strong>, <strong>Hard to reuse stateful logic</strong>, and <strong>Confusing "this" keyword</strong>.
+          </p>
+        </div>
+
+        <h3>📊 Before vs After Hooks</h3>
+        <div class="vs-container">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ Before Hooks (Class Component)</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">class</span> <span class="fn">Counter</span> <span class="kw">extends</span> React.Component {
+  <span class="fn">constructor</span>(props) {
+    <span class="kw">super</span>(props);
+    <span class="kw">this</span>.state = { count: <span class="num">0</span> };
+    <span class="kw">this</span>.handleClick = <span class="kw">this</span>.handleClick.<span class="fn">bind</span>(<span class="kw">this</span>);
+  }
+
+  <span class="fn">handleClick</span>() {
+    <span class="kw">this</span>.<span class="fn">setState</span>({ count: <span class="kw">this</span>.state.count + <span class="num">1</span> });
+  }
+
+  <span class="fn">componentDidMount</span>() {
+    document.title = <span class="str">`Count: </span>${<span class="kw">this</span>.state.count}<span class="str">`</span>;
+  }
+
+  <span class="fn">componentDidUpdate</span>() {
+    document.title = <span class="str">`Count: </span>${<span class="kw">this</span>.state.count}<span class="str">`</span>;
+  }
+
+  <span class="fn">render</span>() {
+    <span class="kw">return</span> (
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={<span class="kw">this</span>.handleClick}<span class="tag">&gt;</span>
+        Count: {<span class="kw">this</span>.state.count}
+      <span class="tag">&lt;/button&gt;</span>
+    );
+  }
+}</pre></div>
+            </div>
+            <p style="color: var(--danger); font-size: 0.85rem;">~25 lines, complex "this" binding</p>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ After Hooks (Functional Component)</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span>, <span class="hook">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>(<span class="num">0</span>);
+
+  <span class="hook">useEffect</span>(() => {
+    document.title = <span class="str">`Count: </span>${count}<span class="str">`</span>;
+  }, [count]);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(count + <span class="num">1</span>)}<span class="tag">&gt;</span>
+      Count: {count}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}</pre></div>
+            </div>
+            <p style="color: var(--accent); font-size: 0.85rem;">~12 lines, clean and simple! 🎉</p>
+          </div>
+        </div>
+
+        <h3>🪝 The Built-in Hooks</h3>
+        <div class="grid-3">
+          <div class="hook-card">
+            <h4>
+              <div class="hook-icon" style="background: linear-gradient(135deg, var(--accent), #059669);">📦</div>
+              <span style="color: var(--accent);">useState</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Add state to functional components</p>
+            <span class="badge badge-accent">Most Used</span>
+          </div>
+          <div class="hook-card">
+            <h4>
+              <div class="hook-icon" style="background: linear-gradient(135deg, var(--secondary), #7c3aed);">🔄</div>
+              <span style="color: var(--secondary);">useEffect</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Handle side effects (API, DOM, timers)</p>
+            <span class="badge badge-secondary">Essential</span>
+          </div>
+          <div class="hook-card">
+            <h4>
+              <div class="hook-icon" style="background: linear-gradient(135deg, var(--warning), #d97706);">🎯</div>
+              <span style="color: var(--warning);">useRef</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Reference DOM elements or persist values</p>
+            <span class="badge badge-warning">Common</span>
+          </div>
+          <div class="hook-card">
+            <h4>
+              <div class="hook-icon" style="background: linear-gradient(135deg, var(--primary), #0891b2);">🌐</div>
+              <span style="color: var(--primary);">useContext</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Access context without wrapping</p>
+            <span class="badge badge-primary">State Sharing</span>
+          </div>
+          <div class="hook-card">
+            <h4>
+              <div class="hook-icon" style="background: linear-gradient(135deg, var(--danger), #dc2626);">🔀</div>
+              <span style="color: var(--danger);">useReducer</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Complex state logic management</p>
+            <span class="badge badge-danger">Advanced</span>
+          </div>
+          <div class="hook-card">
+            <h4>
+              <div class="hook-icon" style="background: linear-gradient(135deg, #818cf8, #4f46e5);">⚡</div>
+              <span style="color: #818cf8;">useMemo / useCallback</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Performance optimization</p>
+            <span class="badge badge-secondary">Performance</span>
+          </div>
+        </div>
+
+        <h3>📜 Rules of Hooks</h3>
+        <div class="rule-box">
+          <h4>🚫 Rule 1: Only Call Hooks at the Top Level</h4>
+          <ul>
+            <li>Don't call Hooks inside loops, conditions, or nested functions</li>
+            <li>Always use Hooks at the top level of your React function</li>
+            <li>This ensures Hooks are called in the same order each render</li>
+          </ul>
+        </div>
+
+        <div class="grid-2">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger);">❌ Wrong</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Form</span>() {
+  <span class="kw">if</span> (isLoggedIn) {
+    <span class="cmt">// ❌ Hook inside condition!</span>
+    <span class="kw">const</span> [name, setName] = <span class="hook">useState</span>(<span class="str">''</span>);
+  }
+  
+  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i < <span class="num">3</span>; i++) {
+    <span class="cmt">// ❌ Hook inside loop!</span>
+    <span class="hook">useEffect</span>(() => {});
+  }
+}</pre></div>
+            </div>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">✅ Correct</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Form</span>() {
+  <span class="cmt">// ✅ Hooks at top level</span>
+  <span class="kw">const</span> [name, setName] = <span class="hook">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [email, setEmail] = <span class="hook">useState</span>(<span class="str">''</span>);
+  
+  <span class="hook">useEffect</span>(() => {
+    <span class="cmt">// Condition INSIDE the hook</span>
+    <span class="kw">if</span> (isLoggedIn) {
+      fetchUserData();
+    }
+  }, [isLoggedIn]);
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rule-box">
+          <h4>🚫 Rule 2: Only Call Hooks from React Functions</h4>
+          <ul>
+            <li>Call Hooks from React functional components</li>
+            <li>Call Hooks from custom Hooks (functions starting with "use")</li>
+            <li>Don't call Hooks from regular JavaScript functions</li>
+          </ul>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 ESLint Plugin</div>
+          <div class="tip-content">
+            Use <code>eslint-plugin-react-hooks</code> to automatically enforce these rules. It's included in Create React App and Vite React templates.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: useState Deep Dive -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-usestate">📦</div>
+        <div class="section-title">Part 2: useState - State Management</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Understanding useState</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>useState</strong> is the most fundamental Hook. It lets you add reactive state to functional components.
+          When state changes, React re-renders the component.
+        </p>
+
+        <h3>📝 Basic Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; useState Syntax</div>
+          <div class="code-body"><pre><span class="kw">const</span> [state, setState] = <span class="hook">useState</span>(initialValue);
+
+<span class="cmt">// Breakdown:</span>
+<span class="cmt">// state      → Current value</span>
+<span class="cmt">// setState   → Function to update the value</span>
+<span class="cmt">// initialValue → Starting value (any type)</span></pre></div>
+        </div>
+
+        <h3>🔄 How useState Works - Visual Flow</h3>
+        <div class="flow-diagram" style="flex-direction: column;">
+          <div class="flow-box">
+            <div style="font-size: 1.2rem;">1️⃣</div>
+            <div style="font-weight: 600;">Component Renders</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">useState(0) returns [0, setCount]</div>
+          </div>
+          <div class="flow-arrow-down">⬇️</div>
+          <div class="flow-box">
+            <div style="font-size: 1.2rem;">2️⃣</div>
+            <div style="font-weight: 600;">User Clicks Button</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">setCount(1) is called</div>
+          </div>
+          <div class="flow-arrow-down">⬇️</div>
+          <div class="flow-box" style="border-color: var(--warning);">
+            <div style="font-size: 1.2rem;">3️⃣</div>
+            <div style="font-weight: 600; color: var(--warning);">React Schedules Re-render</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">New state value is queued</div>
+          </div>
+          <div class="flow-arrow-down">⬇️</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.2rem;">4️⃣</div>
+            <div style="font-weight: 600; color: var(--react);">Component Re-renders</div>
+            <div style="color: var(--muted); font-size: 0.8rem;">useState(0) returns [1, setCount]</div>
+          </div>
+        </div>
+
+        <h3>📦 useState with Different Data Types</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Primitive Types</div>
+            <div class="code-body"><pre><span class="cmt">// Number</span>
+<span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>(<span class="num">0</span>);
+<span class="fn">setCount</span>(count + <span class="num">1</span>);
+
+<span class="cmt">// String</span>
+<span class="kw">const</span> [name, setName] = <span class="hook">useState</span>(<span class="str">''</span>);
+<span class="fn">setName</span>(<span class="str">'Alice'</span>);
+
+<span class="cmt">// Boolean</span>
+<span class="kw">const</span> [isOpen, setIsOpen] = <span class="hook">useState</span>(<span class="kw">false</span>);
+<span class="fn">setIsOpen</span>(!isOpen);  <span class="cmt">// Toggle</span></pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Objects & Arrays</div>
+            <div class="code-body"><pre><span class="cmt">// Object - must spread to update!</span>
+<span class="kw">const</span> [user, setUser] = <span class="hook">useState</span>({
+  name: <span class="str">''</span>,
+  age: <span class="num">0</span>
+});
+<span class="fn">setUser</span>({ ...user, name: <span class="str">'Bob'</span> });
+
+<span class="cmt">// Array - must spread to update!</span>
+<span class="kw">const</span> [items, setItems] = <span class="hook">useState</span>([]);
+<span class="fn">setItems</span>([...items, newItem]); <span class="cmt">// Add</span>
+<span class="fn">setItems</span>(items.<span class="fn">filter</span>(i => i.id !== id)); <span class="cmt">// Remove</span></pre></div>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Never Mutate State Directly!</div>
+          <div class="warning-content">
+            <code>user.name = 'Bob'</code> ❌ - This mutates state directly, React won't re-render!<br>
+            <code>setUser({...user, name: 'Bob'})</code> ✅ - Creates new object, triggers re-render.
+          </div>
+        </div>
+
+        <h3>🔧 Functional Updates</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          When the new state depends on the previous state, use the <strong>functional form</strong> of setState.
+        </p>
+
+        <div class="grid-2">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger);">❌ May Cause Bugs</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// If clicked rapidly, may miss updates</span>
+<span class="kw">function</span> <span class="fn">handleClick</span>() {
+  <span class="fn">setCount</span>(count + <span class="num">1</span>);
+  <span class="fn">setCount</span>(count + <span class="num">1</span>);
+  <span class="fn">setCount</span>(count + <span class="num">1</span>);
+  <span class="cmt">// Result: count + 1 (not +3!)</span>
+}</pre></div>
+            </div>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">✅ Correct - Functional Update</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Always uses latest state</span>
+<span class="kw">function</span> <span class="fn">handleClick</span>() {
+  <span class="fn">setCount</span>(prev => prev + <span class="num">1</span>);
+  <span class="fn">setCount</span>(prev => prev + <span class="num">1</span>);
+  <span class="fn">setCount</span>(prev => prev + <span class="num">1</span>);
+  <span class="cmt">// Result: count + 3 ✓</span>
+}</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>💡 Lazy Initialization</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          For expensive initial values, pass a <strong>function</strong> to useState - it only runs once.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Lazy Initialization</div>
+          <div class="code-body"><pre><span class="cmt">// ❌ Runs on EVERY render</span>
+<span class="kw">const</span> [data, setData] = <span class="hook">useState</span>(<span class="fn">expensiveCalculation</span>());
+
+<span class="cmt">// ✅ Runs only on FIRST render</span>
+<span class="kw">const</span> [data, setData] = <span class="hook">useState</span>(() => <span class="fn">expensiveCalculation</span>());
+
+<span class="cmt">// Example: Reading from localStorage</span>
+<span class="kw">const</span> [theme, setTheme] = <span class="hook">useState</span>(() => {
+  <span class="kw">const</span> saved = localStorage.<span class="fn">getItem</span>(<span class="str">'theme'</span>);
+  <span class="kw">return</span> saved || <span class="str">'light'</span>;
+});</pre></div>
+        </div>
+
+        <h3>📊 Complete useState Example</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentForm.jsx - Multiple useState</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentForm</span>({ onAddStudent }) {
+  <span class="cmt">// Multiple useState calls for different pieces of state</span>
+  <span class="kw">const</span> [name, setName] = <span class="hook">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [age, setAge] = <span class="hook">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [grade, setGrade] = <span class="hook">useState</span>(<span class="str">'A'</span>);
+  <span class="kw">const</span> [isSubmitting, setIsSubmitting] = <span class="hook">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [errors, setErrors] = <span class="hook">useState</span>({});
+
+  <span class="kw">function</span> <span class="fn">handleSubmit</span>(e) {
+    e.<span class="fn">preventDefault</span>();
+    
+    <span class="cmt">// Validation</span>
+    <span class="kw">const</span> newErrors = {};
+    <span class="kw">if</span> (!name.trim()) newErrors.name = <span class="str">'Name is required'</span>;
+    <span class="kw">if</span> (!age || age < <span class="num">5</span>) newErrors.age = <span class="str">'Valid age required'</span>;
+    
+    <span class="kw">if</span> (Object.<span class="fn">keys</span>(newErrors).length > <span class="num">0</span>) {
+      <span class="fn">setErrors</span>(newErrors);
+      <span class="kw">return</span>;
+    }
+
+    <span class="fn">setIsSubmitting</span>(<span class="kw">true</span>);
+    
+    <span class="cmt">// Create student and call parent callback</span>
+    <span class="fn">onAddStudent</span>({
+      id: Date.<span class="fn">now</span>(),
+      name: name.trim(),
+      age: <span class="fn">parseInt</span>(age),
+      grade
+    });
+
+    <span class="cmt">// Reset form</span>
+    <span class="fn">setName</span>(<span class="str">''</span>);
+    <span class="fn">setAge</span>(<span class="str">''</span>);
+    <span class="fn">setGrade</span>(<span class="str">'A'</span>);
+    <span class="fn">setErrors</span>({});
+    <span class="fn">setIsSubmitting</span>(<span class="kw">false</span>);
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">value</span>={name}
+        <span class="attr">onChange</span>={(e) => <span class="fn">setName</span>(e.target.value)}
+        <span class="attr">placeholder</span>=<span class="str">"Student name"</span>
+      <span class="tag">/&gt;</span>
+      {errors.name && <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"error"</span><span class="tag">&gt;</span>{errors.name}<span class="tag">&lt;/span&gt;</span>}
+      
+      <span class="tag">&lt;input</span>
+        <span class="attr">type</span>=<span class="str">"number"</span>
+        <span class="attr">value</span>={age}
+        <span class="attr">onChange</span>={(e) => <span class="fn">setAge</span>(e.target.value)}
+        <span class="attr">placeholder</span>=<span class="str">"Age"</span>
+      <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;select</span> <span class="attr">value</span>={grade} <span class="attr">onChange</span>={(e) => <span class="fn">setGrade</span>(e.target.value)}<span class="tag">&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"A"</span><span class="tag">&gt;</span>A<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"B"</span><span class="tag">&gt;</span>B<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"C"</span><span class="tag">&gt;</span>C<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;/select&gt;</span>
+      
+      <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span> <span class="attr">disabled</span>={isSubmitting}<span class="tag">&gt;</span>
+        {isSubmitting ? <span class="str">'Adding...'</span> : <span class="str">'Add Student'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: useEffect Deep Dive -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-useeffect">🔄</div>
+        <div class="section-title">Part 3: useEffect - Side Effects & Lifecycle</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Understanding useEffect</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>useEffect</strong> lets you perform <strong>side effects</strong> in components. Side effects are operations that reach "outside" the component - like API calls, subscriptions, DOM manipulation, or timers.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--secondary); margin-bottom: 0.75rem;">🎯 What Are Side Effects?</h4>
+          <ul style="color: var(--muted); padding-left: 1.5rem;">
+            <li><strong>Data fetching</strong> - API calls to load data</li>
+            <li><strong>Subscriptions</strong> - WebSocket, event listeners</li>
+            <li><strong>DOM manipulation</strong> - document.title, focus()</li>
+            <li><strong>Timers</strong> - setTimeout, setInterval</li>
+            <li><strong>Storage</strong> - localStorage, sessionStorage</li>
+          </ul>
+        </div>
+
+        <h3>📝 useEffect Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; useEffect Syntax</div>
+          <div class="code-body"><pre><span class="hook">useEffect</span>(() => {
+  <span class="cmt">// Effect code runs here</span>
+  
+  <span class="kw">return</span> () => {
+    <span class="cmt">// Cleanup code (optional)</span>
+  };
+}, [dependencies]);
+
+<span class="cmt">// Breakdown:</span>
+<span class="cmt">// First arg  → Effect function (what to do)</span>
+<span class="cmt">// Return     → Cleanup function (optional)</span>
+<span class="cmt">// Second arg → Dependency array (when to run)</span></pre></div>
+        </div>
+
+        <h3>📊 The Dependency Array - When Effects Run</h3>
+        <div class="lifecycle-diagram">
+          <div class="lifecycle-phase mount">
+            <div style="min-width: 150px;">
+              <strong style="color: var(--accent);">No Array</strong>
+              <div style="font-size: 0.8rem; color: var(--muted);">useEffect(() => {...})</div>
+            </div>
+            <div style="flex: 1; color: var(--muted);">
+              Runs after <strong>EVERY</strong> render. Usually not what you want!
+            </div>
+          </div>
+          <div class="lifecycle-phase update">
+            <div style="min-width: 150px;">
+              <strong style="color: var(--warning);">Empty Array []</strong>
+              <div style="font-size: 0.8rem; color: var(--muted);">useEffect(() => {...}, [])</div>
+            </div>
+            <div style="flex: 1; color: var(--muted);">
+              Runs only <strong>ONCE</strong> on mount. Like componentDidMount.
+            </div>
+          </div>
+          <div class="lifecycle-phase unmount">
+            <div style="min-width: 150px;">
+              <strong style="color: var(--danger);">With Dependencies</strong>
+              <div style="font-size: 0.8rem; color: var(--muted);">useEffect(() => {...}, [a, b])</div>
+            </div>
+            <div style="flex: 1; color: var(--muted);">
+              Runs on mount AND when <strong>a or b changes</strong>.
+            </div>
+          </div>
+        </div>
+
+        <h3>📋 useEffect Examples</h3>
+        
+        <h4 style="color: var(--accent); margin: 1.5rem 0 0.75rem;">1️⃣ Fetching Data on Mount</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Data Fetching</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StudentList</span>() {
+  <span class="kw">const</span> [students, setStudents] = <span class="hook">useState</span>([]);
+  <span class="kw">const</span> [loading, setLoading] = <span class="hook">useState</span>(<span class="kw">true</span>);
+  <span class="kw">const</span> [error, setError] = <span class="hook">useState</span>(<span class="kw">null</span>);
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="cmt">// Fetch students when component mounts</span>
+    <span class="kw">async function</span> <span class="fn">fetchStudents</span>() {
+      <span class="kw">try</span> {
+        <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/students'</span>);
+        <span class="kw">const</span> data = <span class="kw">await</span> response.<span class="fn">json</span>();
+        <span class="fn">setStudents</span>(data);
+      } <span class="kw">catch</span> (err) {
+        <span class="fn">setError</span>(err.message);
+      } <span class="kw">finally</span> {
+        <span class="fn">setLoading</span>(<span class="kw">false</span>);
+      }
+    }
+    
+    <span class="fn">fetchStudents</span>();
+  }, []); <span class="cmt">// Empty array = run once on mount</span>
+
+  <span class="kw">if</span> (loading) <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>;
+  <span class="kw">if</span> (error) <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Error: {error}<span class="tag">&lt;/p&gt;</span>;
+  
+  <span class="kw">return</span> <span class="tag">&lt;ul&gt;</span>{students.<span class="fn">map</span>(s => <span class="tag">&lt;li</span> <span class="attr">key</span>={s.id}<span class="tag">&gt;</span>{s.name}<span class="tag">&lt;/li&gt;</span>)}<span class="tag">&lt;/ul&gt;</span>;
+}</pre></div>
+        </div>
+
+        <h4 style="color: var(--warning); margin: 1.5rem 0 0.75rem;">2️⃣ Running Effect When Dependencies Change</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Effect with Dependencies</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StudentDetails</span>({ studentId }) {
+  <span class="kw">const</span> [student, setStudent] = <span class="hook">useState</span>(<span class="kw">null</span>);
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="cmt">// Runs when studentId changes</span>
+    <span class="kw">async function</span> <span class="fn">loadStudent</span>() {
+      <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`/api/students/</span>${studentId}<span class="str">`</span>);
+      <span class="kw">const</span> data = <span class="kw">await</span> response.<span class="fn">json</span>();
+      <span class="fn">setStudent</span>(data);
+    }
+    
+    <span class="fn">loadStudent</span>();
+  }, [studentId]); <span class="cmt">// Re-run when studentId changes</span>
+
+  <span class="kw">return</span> student ? <span class="tag">&lt;h2&gt;</span>{student.name}<span class="tag">&lt;/h2&gt;</span> : <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>;
+}</pre></div>
+        </div>
+
+        <h4 style="color: var(--danger); margin: 1.5rem 0 0.75rem;">3️⃣ Cleanup Function - Preventing Memory Leaks</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Cleanup Example</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Timer</span>() {
+  <span class="kw">const</span> [seconds, setSeconds] = <span class="hook">useState</span>(<span class="num">0</span>);
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="cmt">// Set up interval</span>
+    <span class="kw">const</span> intervalId = <span class="fn">setInterval</span>(() => {
+      <span class="fn">setSeconds</span>(prev => prev + <span class="num">1</span>);
+    }, <span class="num">1000</span>);
+
+    <span class="cmt">// Cleanup: clear interval when component unmounts</span>
+    <span class="kw">return</span> () => {
+      <span class="fn">clearInterval</span>(intervalId);
+      console.<span class="fn">log</span>(<span class="str">'Timer cleaned up!'</span>);
+    };
+  }, []); <span class="cmt">// Run once on mount</span>
+
+  <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Time: {seconds}s<span class="tag">&lt;/p&gt;</span>;
+}
+
+<span class="cmt">// Event listener example</span>
+<span class="hook">useEffect</span>(() => {
+  <span class="kw">function</span> <span class="fn">handleResize</span>() {
+    <span class="fn">setWidth</span>(window.innerWidth);
+  }
+  
+  window.<span class="fn">addEventListener</span>(<span class="str">'resize'</span>, handleResize);
+  
+  <span class="cmt">// Cleanup: remove listener</span>
+  <span class="kw">return</span> () => window.<span class="fn">removeEventListener</span>(<span class="str">'resize'</span>, handleResize);
+}, []);</pre></div>
+        </div>
+
+        <h3>🔄 useEffect Lifecycle Visualization</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Effect Lifecycle</div>
+          <div class="code-body"><pre style="color: var(--muted);">
+┌─────────────────────────────────────────────────────────────┐
+│                    <span style="color: var(--react);">COMPONENT LIFECYCLE</span>                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  <span style="color: var(--accent);">MOUNT (First Render)</span>                                      │
+│  ─────────────────────                                      │
+│  1. Component renders                                       │
+│  2. DOM updates                                             │
+│  3. useEffect runs  ──────────► Effect function executes    │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  <span style="color: var(--warning);">UPDATE (Re-render when dependencies change)</span>                │
+│  ──────────────────────────────────────────                 │
+│  1. Component re-renders                                    │
+│  2. DOM updates                                             │
+│  3. Cleanup runs (previous effect) ──► return () => {...}   │
+│  4. New effect runs ──────────────────► Effect function     │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  <span style="color: var(--danger);">UNMOUNT (Component removed)</span>                               │
+│  ────────────────────────────                               │
+│  1. Cleanup runs ─────────────────────► return () => {...}  │
+│  2. Component removed from DOM                              │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Common useEffect Patterns</div>
+          <div class="tip-content">
+            <strong>Document title:</strong> useEffect(() => { document.title = `${count} items` }, [count])<br>
+            <strong>Local storage sync:</strong> useEffect(() => { localStorage.setItem('data', JSON.stringify(data)) }, [data])<br>
+            <strong>Focus input:</strong> useEffect(() => { inputRef.current.focus() }, [])
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: useRef Deep Dive -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-useref">🎯</div>
+        <div class="section-title">Part 4: useRef - References & Persistence</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Understanding useRef</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>useRef</strong> creates a mutable reference that persists across renders without causing re-renders. It's commonly used for <strong>DOM access</strong> and <strong>storing mutable values</strong>.
+        </p>
+
+        <h3>📝 useRef Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; useRef Syntax</div>
+          <div class="code-body"><pre><span class="kw">const</span> myRef = <span class="hook">useRef</span>(initialValue);
+
+<span class="cmt">// Returns an object: { current: initialValue }</span>
+<span class="cmt">// myRef.current → Access or modify the value</span>
+<span class="cmt">// Changes to .current do NOT trigger re-renders!</span></pre></div>
+        </div>
+
+        <h3>🆚 useRef vs useState</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th style="color: var(--accent);">useState</th>
+              <th style="color: var(--warning);">useRef</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Triggers re-render</strong></td>
+              <td>✅ Yes</td>
+              <td>❌ No</td>
+            </tr>
+            <tr>
+              <td><strong>Value persists</strong></td>
+              <td>✅ Yes</td>
+              <td>✅ Yes</td>
+            </tr>
+            <tr>
+              <td><strong>How to update</strong></td>
+              <td>setState(newValue)</td>
+              <td>ref.current = newValue</td>
+            </tr>
+            <tr>
+              <td><strong>Use for</strong></td>
+              <td>UI state, data that should reflect in view</td>
+              <td>DOM refs, timers, previous values</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>📋 useRef Use Cases</h3>
+
+        <h4 style="color: var(--accent); margin: 1.5rem 0 0.75rem;">1️⃣ Accessing DOM Elements</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; DOM Reference</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">SearchInput</span>() {
+  <span class="kw">const</span> inputRef = <span class="hook">useRef</span>(<span class="kw">null</span>);
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="cmt">// Focus input on mount</span>
+    inputRef.current.<span class="fn">focus</span>();
+  }, []);
+
+  <span class="kw">function</span> <span class="fn">handleClear</span>() {
+    inputRef.current.value = <span class="str">''</span>;
+    inputRef.current.<span class="fn">focus</span>();
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">ref</span>={inputRef} <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">placeholder</span>=<span class="str">"Search..."</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleClear}<span class="tag">&gt;</span>Clear<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h4 style="color: var(--warning); margin: 1.5rem 0 0.75rem;">2️⃣ Storing Previous Value</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Previous Value</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> prevCountRef = <span class="hook">useRef</span>();
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="cmt">// Store current value for next render</span>
+    prevCountRef.current = count;
+  });
+
+  <span class="kw">const</span> prevCount = prevCountRef.current;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Current: {count}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Previous: {prevCount}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(count + <span class="num">1</span>)}<span class="tag">&gt;</span>Increment<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h4 style="color: var(--secondary); margin: 1.5rem 0 0.75rem;">3️⃣ Storing Timer/Interval IDs</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Timer Reference</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Stopwatch</span>() {
+  <span class="kw">const</span> [time, setTime] = <span class="hook">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> [isRunning, setIsRunning] = <span class="hook">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> intervalRef = <span class="hook">useRef</span>(<span class="kw">null</span>);
+
+  <span class="kw">function</span> <span class="fn">start</span>() {
+    <span class="kw">if</span> (!isRunning) {
+      <span class="fn">setIsRunning</span>(<span class="kw">true</span>);
+      intervalRef.current = <span class="fn">setInterval</span>(() => {
+        <span class="fn">setTime</span>(prev => prev + <span class="num">1</span>);
+      }, <span class="num">1000</span>);
+    }
+  }
+
+  <span class="kw">function</span> <span class="fn">stop</span>() {
+    <span class="fn">clearInterval</span>(intervalRef.current);
+    <span class="fn">setIsRunning</span>(<span class="kw">false</span>);
+  }
+
+  <span class="kw">function</span> <span class="fn">reset</span>() {
+    <span class="fn">stop</span>();
+    <span class="fn">setTime</span>(<span class="num">0</span>);
+  }
+
+  <span class="cmt">// Cleanup on unmount</span>
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">return</span> () => <span class="fn">clearInterval</span>(intervalRef.current);
+  }, []);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>{time}s<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={start}<span class="tag">&gt;</span>Start<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={stop}<span class="tag">&gt;</span>Stop<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={reset}<span class="tag">&gt;</span>Reset<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 When to Use useRef</div>
+          <div class="note-content">
+            ✅ Accessing DOM elements (focus, scroll, measure)<br>
+            ✅ Storing interval/timeout IDs<br>
+            ✅ Keeping track of previous values<br>
+            ✅ Storing values that shouldn't trigger re-renders<br>
+            ❌ Don't use for values that should update the UI!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Vanilla JS vs React Hooks Comparison -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-compare">⚖️</div>
+        <div class="section-title">Part 5: Vanilla JavaScript vs React Hooks - Complete Comparison</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>The Same Feature: Two Approaches</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Let's build a <strong>Student Timer & Counter Dashboard</strong> with data fetching, timers, and state management - comparing vanilla JavaScript with React Hooks.
+        </p>
+
+        <h3>📊 Lines of Code Comparison</h3>
+        <div class="lines-compare">
+          <div class="lines-label" style="color: var(--js);">Vanilla JS</div>
+          <div class="lines-bar" style="width: 100%; background: linear-gradient(90deg, var(--js), #d4a017); color: #000;">~120 lines</div>
+        </div>
+        <div class="lines-compare">
+          <div class="lines-label" style="color: var(--react);">React Hooks</div>
+          <div class="lines-bar" style="width: 40%; background: linear-gradient(90deg, var(--react), var(--primary)); color: #000;">~48 lines</div>
+        </div>
+
+        <div class="vs-container">
+          <div>
+            <h4 style="color: var(--js); margin-bottom: 1rem;">❌ Vanilla JavaScript Approach</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; app.js - Vanilla JavaScript</div>
+              <div class="code-body"><pre><span class="cmt">// State variables (not reactive!)</span>
+<span class="kw">let</span> students = [];
+<span class="kw">let</span> count = <span class="num">0</span>;
+<span class="kw">let</span> timer = <span class="num">0</span>;
+<span class="kw">let</span> intervalId = <span class="kw">null</span>;
+<span class="kw">let</span> isLoading = <span class="kw">true</span>;
+
+<span class="cmt">// DOM References</span>
+<span class="kw">const</span> countDisplay = document.<span class="fn">getElementById</span>(<span class="str">'count'</span>);
+<span class="kw">const</span> timerDisplay = document.<span class="fn">getElementById</span>(<span class="str">'timer'</span>);
+<span class="kw">const</span> studentList = document.<span class="fn">getElementById</span>(<span class="str">'students'</span>);
+<span class="kw">const</span> loadingDiv = document.<span class="fn">getElementById</span>(<span class="str">'loading'</span>);
+<span class="kw">const</span> searchInput = document.<span class="fn">getElementById</span>(<span class="str">'search'</span>);
+
+<span class="cmt">// Update count display manually</span>
+<span class="kw">function</span> <span class="fn">updateCountDisplay</span>() {
+  countDisplay.textContent = count;
+  document.title = <span class="str">`Count: </span>${count}<span class="str">`</span>;
+}
+
+<span class="cmt">// Update timer display manually</span>
+<span class="kw">function</span> <span class="fn">updateTimerDisplay</span>() {
+  timerDisplay.textContent = timer + <span class="str">'s'</span>;
+}
+
+<span class="cmt">// Render students manually</span>
+<span class="kw">function</span> <span class="fn">renderStudents</span>() {
+  studentList.innerHTML = <span class="str">''</span>;
+  
+  students.<span class="fn">forEach</span>(<span class="kw">function</span>(student) {
+    <span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">'li'</span>);
+    li.textContent = student.name + <span class="str">' - '</span> + student.grade;
+    
+    <span class="kw">const</span> deleteBtn = document.<span class="fn">createElement</span>(<span class="str">'button'</span>);
+    deleteBtn.textContent = <span class="str">'Delete'</span>;
+    deleteBtn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, <span class="kw">function</span>() {
+      <span class="fn">deleteStudent</span>(student.id);
+    });
+    
+    li.<span class="fn">appendChild</span>(deleteBtn);
+    studentList.<span class="fn">appendChild</span>(li);
+  });
+}
+
+<span class="cmt">// Counter functions</span>
+<span class="kw">function</span> <span class="fn">increment</span>() {
+  count++;
+  <span class="fn">updateCountDisplay</span>();
+}
+
+<span class="kw">function</span> <span class="fn">decrement</span>() {
+  count--;
+  <span class="fn">updateCountDisplay</span>();
+}
+
+<span class="cmt">// Timer functions</span>
+<span class="kw">function</span> <span class="fn">startTimer</span>() {
+  <span class="kw">if</span> (intervalId) <span class="kw">return</span>;
+  intervalId = <span class="fn">setInterval</span>(<span class="kw">function</span>() {
+    timer++;
+    <span class="fn">updateTimerDisplay</span>();
+  }, <span class="num">1000</span>);
+}
+
+<span class="kw">function</span> <span class="fn">stopTimer</span>() {
+  <span class="fn">clearInterval</span>(intervalId);
+  intervalId = <span class="kw">null</span>;
+}
+
+<span class="kw">function</span> <span class="fn">resetTimer</span>() {
+  <span class="fn">stopTimer</span>();
+  timer = <span class="num">0</span>;
+  <span class="fn">updateTimerDisplay</span>();
+}
+
+<span class="cmt">// Fetch students</span>
+<span class="kw">async function</span> <span class="fn">fetchStudents</span>() {
+  isLoading = <span class="kw">true</span>;
+  loadingDiv.style.display = <span class="str">'block'</span>;
+  
+  <span class="kw">try</span> {
+    <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/students'</span>);
+    students = <span class="kw">await</span> response.<span class="fn">json</span>();
+    <span class="fn">renderStudents</span>();
+  } <span class="kw">catch</span> (err) {
+    console.<span class="fn">error</span>(err);
+  } <span class="kw">finally</span> {
+    isLoading = <span class="kw">false</span>;
+    loadingDiv.style.display = <span class="str">'none'</span>;
+  }
+}
+
+<span class="cmt">// Delete student</span>
+<span class="kw">function</span> <span class="fn">deleteStudent</span>(id) {
+  students = students.<span class="fn">filter</span>(s => s.id !== id);
+  <span class="fn">renderStudents</span>();
+}
+
+<span class="cmt">// Add event listeners</span>
+document.<span class="fn">getElementById</span>(<span class="str">'incBtn'</span>).<span class="fn">addEventListener</span>(<span class="str">'click'</span>, increment);
+document.<span class="fn">getElementById</span>(<span class="str">'decBtn'</span>).<span class="fn">addEventListener</span>(<span class="str">'click'</span>, decrement);
+document.<span class="fn">getElementById</span>(<span class="str">'startBtn'</span>).<span class="fn">addEventListener</span>(<span class="str">'click'</span>, startTimer);
+document.<span class="fn">getElementById</span>(<span class="str">'stopBtn'</span>).<span class="fn">addEventListener</span>(<span class="str">'click'</span>, stopTimer);
+document.<span class="fn">getElementById</span>(<span class="str">'resetBtn'</span>).<span class="fn">addEventListener</span>(<span class="str">'click'</span>, resetTimer);
+
+<span class="cmt">// Focus search on load</span>
+searchInput.<span class="fn">focus</span>();
+
+<span class="cmt">// Clean up on page unload</span>
+window.<span class="fn">addEventListener</span>(<span class="str">'beforeunload'</span>, <span class="kw">function</span>() {
+  <span class="fn">clearInterval</span>(intervalId);
+});
+
+<span class="cmt">// Initialize</span>
+<span class="fn">fetchStudents</span>();
+<span class="fn">updateCountDisplay</span>();
+<span class="fn">updateTimerDisplay</span>();</pre></div>
+            </div>
+
+            <div class="note" style="border-left-color: var(--danger);">
+              <div class="note-title" style="color: var(--danger);">😫 Pain Points</div>
+              <div class="note-content">
+                • Manual DOM selection for EVERY element<br>
+                • Manual update functions for EVERY state change<br>
+                • Must remember to call render after changes<br>
+                • Event listeners attached manually<br>
+                • Cleanup code scattered everywhere<br>
+                • No automatic re-rendering!
+              </div>
+            </div>
+          </div>
+          
+          <div class="vs-divider">VS</div>
+          
+          <div>
+            <h4 style="color: var(--react); margin-bottom: 1rem;">✅ React Hooks Approach</h4>
+            <div class="code-block">
+              <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Dashboard.jsx - React Hooks</div>
+              <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span>, <span class="hook">useEffect</span>, <span class="hook">useRef</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Dashboard</span>() {
+  <span class="cmt">// State with useState</span>
+  <span class="kw">const</span> [students, setStudents] = <span class="hook">useState</span>([]);
+  <span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> [timer, setTimer] = <span class="hook">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> [isRunning, setIsRunning] = <span class="hook">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [loading, setLoading] = <span class="hook">useState</span>(<span class="kw">true</span>);
+  
+  <span class="cmt">// Refs with useRef</span>
+  <span class="kw">const</span> searchRef = <span class="hook">useRef</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> intervalRef = <span class="hook">useRef</span>(<span class="kw">null</span>);
+
+  <span class="cmt">// Fetch students on mount</span>
+  <span class="hook">useEffect</span>(() => {
+    <span class="fn">fetch</span>(<span class="str">'/api/students'</span>)
+      .<span class="fn">then</span>(res => res.<span class="fn">json</span>())
+      .<span class="fn">then</span>(data => {
+        <span class="fn">setStudents</span>(data);
+        <span class="fn">setLoading</span>(<span class="kw">false</span>);
+      });
+  }, []);
+
+  <span class="cmt">// Update document title when count changes</span>
+  <span class="hook">useEffect</span>(() => {
+    document.title = <span class="str">`Count: </span>${count}<span class="str">`</span>;
+  }, [count]);
+
+  <span class="cmt">// Focus search input on mount</span>
+  <span class="hook">useEffect</span>(() => {
+    searchRef.current.<span class="fn">focus</span>();
+  }, []);
+
+  <span class="cmt">// Timer effect with cleanup</span>
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">if</span> (isRunning) {
+      intervalRef.current = <span class="fn">setInterval</span>(() => {
+        <span class="fn">setTimer</span>(t => t + <span class="num">1</span>);
+      }, <span class="num">1000</span>);
+    }
+    <span class="kw">return</span> () => <span class="fn">clearInterval</span>(intervalRef.current);
+  }, [isRunning]);
+
+  <span class="kw">const</span> <span class="fn">deleteStudent</span> = (id) => {
+    <span class="fn">setStudents</span>(students.<span class="fn">filter</span>(s => s.id !== id));
+  };
+
+  <span class="kw">if</span> (loading) <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">ref</span>={searchRef} <span class="attr">placeholder</span>=<span class="str">"Search..."</span> <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;h2&gt;</span>Count: {count}<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(c => c + <span class="num">1</span>)}<span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(c => c - <span class="num">1</span>)}<span class="tag">&gt;</span>-<span class="tag">&lt;/button&gt;</span>
+      
+      <span class="tag">&lt;h2&gt;</span>Timer: {timer}s<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setIsRunning</span>(<span class="kw">true</span>)}<span class="tag">&gt;</span>Start<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setIsRunning</span>(<span class="kw">false</span>)}<span class="tag">&gt;</span>Stop<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => { <span class="fn">setIsRunning</span>(<span class="kw">false</span>); <span class="fn">setTimer</span>(<span class="num">0</span>); }}<span class="tag">&gt;</span>Reset<span class="tag">&lt;/button&gt;</span>
+      
+      <span class="tag">&lt;ul&gt;</span>
+        {students.<span class="fn">map</span>(s => (
+          <span class="tag">&lt;li</span> <span class="attr">key</span>={s.id}<span class="tag">&gt;</span>
+            {s.name} - {s.grade}
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">deleteStudent</span>(s.id)}<span class="tag">&gt;</span>Delete<span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;/li&gt;</span>
+        ))}
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+            </div>
+
+            <div class="tip">
+              <div class="tip-title">🎉 Benefits of Hooks</div>
+              <div class="tip-content">
+                ✅ <strong>useState:</strong> Reactive state, auto re-renders<br>
+                ✅ <strong>useEffect:</strong> Side effects with auto cleanup<br>
+                ✅ <strong>useRef:</strong> DOM access without re-renders<br>
+                ✅ <strong>Declarative:</strong> Describe what you want<br>
+                ✅ <strong>60% less code!</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>📊 Detailed Comparison Table</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th style="color: var(--js);">Vanilla JavaScript</th>
+              <th style="color: var(--react);">React Hooks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>State Management</strong></td>
+              <td>Manual variables + update functions</td>
+              <td>useState → automatic re-renders</td>
+            </tr>
+            <tr>
+              <td><strong>Side Effects</strong></td>
+              <td>Scattered event listeners</td>
+              <td>useEffect → organized, with cleanup</td>
+            </tr>
+            <tr>
+              <td><strong>DOM Access</strong></td>
+              <td>getElementById, querySelector</td>
+              <td>useRef → declarative refs</td>
+            </tr>
+            <tr>
+              <td><strong>Data Fetching</strong></td>
+              <td>Manual loading states</td>
+              <td>useEffect + useState</td>
+            </tr>
+            <tr>
+              <td><strong>Timers</strong></td>
+              <td>Manual interval + cleanup</td>
+              <td>useEffect cleanup function</td>
+            </tr>
+            <tr>
+              <td><strong>Cleanup</strong></td>
+              <td>beforeunload, manual</td>
+              <td>Automatic in useEffect return</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 6: Complete Student Management Project -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-project">🎓</div>
+        <div class="section-title">Part 6: Complete Student Management System with Hooks</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Project Overview</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Let's build a complete <strong>Student Management System</strong> demonstrating all major Hooks working together.
+        </p>
+
+        <h3>📁 Project Structure</h3>
+        <div class="file-structure">
+          <div class="folder">📂 student-hooks-app/</div>
+          <div class="indent folder">📂 src/</div>
+          <div class="indent indent folder">📂 components/</div>
+          <div class="indent indent indent file">📄 StudentList.jsx <span class="badge badge-accent">useState, useEffect</span></div>
+          <div class="indent indent indent file">📄 StudentForm.jsx <span class="badge badge-accent">useState, useRef</span></div>
+          <div class="indent indent indent file">📄 StudentSearch.jsx <span class="badge badge-warning">useRef, useState</span></div>
+          <div class="indent indent indent file">📄 Timer.jsx <span class="badge badge-secondary">useEffect, useRef</span></div>
+          <div class="indent indent folder">📂 hooks/</div>
+          <div class="indent indent indent file">📄 useLocalStorage.js <span class="badge badge-danger">Custom Hook</span></div>
+          <div class="indent indent indent file">📄 useFetch.js <span class="badge badge-danger">Custom Hook</span></div>
+          <div class="indent indent file">📄 App.jsx</div>
+        </div>
+
+        <h3>📝 Component Implementation</h3>
+
+        <h4 style="color: var(--accent); margin: 1.5rem 0 0.75rem;">1️⃣ App.jsx - Main Component with All Hooks</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; App.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span>, <span class="hook">useEffect</span>, <span class="hook">useRef</span>, <span class="hook">useCallback</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> StudentList <span class="kw">from</span> <span class="str">'./components/StudentList'</span>;
+<span class="kw">import</span> StudentForm <span class="kw">from</span> <span class="str">'./components/StudentForm'</span>;
+<span class="kw">import</span> StudentSearch <span class="kw">from</span> <span class="str">'./components/StudentSearch'</span>;
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  <span class="cmt">//  useState - Managing reactive state</span>
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  <span class="kw">const</span> [students, setStudents] = <span class="hook">useState</span>(() => {
+    <span class="cmt">// Lazy initialization from localStorage</span>
+    <span class="kw">const</span> saved = localStorage.<span class="fn">getItem</span>(<span class="str">'students'</span>);
+    <span class="kw">return</span> saved ? JSON.<span class="fn">parse</span>(saved) : [];
+  });
+  
+  <span class="kw">const</span> [searchTerm, setSearchTerm] = <span class="hook">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [filter, setFilter] = <span class="hook">useState</span>(<span class="str">'all'</span>); <span class="cmt">// 'all', 'A', 'B', 'C'</span>
+  <span class="kw">const</span> [isLoading, setIsLoading] = <span class="hook">useState</span>(<span class="kw">false</span>);
+  
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  <span class="cmt">//  useRef - Persist values without re-renders</span>
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  <span class="kw">const</span> renderCount = <span class="hook">useRef</span>(<span class="num">0</span>);
+  <span class="kw">const</span> prevStudentCount = <span class="hook">useRef</span>(students.length);
+
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  <span class="cmt">//  useEffect - Side effects</span>
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  
+  <span class="cmt">// Effect 1: Save to localStorage when students change</span>
+  <span class="hook">useEffect</span>(() => {
+    localStorage.<span class="fn">setItem</span>(<span class="str">'students'</span>, JSON.<span class="fn">stringify</span>(students));
+    console.<span class="fn">log</span>(<span class="str">'✅ Saved to localStorage'</span>);
+  }, [students]);
+
+  <span class="cmt">// Effect 2: Update document title</span>
+  <span class="hook">useEffect</span>(() => {
+    document.title = <span class="str">`Students (</span>${students.length}<span class="str">)`</span>;
+  }, [students.length]);
+
+  <span class="cmt">// Effect 3: Track render count</span>
+  <span class="hook">useEffect</span>(() => {
+    renderCount.current += <span class="num">1</span>;
+    console.<span class="fn">log</span>(<span class="str">`Render #</span>${renderCount.current}<span class="str">`</span>);
+  });
+
+  <span class="cmt">// Effect 4: Log when student count changes</span>
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">if</span> (prevStudentCount.current !== students.length) {
+      console.<span class="fn">log</span>(
+        <span class="str">`Student count: </span>${prevStudentCount.current}<span class="str"> → </span>${students.length}<span class="str">`</span>
+      );
+      prevStudentCount.current = students.length;
+    }
+  }, [students.length]);
+
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  <span class="cmt">//  useCallback - Memoized callbacks</span>
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  <span class="kw">const</span> handleAddStudent = <span class="hook">useCallback</span>((newStudent) => {
+    <span class="fn">setStudents</span>(prev => [...prev, { ...newStudent, id: Date.<span class="fn">now</span>() }]);
+  }, []);
+
+  <span class="kw">const</span> handleDeleteStudent = <span class="hook">useCallback</span>((id) => {
+    <span class="fn">setStudents</span>(prev => prev.<span class="fn">filter</span>(s => s.id !== id));
+  }, []);
+
+  <span class="kw">const</span> handleUpdateStudent = <span class="hook">useCallback</span>((id, updates) => {
+    <span class="fn">setStudents</span>(prev => prev.<span class="fn">map</span>(s => 
+      s.id === id ? { ...s, ...updates } : s
+    ));
+  }, []);
+
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  <span class="cmt">//  Computed/Derived State</span>
+  <span class="cmt">// ═══════════════════════════════════════════════════════</span>
+  <span class="kw">const</span> filteredStudents = students
+    .<span class="fn">filter</span>(s => {
+      <span class="kw">const</span> matchesSearch = s.name.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(searchTerm.<span class="fn">toLowerCase</span>());
+      <span class="kw">const</span> matchesFilter = filter === <span class="str">'all'</span> || s.grade === filter;
+      <span class="kw">return</span> matchesSearch && matchesFilter;
+    });
+
+  <span class="kw">const</span> stats = {
+    total: students.length,
+    gradeA: students.<span class="fn">filter</span>(s => s.grade === <span class="str">'A'</span>).length,
+    gradeB: students.<span class="fn">filter</span>(s => s.grade === <span class="str">'B'</span>).length,
+    gradeC: students.<span class="fn">filter</span>(s => s.grade === <span class="str">'C'</span>).length,
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>🎓 Student Management<span class="tag">&lt;/h1&gt;</span>
+      
+      <span class="cmt">{/* Stats Section */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stats"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span&gt;</span>Total: {stats.total}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span&gt;</span>A: {stats.gradeA}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span&gt;</span>B: {stats.gradeB}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span&gt;</span>C: {stats.gradeC}<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="cmt">{/* Search Component */}</span>
+      <span class="tag">&lt;StudentSearch</span>
+        <span class="attr">searchTerm</span>={searchTerm}
+        <span class="attr">onSearchChange</span>={setSearchTerm}
+        <span class="attr">filter</span>={filter}
+        <span class="attr">onFilterChange</span>={setFilter}
+      <span class="tag">/&gt;</span>
+
+      <span class="cmt">{/* Form Component */}</span>
+      <span class="tag">&lt;StudentForm</span> <span class="attr">onAddStudent</span>={handleAddStudent} <span class="tag">/&gt;</span>
+
+      <span class="cmt">{/* List Component */}</span>
+      <span class="tag">&lt;StudentList</span>
+        <span class="attr">students</span>={filteredStudents}
+        <span class="attr">onDelete</span>={handleDeleteStudent}
+        <span class="attr">onUpdate</span>={handleUpdateStudent}
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> App;</pre></div>
+        </div>
+
+        <h4 style="color: var(--warning); margin: 1.5rem 0 0.75rem;">2️⃣ StudentSearch.jsx - Search with useRef</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentSearch.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useRef</span>, <span class="hook">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentSearch</span>({ searchTerm, onSearchChange, filter, onFilterChange }) {
+  <span class="kw">const</span> inputRef = <span class="hook">useRef</span>(<span class="kw">null</span>);
+
+  <span class="cmt">// Auto-focus search input on mount</span>
+  <span class="hook">useEffect</span>(() => {
+    inputRef.current.<span class="fn">focus</span>();
+  }, []);
+
+  <span class="cmt">// Keyboard shortcut: Press "/" to focus search</span>
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">function</span> <span class="fn">handleKeyDown</span>(e) {
+      <span class="kw">if</span> (e.key === <span class="str">'/'</span> && document.activeElement !== inputRef.current) {
+        e.<span class="fn">preventDefault</span>();
+        inputRef.current.<span class="fn">focus</span>();
+      }
+    }
+    
+    window.<span class="fn">addEventListener</span>(<span class="str">'keydown'</span>, handleKeyDown);
+    <span class="kw">return</span> () => window.<span class="fn">removeEventListener</span>(<span class="str">'keydown'</span>, handleKeyDown);
+  }, []);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"search-container"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">ref</span>={inputRef}
+        <span class="attr">type</span>=<span class="str">"text"</span>
+        <span class="attr">value</span>={searchTerm}
+        <span class="attr">onChange</span>={(e) => <span class="fn">onSearchChange</span>(e.target.value)}
+        <span class="attr">placeholder</span>=<span class="str">"Search students... (Press /)"</span>
+      <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;select</span> <span class="attr">value</span>={filter} <span class="attr">onChange</span>={(e) => <span class="fn">onFilterChange</span>(e.target.value)}<span class="tag">&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"all"</span><span class="tag">&gt;</span>All Grades<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"A"</span><span class="tag">&gt;</span>Grade A<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"B"</span><span class="tag">&gt;</span>Grade B<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"C"</span><span class="tag">&gt;</span>Grade C<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;/select&gt;</span>
+      
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => { <span class="fn">onSearchChange</span>(<span class="str">''</span>); <span class="fn">onFilterChange</span>(<span class="str">'all'</span>); }}<span class="tag">&gt;</span>
+        Clear
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentSearch;</pre></div>
+        </div>
+
+        <h4 style="color: var(--secondary); margin: 1.5rem 0 0.75rem;">3️⃣ StudentForm.jsx - Form with useState & useRef</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentForm.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span>, <span class="hook">useRef</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentForm</span>({ onAddStudent }) {
+  <span class="kw">const</span> [name, setName] = <span class="hook">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [age, setAge] = <span class="hook">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [grade, setGrade] = <span class="hook">useState</span>(<span class="str">'A'</span>);
+  <span class="kw">const</span> [errors, setErrors] = <span class="hook">useState</span>({});
+  
+  <span class="kw">const</span> nameInputRef = <span class="hook">useRef</span>(<span class="kw">null</span>);
+
+  <span class="kw">function</span> <span class="fn">validate</span>() {
+    <span class="kw">const</span> newErrors = {};
+    <span class="kw">if</span> (!name.trim()) newErrors.name = <span class="str">'Name is required'</span>;
+    <span class="kw">if</span> (!age || age < <span class="num">5</span> || age > <span class="num">25</span>) newErrors.age = <span class="str">'Age must be 5-25'</span>;
+    <span class="fn">setErrors</span>(newErrors);
+    <span class="kw">return</span> Object.<span class="fn">keys</span>(newErrors).length === <span class="num">0</span>;
+  }
+
+  <span class="kw">function</span> <span class="fn">handleSubmit</span>(e) {
+    e.<span class="fn">preventDefault</span>();
+    
+    <span class="kw">if</span> (!<span class="fn">validate</span>()) <span class="kw">return</span>;
+    
+    <span class="fn">onAddStudent</span>({
+      name: name.trim(),
+      age: <span class="fn">parseInt</span>(age),
+      grade
+    });
+    
+    <span class="cmt">// Reset form</span>
+    <span class="fn">setName</span>(<span class="str">''</span>);
+    <span class="fn">setAge</span>(<span class="str">''</span>);
+    <span class="fn">setGrade</span>(<span class="str">'A'</span>);
+    <span class="fn">setErrors</span>({});
+    
+    <span class="cmt">// Focus back to name input</span>
+    nameInputRef.current.<span class="fn">focus</span>();
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit} <span class="attr">className</span>=<span class="str">"student-form"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;input</span>
+          <span class="attr">ref</span>={nameInputRef}
+          <span class="attr">value</span>={name}
+          <span class="attr">onChange</span>={(e) => <span class="fn">setName</span>(e.target.value)}
+          <span class="attr">placeholder</span>=<span class="str">"Student name"</span>
+        <span class="tag">/&gt;</span>
+        {errors.name && <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"error"</span><span class="tag">&gt;</span>{errors.name}<span class="tag">&lt;/span&gt;</span>}
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;input</span>
+          <span class="attr">type</span>=<span class="str">"number"</span>
+          <span class="attr">value</span>={age}
+          <span class="attr">onChange</span>={(e) => <span class="fn">setAge</span>(e.target.value)}
+          <span class="attr">placeholder</span>=<span class="str">"Age"</span>
+        <span class="tag">/&gt;</span>
+        {errors.age && <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"error"</span><span class="tag">&gt;</span>{errors.age}<span class="tag">&lt;/span&gt;</span>}
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="tag">&lt;select</span> <span class="attr">value</span>={grade} <span class="attr">onChange</span>={(e) => <span class="fn">setGrade</span>(e.target.value)}<span class="tag">&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"A"</span><span class="tag">&gt;</span>Grade A<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"B"</span><span class="tag">&gt;</span>Grade B<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"C"</span><span class="tag">&gt;</span>Grade C<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;/select&gt;</span>
+      
+      <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span><span class="tag">&gt;</span>Add Student<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentForm;</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Custom Hooks -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-custom">🔧</div>
+        <div class="section-title">Part 7: Custom Hooks - Reusable Logic</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>What Are Custom Hooks?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Custom Hooks</strong> let you extract component logic into reusable functions. 
+          They must start with <code>use</code> and can call other Hooks.
+        </p>
+
+        <h3>📋 Custom Hook Examples</h3>
+
+        <h4 style="color: var(--accent); margin: 1.5rem 0 0.75rem;">1️⃣ useLocalStorage - Persist State</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; hooks/useLocalStorage.js</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span>, <span class="hook">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">useLocalStorage</span>(key, initialValue) {
+  <span class="cmt">// Get initial value from localStorage or use provided initial</span>
+  <span class="kw">const</span> [value, setValue] = <span class="hook">useState</span>(() => {
+    <span class="kw">try</span> {
+      <span class="kw">const</span> item = localStorage.<span class="fn">getItem</span>(key);
+      <span class="kw">return</span> item ? JSON.<span class="fn">parse</span>(item) : initialValue;
+    } <span class="kw">catch</span> (error) {
+      <span class="kw">return</span> initialValue;
+    }
+  });
+
+  <span class="cmt">// Update localStorage when value changes</span>
+  <span class="hook">useEffect</span>(() => {
+    localStorage.<span class="fn">setItem</span>(key, JSON.<span class="fn">stringify</span>(value));
+  }, [key, value]);
+
+  <span class="kw">return</span> [value, setValue];
+}
+
+<span class="kw">export default</span> useLocalStorage;
+
+<span class="cmt">// Usage:</span>
+<span class="cmt">// const [students, setStudents] = useLocalStorage('students', []);</span></pre></div>
+        </div>
+
+        <h4 style="color: var(--secondary); margin: 1.5rem 0 0.75rem;">2️⃣ useFetch - Data Fetching</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; hooks/useFetch.js</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span>, <span class="hook">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">useFetch</span>(url) {
+  <span class="kw">const</span> [data, setData] = <span class="hook">useState</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> [loading, setLoading] = <span class="hook">useState</span>(<span class="kw">true</span>);
+  <span class="kw">const</span> [error, setError] = <span class="hook">useState</span>(<span class="kw">null</span>);
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">let</span> isMounted = <span class="kw">true</span>;  <span class="cmt">// Prevent state update if unmounted</span>
+
+    <span class="kw">async function</span> <span class="fn">fetchData</span>() {
+      <span class="kw">try</span> {
+        <span class="fn">setLoading</span>(<span class="kw">true</span>);
+        <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(url);
+        
+        <span class="kw">if</span> (!response.ok) {
+          <span class="kw">throw new</span> Error(<span class="str">`HTTP error: </span>${response.status}<span class="str">`</span>);
+        }
+        
+        <span class="kw">const</span> json = <span class="kw">await</span> response.<span class="fn">json</span>();
+        
+        <span class="kw">if</span> (isMounted) {
+          <span class="fn">setData</span>(json);
+          <span class="fn">setError</span>(<span class="kw">null</span>);
+        }
+      } <span class="kw">catch</span> (err) {
+        <span class="kw">if</span> (isMounted) {
+          <span class="fn">setError</span>(err.message);
+          <span class="fn">setData</span>(<span class="kw">null</span>);
+        }
+      } <span class="kw">finally</span> {
+        <span class="kw">if</span> (isMounted) {
+          <span class="fn">setLoading</span>(<span class="kw">false</span>);
+        }
+      }
+    }
+
+    <span class="fn">fetchData</span>();
+
+    <span class="cmt">// Cleanup</span>
+    <span class="kw">return</span> () => {
+      isMounted = <span class="kw">false</span>;
+    };
+  }, [url]);
+
+  <span class="kw">return</span> { data, loading, error };
+}
+
+<span class="kw">export default</span> useFetch;
+
+<span class="cmt">// Usage:</span>
+<span class="cmt">// const { data: students, loading, error } = useFetch('/api/students');</span></pre></div>
+        </div>
+
+        <h4 style="color: var(--warning); margin: 1.5rem 0 0.75rem;">3️⃣ useDebounce - Debounced Value</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; hooks/useDebounce.js</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span>, <span class="hook">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">useDebounce</span>(value, delay = <span class="num">500</span>) {
+  <span class="kw">const</span> [debouncedValue, setDebouncedValue] = <span class="hook">useState</span>(value);
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">const</span> timer = <span class="fn">setTimeout</span>(() => {
+      <span class="fn">setDebouncedValue</span>(value);
+    }, delay);
+
+    <span class="kw">return</span> () => <span class="fn">clearTimeout</span>(timer);
+  }, [value, delay]);
+
+  <span class="kw">return</span> debouncedValue;
+}
+
+<span class="kw">export default</span> useDebounce;
+
+<span class="cmt">// Usage: Debounce search input</span>
+<span class="cmt">// const [search, setSearch] = useState('');</span>
+<span class="cmt">// const debouncedSearch = useDebounce(search, 300);</span>
+<span class="cmt">// useEffect(() => { fetchResults(debouncedSearch) }, [debouncedSearch]);</span></pre></div>
+        </div>
+
+        <h4 style="color: var(--danger); margin: 1.5rem 0 0.75rem;">4️⃣ useToggle - Boolean Toggle</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; hooks/useToggle.js</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span>, <span class="hook">useCallback</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">useToggle</span>(initialValue = <span class="kw">false</span>) {
+  <span class="kw">const</span> [value, setValue] = <span class="hook">useState</span>(initialValue);
+
+  <span class="kw">const</span> toggle = <span class="hook">useCallback</span>(() => {
+    <span class="fn">setValue</span>(v => !v);
+  }, []);
+
+  <span class="kw">const</span> setTrue = <span class="hook">useCallback</span>(() => <span class="fn">setValue</span>(<span class="kw">true</span>), []);
+  <span class="kw">const</span> setFalse = <span class="hook">useCallback</span>(() => <span class="fn">setValue</span>(<span class="kw">false</span>), []);
+
+  <span class="kw">return</span> [value, toggle, setTrue, setFalse];
+}
+
+<span class="kw">export default</span> useToggle;
+
+<span class="cmt">// Usage:</span>
+<span class="cmt">// const [isOpen, toggleOpen, openModal, closeModal] = useToggle(false);</span></pre></div>
+        </div>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--react); margin-bottom: 0.75rem;">🎯 Custom Hook Best Practices</h4>
+          <ul style="color: var(--muted); padding-left: 1.5rem;">
+            <li>Name must start with <code>use</code></li>
+            <li>Extract logic that's used in multiple components</li>
+            <li>Can call other Hooks (useState, useEffect, etc.)</li>
+            <li>Return values that components need (state, functions)</li>
+            <li>Keep hooks focused on one purpose</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Complete Workflow -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon icon-workflow">🔄</div>
+        <div class="section-title">Part 8: Complete Hooks Workflow - Step by Step</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Understanding the Hooks Lifecycle</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Let's trace through exactly what happens when our Student Management app renders and updates.
+        </p>
+
+        <h3>📌 Workflow: Adding a Student</h3>
+        
+        <div class="workflow-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>User Types in Form (useState)</h4>
+            <p style="color: var(--muted);">Each keystroke triggers setName/setAge/setGrade</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// In StudentForm</span>
+<span class="fn">setName</span>(<span class="str">"Alice"</span>)  <span class="cmt">// Triggers re-render</span>
+<span class="cmt">// Component re-renders with name = "Alice"</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>User Clicks Submit</h4>
+            <p style="color: var(--muted);">handleSubmit validates and calls onAddStudent prop</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="fn">onAddStudent</span>({ name: <span class="str">"Alice"</span>, age: <span class="num">15</span>, grade: <span class="str">"A"</span> });
+<span class="cmt">// This is handleAddStudent from App</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>App State Updates (useState)</h4>
+            <p style="color: var(--muted);">setStudents adds new student to array</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="fn">setStudents</span>(prev => [...prev, { ...newStudent, id: Date.<span class="fn">now</span>() }]);
+<span class="cmt">// State: [] → [{id: 123, name: "Alice", age: 15, grade: "A"}]</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h4>App Re-renders</h4>
+            <p style="color: var(--muted);">All child components receive new props</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// App re-renders</span>
+<span class="cmt">// StudentList receives updated students prop</span>
+<span class="cmt">// Stats computed: total = 1, gradeA = 1</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <h4>useEffect Runs (Side Effects)</h4>
+            <p style="color: var(--muted);">Effects with [students] dependency execute</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Effect 1: Save to localStorage</span>
+localStorage.<span class="fn">setItem</span>(<span class="str">'students'</span>, JSON.<span class="fn">stringify</span>(students));
+
+<span class="cmt">// Effect 2: Update document title</span>
+document.title = <span class="str">"Students (1)"</span>;</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">6</div>
+          <div class="step-content">
+            <h4>useRef Updates (No Re-render)</h4>
+            <p style="color: var(--muted);">Render count and previous value updated silently</p>
+            <div class="code-block">
+              <div class="code-body"><pre>renderCount.current = <span class="num">2</span>;  <span class="cmt">// No re-render!</span>
+prevStudentCount.current = <span class="num">1</span>;  <span class="cmt">// No re-render!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 2rem;">📊 Complete Hooks Flow Diagram</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Hooks Execution Flow</div>
+          <div class="code-body"><pre style="color: var(--muted); font-size: 0.8rem;">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        <span style="color: var(--react);">REACT HOOKS LIFECYCLE</span>                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  <span style="color: var(--accent);">1. INITIAL RENDER</span>                                                    │
+│  ────────────────                                                       │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ <span style="color: #e5c07b;">useState</span> calls execute in order                                  │   │
+│  │   const [students, setStudents] = useState([])  → []            │   │
+│  │   const [search, setSearch] = useState('')      → ''            │   │
+│  │   const [filter, setFilter] = useState('all')   → 'all'         │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              ↓                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ <span style="color: #e5c07b;">useRef</span> calls execute                                             │   │
+│  │   const renderCount = useRef(0)  → {current: 0}                 │   │
+│  │   const inputRef = useRef(null)  → {current: null}              │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              ↓                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ Component returns JSX → React renders to DOM                     │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              ↓                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ <span style="color: #e5c07b;">useEffect</span> callbacks run (after paint)                           │   │
+│  │   Effect 1: [] deps → runs once, focus input                    │   │
+│  │   Effect 2: [students] → save to localStorage                   │   │
+│  │   Effect 3: no deps → runs every render                         │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  <span style="color: var(--warning);">2. USER INTERACTION (e.g., Add Student)</span>                             │
+│  ──────────────────────────────────────                                 │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ Event handler calls setState                                     │   │
+│  │   setStudents([...students, newStudent])                        │   │
+│  │                       ↓                                          │   │
+│  │   React schedules re-render                                      │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  <span style="color: var(--danger);">3. RE-RENDER</span>                                                         │
+│  ───────────                                                            │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ useState returns NEW values                                      │   │
+│  │   students = [{...newStudent}]  (changed!)                      │   │
+│  │   search = ''  (same)                                           │   │
+│  │   filter = 'all'  (same)                                        │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              ↓                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ useRef returns SAME object (persisted)                          │   │
+│  │   renderCount = {current: 1}                                    │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              ↓                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ Component returns new JSX → React updates DOM (only changes)    │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              ↓                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ useEffect cleanup runs FIRST (if deps changed)                  │   │
+│  │   Previous effect cleanup: clearInterval(...)                   │   │
+│  │                       ↓                                          │   │
+│  │ useEffect callbacks run (only if deps changed)                  │   │
+│  │   [students] changed → save to localStorage                     │   │
+│  │   [] didn't change → skip                                       │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre></div>
+        </div>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--react); margin-bottom: 0.75rem;">🎯 Key Takeaways</h4>
+          <ul style="color: var(--muted); padding-left: 1.5rem;">
+            <li><strong>useState:</strong> Returns [value, setter], triggers re-render on change</li>
+            <li><strong>useEffect:</strong> Runs after render, cleanup runs before next effect/unmount</li>
+            <li><strong>useRef:</strong> Persists across renders, changes don't trigger re-renders</li>
+            <li><strong>Order matters:</strong> Hooks must be called in the same order every render</li>
+            <li><strong>Dependencies:</strong> Control when effects run - empty = once, [deps] = on change</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(97,218,251,0.1), rgba(167,139,250,0.05)); border-radius: 16px; border: 1px solid var(--border);">
+      <h3 style="color: var(--react); margin-bottom: 0.5rem;">🎉 You've Mastered React Hooks!</h3>
+      <p style="color: var(--muted);">From useState to Custom Hooks - You're ready to build amazing React apps!</p>
+      <div style="margin-top: 1rem;">
+        <span class="badge badge-accent" style="margin: 0.25rem;">useState</span>
+        <span class="badge badge-secondary" style="margin: 0.25rem;">useEffect</span>
+        <span class="badge badge-warning" style="margin: 0.25rem;">useRef</span>
+        <span class="badge badge-danger" style="margin: 0.25rem;">Custom Hooks</span>
+        <span class="badge badge-primary" style="margin: 0.25rem;">Workflow</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Async Basics - Sync vs Async</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>⏳ Sync vs Async</h1>
+      <p>Understanding synchronous and asynchronous execution in JavaScript</p>
+    </header>
+
+    <main>
+      <!-- Concept Explanation -->
+      <section class="section">
+        <h2>💡 How It Works</h2>
+        <div class="concept-grid">
+          <div class="concept-card sync-card">
+            <div class="concept-icon">🔄</div>
+            <h3>Synchronous</h3>
+            <p>Code runs line by line. Each line waits for the previous one to complete.</p>
+            <div class="code-preview">
+              <code>console.log('1');</code>
+              <code>console.log('2');</code>
+              <code>console.log('3');</code>
+              <code class="output">// Output: 1, 2, 3</code>
+            </div>
+          </div>
+          <div class="concept-card async-card">
+            <div class="concept-icon">⚡</div>
+            <h3>Asynchronous</h3>
+            <p>Some operations run in the background while other code continues.</p>
+            <div class="code-preview">
+              <code>console.log('1');</code>
+              <code>setTimeout(() => log('2'), 0);</code>
+              <code>console.log('3');</code>
+              <code class="output">// Output: 1, 3, 2</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Demo -->
+      <section class="section">
+        <h2>🎮 Interactive Demo</h2>
+        <div class="demo-controls">
+          <button id="runSyncBtn" class="btn btn-primary">
+            🔄 Run Synchronous
+          </button>
+          <button id="runAsyncBtn" class="btn btn-async">
+            ⚡ Run Asynchronous
+          </button>
+          <button id="clearBtn" class="btn btn-secondary">
+            🗑️ Clear Output
+          </button>
+        </div>
+
+        <div class="output-container">
+          <div class="output-header">
+            <span>📋 Output Console</span>
+            <span id="execTime" class="exec-time"></span>
+          </div>
+          <div id="output" class="output"></div>
+        </div>
+      </section>
+
+      <!-- Visual Timeline -->
+      <section class="section">
+        <h2>📊 Execution Timeline</h2>
+        <div class="timeline-container">
+          <div class="timeline-header">
+            <span>Time (ms)</span>
+            <div class="timeline-scale">
+              <span>0</span>
+              <span>500</span>
+              <span>1000</span>
+              <span>1500</span>
+              <span>2000</span>
+            </div>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </div>
+        <div class="timeline-legend">
+          <span class="legend-item"><span class="legend-color sync"></span> Synchronous</span>
+          <span class="legend-item"><span class="legend-color async"></span> Asynchronous</span>
+          <span class="legend-item"><span class="legend-color callback"></span> Callback</span>
+        </div>
+      </section>
+
+      <!-- Real World Analogy -->
+      <section class="section">
+        <h2>🍳 Real-World Analogy: Making Breakfast</h2>
+        <div class="analogy-grid">
+          <div class="analogy-card">
+            <h4>😴 Synchronous Chef</h4>
+            <ol>
+              <li>Toast bread... wait 3 min ⏳</li>
+              <li>Boil water... wait 5 min ⏳</li>
+              <li>Make coffee... wait 2 min ⏳</li>
+            </ol>
+            <div class="analogy-result bad">Total: 10 minutes</div>
+          </div>
+          <div class="analogy-card">
+            <h4>🚀 Asynchronous Chef</h4>
+            <ol>
+              <li>Start toasting bread 🍞</li>
+              <li>Start boiling water ☕ (while toasting)</li>
+              <li>Prepare coffee (while both work)</li>
+            </ol>
+            <div class="analogy-result good">Total: ~5 minutes</div>
+          </div>
+        </div>
+        <button id="runBreakfastDemo" class="btn btn-accent">
+          🍳 Run Breakfast Demo
+        </button>
+        <div id="breakfastOutput" class="output" style="margin-top: 1rem;"></div>
+      </section>
+
+      <!-- Code Example -->
+      <section class="section">
+        <h2>📝 Code Examples</h2>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="badge sync-badge">Synchronous</span>
+            Blocking Execution
+          </div>
+          <pre><code>console.log('1. Start');
+console.log('2. Middle');  // Waits for line 1
+console.log('3. End');     // Waits for line 2
+
+// Output:
+// 1. Start
+// 2. Middle
+// 3. End</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="badge async-badge">Asynchronous</span>
+            Non-Blocking Execution
+          </div>
+          <pre><code>console.log('1. Start');
+
+setTimeout(() => {
+  console.log('2. Async operation done!');
+}, 2000);  // Runs after 2 seconds
+
+console.log('3. End');  // Doesn't wait!
+
+// Output:
+// 1. Start
+// 3. End          ← Runs immediately!
+// 2. Async operation done!  ← Runs after 2 seconds</code></pre>
+        </div>
+      </section>
+
+      <!-- Common Async Operations -->
+      <section class="section">
+        <h2>🎯 Common Async Operations</h2>
+        <div class="operations-grid">
+          <div class="operation-card">
+            <span class="op-icon">🌐</span>
+            <h4>API Calls</h4>
+            <p>Fetching data from servers</p>
+          </div>
+          <div class="operation-card">
+            <span class="op-icon">⏰</span>
+            <h4>Timers</h4>
+            <p>setTimeout, setInterval</p>
+          </div>
+          <div class="operation-card">
+            <span class="op-icon">📁</span>
+            <h4>File Operations</h4>
+            <p>Reading/writing files</p>
+          </div>
+          <div class="operation-card">
+            <span class="op-icon">💾</span>
+            <h4>Database</h4>
+            <p>Queries and updates</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Chapter 17: Async/Await Complete Guide</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

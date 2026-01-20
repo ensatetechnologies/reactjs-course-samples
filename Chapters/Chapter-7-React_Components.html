@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Components Deep Dive - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb; --js: #f7df1e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(97,218,251,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(52,211,153,0.1) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--react), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-react { background: #20232a; color: var(--react); }
+    .badge-components { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; }
+    .icon-concept { background: linear-gradient(135deg, var(--react), #0891b2); color: white; }
+    .icon-types { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    .icon-anatomy { background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; }
+    .icon-compare { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
+    .icon-project { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
+    .icon-composition { background: linear-gradient(135deg, var(--warning), #d97706); color: white; }
+    .icon-communication { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; }
+    .icon-workflow { background: linear-gradient(135deg, #818cf8, #4f46e5); color: white; }
+    .icon-patterns { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .hook { color: #e5c07b; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-react { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--react); box-shadow: 0 0 20px rgba(97,218,251,0.2); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    .flow-arrow-down { color: var(--accent); font-size: 2rem; }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: start; margin: 1.5rem 0; }
+    .vs-divider { display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--warning); font-size: 1.5rem; padding-top: 2rem; }
+    @media (max-width: 900px) { .vs-container { grid-template-columns: 1fr; } .vs-divider { padding: 1rem 0; } }
+    
+    .highlight-box { background: linear-gradient(135deg, rgba(97,218,251,0.1), rgba(167,139,250,0.05)); border: 1px solid rgba(97,218,251,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    
+    .component-card { background: var(--surface); border: 2px solid var(--border); border-radius: 16px; padding: 1.5rem; margin: 1rem 0; transition: all 0.3s; }
+    .component-card:hover { border-color: var(--react); }
+    .component-card h4 { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .component-icon { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    
+    .lines-compare { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: var(--surface2); border-radius: 10px; }
+    .lines-bar { height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; }
+    .lines-label { min-width: 100px; font-size: 0.9rem; }
+    
+    .workflow-step { display: flex; gap: 1.5rem; margin: 1.5rem 0; align-items: flex-start; }
+    .step-number { width: 50px; height: 50px; background: linear-gradient(135deg, var(--react), var(--primary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; color: var(--bg); flex-shrink: 0; }
+    .step-content { flex: 1; }
+    .step-content h4 { color: var(--primary); margin-bottom: 0.5rem; }
+    
+    .file-structure { background: var(--surface2); border-radius: 12px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+    .file-structure .folder { color: var(--warning); }
+    .file-structure .file { color: var(--text); }
+    .file-structure .indent { margin-left: 1.5rem; }
+    
+    .tree-diagram { background: var(--surface2); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .tree-node { display: flex; flex-direction: column; align-items: center; }
+    .tree-children { display: flex; gap: 1rem; margin-top: 1rem; justify-content: center; flex-wrap: wrap; }
+    .tree-box { background: var(--surface); border: 2px solid var(--border); border-radius: 10px; padding: 0.75rem 1.25rem; text-align: center; min-width: 100px; }
+    .tree-box.root { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.1), transparent); }
+    .tree-box.parent { border-color: var(--accent); }
+    .tree-box.child { border-color: var(--secondary); font-size: 0.9rem; }
+    .tree-connector { width: 2px; height: 20px; background: var(--border); margin: 0 auto; }
+    .tree-branch { display: flex; align-items: flex-start; }
+    .tree-branch::before { content: ''; border-top: 2px solid var(--border); width: 100%; position: relative; top: 0; }
+    
+    h2 { color: var(--react); margin-bottom: 1rem; }
+    h3 { color: var(--primary); margin: 1.5rem 0 1rem; }
+    
+    .anatomy-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+    .anatomy-section { border-left: 3px solid var(--border); padding-left: 1rem; margin: 1rem 0; }
+    .anatomy-section.imports { border-left-color: var(--warning); }
+    .anatomy-section.state { border-left-color: var(--accent); }
+    .anatomy-section.logic { border-left-color: var(--secondary); }
+    .anatomy-section.jsx { border-left-color: var(--react); }
+    
+    .demo-output { background: #1a1a2e; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+    .demo-output h4 { color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-react">⚛️ React Components</span>
+        <span class="hero-badge badge-components">🧩 Complete Guide</span>
+      </div>
+      <h1>React Components Deep Dive</h1>
+      <p>Building Blocks of Modern React Applications</p>
+    </div>
+
+    <!-- Section 1: Understanding Components -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-concept">🧩</div>
+        <div class="section-title">Part 1: Understanding Components - What and Why</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>What Are Components?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Components</strong> are the fundamental building blocks of React applications. 
+          They are <strong>reusable, self-contained pieces of UI</strong> that can be composed together to build complex interfaces.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--react); margin-bottom: 0.75rem;">🎯 Think of Components Like LEGO Blocks</h4>
+          <p style="color: var(--muted);">
+            Just like LEGO blocks snap together to build amazing structures, React components combine to create complete user interfaces.
+            Each component handles its own appearance, logic, and behavior - then they connect to form your app!
+          </p>
+        </div>
+
+        <h3>🔍 Components in Real Apps</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Facebook-like App Structure</div>
+          <div class="code-body"><pre style="color: var(--muted);">
+┌─────────────────────────────────────────────────────────────────────┐
+│  <span style="color: var(--react);">&lt;App&gt;</span>                                                             │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │  <span style="color: var(--accent);">&lt;Navbar&gt;</span>                                                    │   │
+│  │    <span style="color: var(--secondary);">&lt;Logo/&gt;</span>  <span style="color: var(--secondary);">&lt;SearchBar/&gt;</span>  <span style="color: var(--secondary);">&lt;UserMenu/&gt;</span>                        │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  ┌──────────────────────┐  ┌────────────────────────────────────┐  │
+│  │  <span style="color: var(--accent);">&lt;Sidebar&gt;</span>           │  │  <span style="color: var(--accent);">&lt;Feed&gt;</span>                            │  │
+│  │    <span style="color: var(--secondary);">&lt;MenuItem/&gt;</span>      │  │    <span style="color: var(--warning);">&lt;CreatePost/&gt;</span>                   │  │
+│  │    <span style="color: var(--secondary);">&lt;MenuItem/&gt;</span>      │  │    <span style="color: var(--warning);">&lt;Post&gt;</span>                          │  │
+│  │    <span style="color: var(--secondary);">&lt;MenuItem/&gt;</span>      │  │      <span style="color: var(--danger);">&lt;PostHeader/&gt;</span>                │  │
+│  │    <span style="color: var(--secondary);">&lt;FriendsList/&gt;</span>   │  │      <span style="color: var(--danger);">&lt;PostContent/&gt;</span>               │  │
+│  └──────────────────────┘  │      <span style="color: var(--danger);">&lt;PostActions/&gt;</span>               │  │
+│                            │      <span style="color: var(--danger);">&lt;Comments/&gt;</span>                  │  │
+│                            │    <span style="color: var(--warning);">&lt;/Post&gt;</span>                         │  │
+│                            │    <span style="color: var(--warning);">&lt;Post/&gt;</span>                         │  │
+│                            │    <span style="color: var(--warning);">&lt;Post/&gt;</span>                         │  │
+│                            └────────────────────────────────────┘  │
+│  <span style="color: var(--react);">&lt;/App&gt;</span>                                                            │
+└─────────────────────────────────────────────────────────────────────┘
+</pre></div>
+        </div>
+
+        <h3>🎯 Why Use Components?</h3>
+        <div class="grid-3">
+          <div class="component-card">
+            <h4>
+              <div class="component-icon" style="background: linear-gradient(135deg, var(--accent), #059669);">♻️</div>
+              <span style="color: var(--accent);">Reusability</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Write once, use everywhere. A Button component can be used across your entire app.</p>
+          </div>
+          <div class="component-card">
+            <h4>
+              <div class="component-icon" style="background: linear-gradient(135deg, var(--secondary), #7c3aed);">📦</div>
+              <span style="color: var(--secondary);">Encapsulation</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Each component manages its own state and logic. Changes don't break other parts.</p>
+          </div>
+          <div class="component-card">
+            <h4>
+              <div class="component-icon" style="background: linear-gradient(135deg, var(--warning), #d97706);">🧪</div>
+              <span style="color: var(--warning);">Testability</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Test components in isolation. Easier to find and fix bugs.</p>
+          </div>
+          <div class="component-card">
+            <h4>
+              <div class="component-icon" style="background: linear-gradient(135deg, var(--primary), #0891b2);">🔧</div>
+              <span style="color: var(--primary);">Maintainability</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Small, focused components are easier to understand and modify.</p>
+          </div>
+          <div class="component-card">
+            <h4>
+              <div class="component-icon" style="background: linear-gradient(135deg, var(--danger), #dc2626);">👥</div>
+              <span style="color: var(--danger);">Team Collaboration</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Different team members can work on different components simultaneously.</p>
+          </div>
+          <div class="component-card">
+            <h4>
+              <div class="component-icon" style="background: linear-gradient(135deg, #818cf8, #4f46e5);">🎨</div>
+              <span style="color: #818cf8;">Consistency</span>
+            </h4>
+            <p style="color: var(--muted); font-size: 0.9rem;">Shared components ensure consistent look and behavior across the app.</p>
+          </div>
+        </div>
+
+        <h3>📐 Component = Function That Returns JSX</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Basic Component</div>
+          <div class="code-body"><pre><span class="cmt">// A component is just a function that returns JSX!</span>
+<span class="kw">function</span> <span class="fn">Welcome</span>() {
+  <span class="kw">return</span> <span class="tag">&lt;h1&gt;</span>Hello, World!<span class="tag">&lt;/h1&gt;</span>;
+}
+
+<span class="cmt">// Component with props (inputs)</span>
+<span class="kw">function</span> <span class="fn">Greeting</span>({ name }) {
+  <span class="kw">return</span> <span class="tag">&lt;h1&gt;</span>Hello, {name}!<span class="tag">&lt;/h1&gt;</span>;
+}
+
+<span class="cmt">// Using components</span>
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;Welcome /&gt;</span>              <span class="cmt">{/* Renders: Hello, World! */}</span>
+      <span class="tag">&lt;Greeting</span> <span class="attr">name</span>=<span class="str">"Alice"</span> <span class="tag">/&gt;</span>  <span class="cmt">{/* Renders: Hello, Alice! */}</span>
+      <span class="tag">&lt;Greeting</span> <span class="attr">name</span>=<span class="str">"Bob"</span> <span class="tag">/&gt;</span>    <span class="cmt">{/* Renders: Hello, Bob! */}</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Key Rule: Component Names Start with Capital Letters</div>
+          <div class="tip-content">
+            <code>&lt;welcome /&gt;</code> ❌ - React treats this as an HTML tag<br>
+            <code>&lt;Welcome /&gt;</code> ✅ - React recognizes this as a component
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Types of Components -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-types">📋</div>
+        <div class="section-title">Part 2: Types of Components - Functional vs Class</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Two Ways to Write Components</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          React supports two types of components: <strong>Functional Components</strong> (modern, recommended) and 
+          <strong>Class Components</strong> (legacy, still works). Today, functional components with Hooks are the standard.
+        </p>
+
+        <div class="vs-container">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ Functional Component (Modern)</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>(<span class="num">0</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Count: {count}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(count + <span class="num">1</span>)}<span class="tag">&gt;</span>
+        Increment
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+            </div>
+            <span class="badge badge-accent">Recommended</span>
+            <span class="badge badge-primary">Uses Hooks</span>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">⚠️ Class Component (Legacy)</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">class</span> <span class="fn">Counter</span> <span class="kw">extends</span> React.Component {
+  <span class="fn">constructor</span>(props) {
+    <span class="kw">super</span>(props);
+    <span class="kw">this</span>.state = { count: <span class="num">0</span> };
+  }
+
+  <span class="fn">render</span>() {
+    <span class="kw">return</span> (
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Count: {<span class="kw">this</span>.state.count}<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => 
+          <span class="kw">this</span>.<span class="fn">setState</span>({ count: <span class="kw">this</span>.state.count + <span class="num">1</span> })
+        }<span class="tag">&gt;</span>
+          Increment
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    );
+  }
+}</pre></div>
+            </div>
+            <span class="badge badge-danger">Legacy</span>
+            <span class="badge badge-warning">More Verbose</span>
+          </div>
+        </div>
+
+        <h3>📊 Comparison Table</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th style="color: var(--accent);">Functional Component</th>
+              <th style="color: var(--danger);">Class Component</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Syntax</strong></td>
+              <td>Simple function</td>
+              <td>ES6 class with render()</td>
+            </tr>
+            <tr>
+              <td><strong>State</strong></td>
+              <td>useState Hook</td>
+              <td>this.state + this.setState()</td>
+            </tr>
+            <tr>
+              <td><strong>Lifecycle</strong></td>
+              <td>useEffect Hook</td>
+              <td>componentDidMount, etc.</td>
+            </tr>
+            <tr>
+              <td><strong>this keyword</strong></td>
+              <td>Not needed ✅</td>
+              <td>Required everywhere ❌</td>
+            </tr>
+            <tr>
+              <td><strong>Lines of Code</strong></td>
+              <td>~40% less</td>
+              <td>More boilerplate</td>
+            </tr>
+            <tr>
+              <td><strong>Performance</strong></td>
+              <td>Slightly better</td>
+              <td>Good</td>
+            </tr>
+            <tr>
+              <td><strong>Testing</strong></td>
+              <td>Easier to test</td>
+              <td>More setup needed</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>🏷️ Component Categories by Purpose</h3>
+        <div class="grid-2">
+          <div class="card card-highlight">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">🎨 Presentational Components</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.75rem;">
+              Focus on <strong>how things look</strong>. Receive data via props and render UI.
+            </p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Only concerned with rendering</span>
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ name, grade }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{name}<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;span&gt;</span>Grade: {grade}<span class="tag">&lt;/span&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+            </div>
+            <span class="badge badge-primary">Dumb Component</span>
+            <span class="badge badge-accent">Stateless</span>
+          </div>
+          <div class="card card-secondary">
+            <h4 style="color: var(--secondary); margin-bottom: 0.75rem;">🧠 Container Components</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 0.75rem;">
+              Focus on <strong>how things work</strong>. Manage state and logic.
+            </p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Manages state and passes to children</span>
+<span class="kw">function</span> <span class="fn">StudentListContainer</span>() {
+  <span class="kw">const</span> [students, setStudents] = <span class="hook">useState</span>([]);
+  
+  <span class="hook">useEffect</span>(() => {
+    <span class="fn">fetchStudents</span>().<span class="fn">then</span>(setStudents);
+  }, []);
+
+  <span class="kw">return</span> <span class="tag">&lt;StudentList</span> <span class="attr">students</span>={students} <span class="tag">/&gt;</span>;
+}</pre></div>
+            </div>
+            <span class="badge badge-secondary">Smart Component</span>
+            <span class="badge badge-warning">Stateful</span>
+          </div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 Modern Approach</div>
+          <div class="note-content">
+            With Hooks, the distinction between presentational and container components has blurred. 
+            You can now add state to any functional component. However, keeping some components "pure" (just rendering based on props) is still a good practice for reusability.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Component Anatomy -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-anatomy">🔬</div>
+        <div class="section-title">Part 3: Component Anatomy - Structure & Parts</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Breaking Down a Component</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Every React component follows a consistent structure. Understanding each part helps you write better components.
+        </p>
+
+        <div class="anatomy-box">
+          <h4 style="color: var(--react); margin-bottom: 1rem;">📐 Component Structure</h4>
+          
+          <div class="anatomy-section imports">
+            <h5 style="color: var(--warning);">1️⃣ Imports</h5>
+            <p style="color: var(--muted); font-size: 0.9rem;">Import React, hooks, other components, styles, utilities</p>
+          </div>
+          
+          <div class="anatomy-section state">
+            <h5 style="color: var(--accent);">2️⃣ Component Function</h5>
+            <p style="color: var(--muted); font-size: 0.9rem;">Receives props, declares state, defines handlers</p>
+          </div>
+          
+          <div class="anatomy-section logic">
+            <h5 style="color: var(--secondary);">3️⃣ Logic & Effects</h5>
+            <p style="color: var(--muted); font-size: 0.9rem;">useEffect for side effects, computed values, event handlers</p>
+          </div>
+          
+          <div class="anatomy-section jsx">
+            <h5 style="color: var(--react);">4️⃣ Return JSX</h5>
+            <p style="color: var(--muted); font-size: 0.9rem;">The UI that gets rendered to the screen</p>
+          </div>
+        </div>
+
+        <h3>📝 Complete Component Example with Annotations</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx - Annotated</div>
+          <div class="code-body"><pre><span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  SECTION 1: IMPORTS</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">import</span> { <span class="hook">useState</span>, <span class="hook">useEffect</span> } <span class="kw">from</span> <span class="str">'react'</span>;        <span class="cmt">// React hooks</span>
+<span class="kw">import</span> PropTypes <span class="kw">from</span> <span class="str">'prop-types'</span>;                <span class="cmt">// Type checking</span>
+<span class="kw">import</span> Badge <span class="kw">from</span> <span class="str">'./Badge'</span>;                        <span class="cmt">// Child component</span>
+<span class="kw">import</span> <span class="str">'./StudentCard.css'</span>;                        <span class="cmt">// Styles</span>
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  SECTION 2: COMPONENT FUNCTION</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ 
+  id,                       <span class="cmt">// Props destructured from parameter</span>
+  name, 
+  age, 
+  grade, 
+  subjects = [],            <span class="cmt">// Default value for optional prop</span>
+  onDelete,                 <span class="cmt">// Callback prop</span>
+  onEdit 
+}) {
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="cmt">//  STATE DECLARATIONS</span>
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> [isExpanded, setIsExpanded] = <span class="hook">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [isEditing, setIsEditing] = <span class="hook">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [editedName, setEditedName] = <span class="hook">useState</span>(name);
+
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="cmt">//  SECTION 3: SIDE EFFECTS</span>
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="hook">useEffect</span>(() => {
+    <span class="cmt">// Reset editedName when name prop changes</span>
+    <span class="fn">setEditedName</span>(name);
+  }, [name]);
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="cmt">// Log when card is expanded (analytics)</span>
+    <span class="kw">if</span> (isExpanded) {
+      console.<span class="fn">log</span>(<span class="str">`Student ${id} details viewed`</span>);
+    }
+  }, [isExpanded, id]);
+
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="cmt">//  COMPUTED VALUES</span>
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> gradeColor = {
+    <span class="str">'A'</span>: <span class="str">'#22c55e'</span>,
+    <span class="str">'B'</span>: <span class="str">'#3b82f6'</span>,
+    <span class="str">'C'</span>: <span class="str">'#f59e0b'</span>,
+    <span class="str">'D'</span>: <span class="str">'#ef4444'</span>,
+    <span class="str">'F'</span>: <span class="str">'#dc2626'</span>
+  }[grade] || <span class="str">'#6b7280'</span>;
+
+  <span class="kw">const</span> subjectCount = subjects.length;
+
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="cmt">//  EVENT HANDLERS</span>
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="kw">function</span> <span class="fn">handleToggleExpand</span>() {
+    <span class="fn">setIsExpanded</span>(!isExpanded);
+  }
+
+  <span class="kw">function</span> <span class="fn">handleSaveEdit</span>() {
+    <span class="fn">onEdit</span>(id, { name: editedName });
+    <span class="fn">setIsEditing</span>(<span class="kw">false</span>);
+  }
+
+  <span class="kw">function</span> <span class="fn">handleDelete</span>() {
+    <span class="kw">if</span> (<span class="fn">confirm</span>(<span class="str">`Delete ${name}?`</span>)) {
+      <span class="fn">onDelete</span>(id);
+    }
+  }
+
+  <span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+  <span class="cmt">//  SECTION 4: RENDER (JSX)</span>
+  <span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="str">`student-card </span>${isExpanded ? <span class="str">'expanded'</span> : <span class="str">''</span>}<span class="str">`</span>}<span class="tag">&gt;</span>
+      <span class="cmt">{/* Header Section */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-header"</span> <span class="attr">onClick</span>={handleToggleExpand}<span class="tag">&gt;</span>
+        {isEditing ? (
+          <span class="tag">&lt;input</span>
+            <span class="attr">value</span>={editedName}
+            <span class="attr">onChange</span>={(e) => <span class="fn">setEditedName</span>(e.target.value)}
+            <span class="attr">onClick</span>={(e) => e.<span class="fn">stopPropagation</span>()}
+          <span class="tag">/&gt;</span>
+        ) : (
+          <span class="tag">&lt;h3&gt;</span>{name}<span class="tag">&lt;/h3&gt;</span>
+        )}
+        <span class="tag">&lt;Badge</span> <span class="attr">grade</span>={grade} <span class="attr">color</span>={gradeColor} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="cmt">{/* Details Section - Conditional Rendering */}</span>
+      {isExpanded && (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-details"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;p&gt;</span>Age: {age}<span class="tag">&lt;/p&gt;</span>
+          <span class="tag">&lt;p&gt;</span>Subjects: {subjectCount}<span class="tag">&lt;/p&gt;</span>
+          
+          <span class="cmt">{/* List Rendering */}</span>
+          {subjectCount > <span class="num">0</span> && (
+            <span class="tag">&lt;ul&gt;</span>
+              {subjects.<span class="fn">map</span>((subject, index) => (
+                <span class="tag">&lt;li</span> <span class="attr">key</span>={index}<span class="tag">&gt;</span>{subject}<span class="tag">&lt;/li&gt;</span>
+              ))}
+            <span class="tag">&lt;/ul&gt;</span>
+          )}
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+
+      <span class="cmt">{/* Actions Section */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-actions"</span><span class="tag">&gt;</span>
+        {isEditing ? (
+          <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleSaveEdit}<span class="tag">&gt;</span>Save<span class="tag">&lt;/button&gt;</span>
+        ) : (
+          <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setIsEditing</span>(<span class="kw">true</span>)}<span class="tag">&gt;</span>Edit<span class="tag">&lt;/button&gt;</span>
+        )}
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={handleDelete} <span class="attr">className</span>=<span class="str">"danger"</span><span class="tag">&gt;</span>Delete<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  PROP TYPES (Type Checking)</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+StudentCard.propTypes = {
+  id: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  age: PropTypes.number.isRequired,
+  grade: PropTypes.<span class="fn">oneOf</span>([<span class="str">'A'</span>, <span class="str">'B'</span>, <span class="str">'C'</span>, <span class="str">'D'</span>, <span class="str">'F'</span>]).isRequired,
+  subjects: PropTypes.<span class="fn">arrayOf</span>(PropTypes.string),
+  onDelete: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired
+};
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  EXPORT</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">export default</span> StudentCard;</pre></div>
+        </div>
+
+        <h3>🎯 JSX Rules & Patterns</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ Single Root Element</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Must return ONE element</span>
+<span class="kw">return</span> (
+  <span class="tag">&lt;div&gt;</span>     <span class="cmt">{/* Root element */}</span>
+    <span class="tag">&lt;h1&gt;</span>Title<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Content<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+);
+
+<span class="cmt">// Or use Fragment (no extra DOM node)</span>
+<span class="kw">return</span> (
+  <span class="tag">&lt;&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>Title<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Content<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/&gt;</span>
+);</pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--warning); margin-bottom: 0.75rem;">🔄 Conditional Rendering</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Ternary operator</span>
+{isLoggedIn ? <span class="tag">&lt;Dashboard /&gt;</span> : <span class="tag">&lt;Login /&gt;</span>}
+
+<span class="cmt">// Logical AND (short-circuit)</span>
+{hasError && <span class="tag">&lt;ErrorMessage /&gt;</span>}
+
+<span class="cmt">// Multiple conditions</span>
+{status === <span class="str">'loading'</span> && <span class="tag">&lt;Spinner /&gt;</span>}
+{status === <span class="str">'error'</span> && <span class="tag">&lt;Error /&gt;</span>}
+{status === <span class="str">'success'</span> && <span class="tag">&lt;Data /&gt;</span>}</pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary); margin-bottom: 0.75rem;">📋 List Rendering</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Always use unique key prop!</span>
+{students.<span class="fn">map</span>(student => (
+  <span class="tag">&lt;StudentCard</span>
+    <span class="attr">key</span>={student.id}  <span class="cmt">{/* Unique key */}</span>
+    <span class="attr">name</span>={student.name}
+    <span class="attr">grade</span>={student.grade}
+  <span class="tag">/&gt;</span>
+))}</pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">🎨 Inline Styles</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Style is an object</span>
+<span class="tag">&lt;div</span> <span class="attr">style</span>={{
+  backgroundColor: <span class="str">'#222'</span>,
+  padding: <span class="str">'1rem'</span>,
+  borderRadius: <span class="num">8</span>
+}}<span class="tag">&gt;</span>
+
+<span class="cmt">// Dynamic styles</span>
+<span class="tag">&lt;span</span> <span class="attr">style</span>={{ color: gradeColor }}<span class="tag">&gt;</span>
+  {grade}
+<span class="tag">&lt;/span&gt;</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Common JSX Mistakes</div>
+          <div class="warning-content">
+            <code>class="name"</code> ❌ → <code>className="name"</code> ✅<br>
+            <code>for="input"</code> ❌ → <code>htmlFor="input"</code> ✅<br>
+            <code>onclick="..."</code> ❌ → <code>onClick={...}</code> ✅<br>
+            <code>style="color: red"</code> ❌ → <code>style={{'{'}color: 'red'{'}'}}</code> ✅
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Vanilla JS vs React Components -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-compare">⚖️</div>
+        <div class="section-title">Part 4: Vanilla JavaScript vs React Components - Complete Comparison</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>The Same Feature: Two Approaches</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Let's build a <strong>Student Card List with Add/Delete functionality</strong> - comparing vanilla JavaScript with React components.
+        </p>
+
+        <h3>📊 Lines of Code Comparison</h3>
+        <div class="lines-compare">
+          <div class="lines-label" style="color: var(--js);">Vanilla JS</div>
+          <div class="lines-bar" style="width: 100%; background: linear-gradient(90deg, var(--js), #d4a017); color: #000;">~150 lines</div>
+        </div>
+        <div class="lines-compare">
+          <div class="lines-label" style="color: var(--react);">React</div>
+          <div class="lines-bar" style="width: 45%; background: linear-gradient(90deg, var(--react), var(--primary)); color: #000;">~68 lines</div>
+        </div>
+
+        <h3 style="color: var(--js);">❌ Vanilla JavaScript Approach</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; app.js - Vanilla JavaScript (~150 lines)</div>
+          <div class="code-body"><pre><span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  STATE (just variables, NOT reactive!)</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">let</span> students = [
+  { id: <span class="num">1</span>, name: <span class="str">'Alice'</span>, age: <span class="num">15</span>, grade: <span class="str">'A'</span> },
+  { id: <span class="num">2</span>, name: <span class="str">'Bob'</span>, age: <span class="num">16</span>, grade: <span class="str">'B'</span> },
+];
+<span class="kw">let</span> nextId = <span class="num">3</span>;
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  DOM REFERENCES (must query each element)</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">const</span> studentListEl = document.<span class="fn">getElementById</span>(<span class="str">'student-list'</span>);
+<span class="kw">const</span> countEl = document.<span class="fn">getElementById</span>(<span class="str">'student-count'</span>);
+<span class="kw">const</span> formEl = document.<span class="fn">getElementById</span>(<span class="str">'add-form'</span>);
+<span class="kw">const</span> nameInput = document.<span class="fn">getElementById</span>(<span class="str">'name-input'</span>);
+<span class="kw">const</span> ageInput = document.<span class="fn">getElementById</span>(<span class="str">'age-input'</span>);
+<span class="kw">const</span> gradeSelect = document.<span class="fn">getElementById</span>(<span class="str">'grade-select'</span>);
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  CREATE STUDENT CARD ELEMENT (manual DOM creation!)</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">function</span> <span class="fn">createStudentCard</span>(student) {
+  <span class="cmt">// Step 1: Create container</span>
+  <span class="kw">const</span> card = document.<span class="fn">createElement</span>(<span class="str">'div'</span>);
+  card.className = <span class="str">'student-card'</span>;
+  card.id = <span class="str">`student-</span>${student.id}<span class="str">`</span>;
+  
+  <span class="cmt">// Step 2: Create header</span>
+  <span class="kw">const</span> header = document.<span class="fn">createElement</span>(<span class="str">'div'</span>);
+  header.className = <span class="str">'card-header'</span>;
+  
+  <span class="cmt">// Step 3: Create name element</span>
+  <span class="kw">const</span> nameEl = document.<span class="fn">createElement</span>(<span class="str">'h3'</span>);
+  nameEl.className = <span class="str">'student-name'</span>;
+  nameEl.textContent = student.name;
+  
+  <span class="cmt">// Step 4: Create grade badge</span>
+  <span class="kw">const</span> badge = document.<span class="fn">createElement</span>(<span class="str">'span'</span>);
+  badge.className = <span class="str">`badge grade-</span>${student.grade}<span class="str">`</span>;
+  badge.textContent = student.grade;
+  
+  <span class="cmt">// Step 5: Create details section</span>
+  <span class="kw">const</span> details = document.<span class="fn">createElement</span>(<span class="str">'div'</span>);
+  details.className = <span class="str">'card-details'</span>;
+  details.innerHTML = <span class="str">`&lt;p&gt;Age: </span>${student.age}<span class="str">&lt;/p&gt;`</span>;
+  
+  <span class="cmt">// Step 6: Create actions</span>
+  <span class="kw">const</span> actions = document.<span class="fn">createElement</span>(<span class="str">'div'</span>);
+  actions.className = <span class="str">'card-actions'</span>;
+  
+  <span class="cmt">// Step 7: Create edit button</span>
+  <span class="kw">const</span> editBtn = document.<span class="fn">createElement</span>(<span class="str">'button'</span>);
+  editBtn.textContent = <span class="str">'Edit'</span>;
+  editBtn.className = <span class="str">'btn-edit'</span>;
+  editBtn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () => <span class="fn">handleEdit</span>(student.id));
+  
+  <span class="cmt">// Step 8: Create delete button</span>
+  <span class="kw">const</span> deleteBtn = document.<span class="fn">createElement</span>(<span class="str">'button'</span>);
+  deleteBtn.textContent = <span class="str">'Delete'</span>;
+  deleteBtn.className = <span class="str">'btn-delete'</span>;
+  deleteBtn.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () => <span class="fn">handleDelete</span>(student.id));
+  
+  <span class="cmt">// Step 9: Assemble the card (tedious!)</span>
+  header.<span class="fn">appendChild</span>(nameEl);
+  header.<span class="fn">appendChild</span>(badge);
+  actions.<span class="fn">appendChild</span>(editBtn);
+  actions.<span class="fn">appendChild</span>(deleteBtn);
+  card.<span class="fn">appendChild</span>(header);
+  card.<span class="fn">appendChild</span>(details);
+  card.<span class="fn">appendChild</span>(actions);
+  
+  <span class="kw">return</span> card;
+}
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  RENDER FUNCTIONS (must call manually after each change!)</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">function</span> <span class="fn">renderStudentList</span>() {
+  <span class="cmt">// Clear existing content</span>
+  studentListEl.innerHTML = <span class="str">''</span>;
+  
+  <span class="cmt">// Create and append each card</span>
+  students.<span class="fn">forEach</span>(student => {
+    <span class="kw">const</span> card = <span class="fn">createStudentCard</span>(student);
+    studentListEl.<span class="fn">appendChild</span>(card);
+  });
+  
+  <span class="cmt">// Update count</span>
+  <span class="fn">updateCount</span>();
+}
+
+<span class="kw">function</span> <span class="fn">updateCount</span>() {
+  countEl.textContent = <span class="str">`Total Students: </span>${students.length}<span class="str">`</span>;
+}
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  EVENT HANDLERS</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">function</span> <span class="fn">handleAdd</span>(e) {
+  e.<span class="fn">preventDefault</span>();
+  
+  <span class="kw">const</span> newStudent = {
+    id: nextId++,
+    name: nameInput.value,
+    age: <span class="fn">parseInt</span>(ageInput.value),
+    grade: gradeSelect.value
+  };
+  
+  <span class="cmt">// Update state</span>
+  students.<span class="fn">push</span>(newStudent);
+  
+  <span class="cmt">// MUST manually re-render!</span>
+  <span class="fn">renderStudentList</span>();
+  
+  <span class="cmt">// Reset form</span>
+  nameInput.value = <span class="str">''</span>;
+  ageInput.value = <span class="str">''</span>;
+  gradeSelect.value = <span class="str">'A'</span>;
+}
+
+<span class="kw">function</span> <span class="fn">handleDelete</span>(id) {
+  <span class="cmt">// Update state</span>
+  students = students.<span class="fn">filter</span>(s => s.id !== id);
+  
+  <span class="cmt">// MUST manually re-render!</span>
+  <span class="fn">renderStudentList</span>();
+}
+
+<span class="kw">function</span> <span class="fn">handleEdit</span>(id) {
+  <span class="kw">const</span> student = students.<span class="fn">find</span>(s => s.id === id);
+  <span class="kw">const</span> newName = <span class="fn">prompt</span>(<span class="str">'Enter new name:'</span>, student.name);
+  
+  <span class="kw">if</span> (newName) {
+    student.name = newName;
+    <span class="cmt">// MUST manually re-render!</span>
+    <span class="fn">renderStudentList</span>();
+  }
+}
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  ATTACH EVENT LISTENERS</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+formEl.<span class="fn">addEventListener</span>(<span class="str">'submit'</span>, handleAdd);
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  INITIAL RENDER</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="fn">renderStudentList</span>();</pre></div>
+        </div>
+
+        <div class="danger">
+          <div class="danger-title">😫 Vanilla JS Pain Points</div>
+          <div class="danger-content">
+            • <strong>9 steps</strong> just to create one card element<br>
+            • Must <strong>manually call render</strong> after every state change<br>
+            • <strong>DOM queries everywhere</strong> - getElementById, createElement<br>
+            • <strong>Event listeners attached manually</strong><br>
+            • <strong>No reusability</strong> - can't easily use this card elsewhere<br>
+            • <strong>HTML and JS separated</strong> - hard to see what renders
+          </div>
+        </div>
+
+        <h3 style="color: var(--react); margin-top: 2rem;">✅ React Components Approach</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; React Components (~68 lines total)</div>
+          <div class="code-body"><pre><span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  StudentCard.jsx - Reusable Component</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, onEdit, onDelete }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"student-card"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-header"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h3&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>={<span class="str">`badge grade-</span>${student.grade}<span class="str">`</span>}<span class="tag">&gt;</span>{student.grade}<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-details"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Age: {student.age}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-actions"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">onEdit</span>(student.id)}<span class="tag">&gt;</span>Edit<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">onDelete</span>(student.id)}<span class="tag">&gt;</span>Delete<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  StudentForm.jsx - Reusable Form Component</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">function</span> <span class="fn">StudentForm</span>({ onAdd }) {
+  <span class="kw">const</span> [name, setName] = <span class="hook">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [age, setAge] = <span class="hook">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [grade, setGrade] = <span class="hook">useState</span>(<span class="str">'A'</span>);
+
+  <span class="kw">const</span> <span class="fn">handleSubmit</span> = (e) => {
+    e.<span class="fn">preventDefault</span>();
+    <span class="fn">onAdd</span>({ name, age: <span class="fn">parseInt</span>(age), grade });
+    <span class="fn">setName</span>(<span class="str">''</span>); <span class="fn">setAge</span>(<span class="str">''</span>); <span class="fn">setGrade</span>(<span class="str">'A'</span>);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">value</span>={name} <span class="attr">onChange</span>={(e) => <span class="fn">setName</span>(e.target.value)} <span class="attr">placeholder</span>=<span class="str">"Name"</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"number"</span> <span class="attr">value</span>={age} <span class="attr">onChange</span>={(e) => <span class="fn">setAge</span>(e.target.value)} <span class="attr">placeholder</span>=<span class="str">"Age"</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;select</span> <span class="attr">value</span>={grade} <span class="attr">onChange</span>={(e) => <span class="fn">setGrade</span>(e.target.value)}<span class="tag">&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"A"</span><span class="tag">&gt;</span>A<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"B"</span><span class="tag">&gt;</span>B<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"C"</span><span class="tag">&gt;</span>C<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;/select&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span><span class="tag">&gt;</span>Add Student<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}
+
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="cmt">//  App.jsx - Main Component (composes everything)</span>
+<span class="cmt">// ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [students, setStudents] = <span class="hook">useState</span>([
+    { id: <span class="num">1</span>, name: <span class="str">'Alice'</span>, age: <span class="num">15</span>, grade: <span class="str">'A'</span> },
+    { id: <span class="num">2</span>, name: <span class="str">'Bob'</span>, age: <span class="num">16</span>, grade: <span class="str">'B'</span> },
+  ]);
+
+  <span class="kw">const</span> <span class="fn">handleAdd</span> = (newStudent) => {
+    <span class="fn">setStudents</span>([...students, { ...newStudent, id: Date.<span class="fn">now</span>() }]);
+    <span class="cmt">// React automatically re-renders! 🎉</span>
+  };
+
+  <span class="kw">const</span> <span class="fn">handleDelete</span> = (id) => {
+    <span class="fn">setStudents</span>(students.<span class="fn">filter</span>(s => s.id !== id));
+    <span class="cmt">// React automatically re-renders! 🎉</span>
+  };
+
+  <span class="kw">const</span> <span class="fn">handleEdit</span> = (id) => {
+    <span class="kw">const</span> newName = <span class="fn">prompt</span>(<span class="str">'Enter new name:'</span>);
+    <span class="kw">if</span> (newName) {
+      <span class="fn">setStudents</span>(students.<span class="fn">map</span>(s => 
+        s.id === id ? { ...s, name: newName } : s
+      ));
+    }
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Student Management<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Total Students: {students.length}<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="tag">&lt;StudentForm</span> <span class="attr">onAdd</span>={handleAdd} <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"student-list"</span><span class="tag">&gt;</span>
+        {students.<span class="fn">map</span>(student => (
+          <span class="tag">&lt;StudentCard</span>
+            <span class="attr">key</span>={student.id}
+            <span class="attr">student</span>={student}
+            <span class="attr">onEdit</span>={handleEdit}
+            <span class="attr">onDelete</span>={handleDelete}
+          <span class="tag">/&gt;</span>
+        ))}
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">🎉 React Benefits</div>
+          <div class="tip-content">
+            ✅ <strong>Declarative:</strong> Describe what UI should look like<br>
+            ✅ <strong>Automatic updates:</strong> Change state → React re-renders<br>
+            ✅ <strong>Reusable components:</strong> StudentCard works anywhere<br>
+            ✅ <strong>Readable:</strong> JSX shows structure clearly<br>
+            ✅ <strong>55% less code!</strong>
+          </div>
+        </div>
+
+        <h3>📊 Detailed Comparison Table</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th style="color: var(--js);">Vanilla JavaScript</th>
+              <th style="color: var(--react);">React Components</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Creating UI</strong></td>
+              <td>document.createElement() × many</td>
+              <td>Write JSX (like HTML)</td>
+            </tr>
+            <tr>
+              <td><strong>State Updates</strong></td>
+              <td>Manual: update variable + call render</td>
+              <td>setState → auto re-render</td>
+            </tr>
+            <tr>
+              <td><strong>Event Handling</strong></td>
+              <td>addEventListener() for each element</td>
+              <td>Inline: onClick={handler}</td>
+            </tr>
+            <tr>
+              <td><strong>Reusability</strong></td>
+              <td>Copy-paste functions</td>
+              <td>Import and use &lt;Component /&gt;</td>
+            </tr>
+            <tr>
+              <td><strong>Data Flow</strong></td>
+              <td>Global variables, hard to track</td>
+              <td>Props down, events up (clear)</td>
+            </tr>
+            <tr>
+              <td><strong>DOM Access</strong></td>
+              <td>getElementById everywhere</td>
+              <td>useRef when needed (rare)</td>
+            </tr>
+            <tr>
+              <td><strong>Performance</strong></td>
+              <td>Full DOM updates</td>
+              <td>Virtual DOM diffing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 5: Complete Student Management Project -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-project">🎓</div>
+        <div class="section-title">Part 5: Complete Student Management System</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Project Overview</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Let's build a complete <strong>Student Management System</strong> with multiple components working together.
+        </p>
+
+        <h3>📁 Project Structure</h3>
+        <div class="file-structure">
+          <div class="folder">📂 student-management/</div>
+          <div class="indent folder">📂 src/</div>
+          <div class="indent indent folder">📂 components/</div>
+          <div class="indent indent indent file">📄 App.jsx <span class="badge badge-primary">Root Component</span></div>
+          <div class="indent indent indent file">📄 Header.jsx <span class="badge badge-accent">Navigation</span></div>
+          <div class="indent indent indent file">📄 StudentStats.jsx <span class="badge badge-accent">Statistics Display</span></div>
+          <div class="indent indent indent file">📄 StudentForm.jsx <span class="badge badge-warning">Add Student</span></div>
+          <div class="indent indent indent file">📄 StudentList.jsx <span class="badge badge-secondary">Container</span></div>
+          <div class="indent indent indent file">📄 StudentCard.jsx <span class="badge badge-secondary">Individual Card</span></div>
+          <div class="indent indent indent file">📄 Badge.jsx <span class="badge badge-danger">Reusable UI</span></div>
+          <div class="indent indent indent file">📄 Button.jsx <span class="badge badge-danger">Reusable UI</span></div>
+          <div class="indent indent file">📄 index.jsx</div>
+        </div>
+
+        <h3>🌳 Component Tree</h3>
+        <div class="tree-diagram">
+          <div class="tree-node">
+            <div class="tree-box root">
+              <strong style="color: var(--react);">App</strong>
+              <div style="font-size: 0.75rem; color: var(--muted);">State: students[]</div>
+            </div>
+            <div class="tree-connector"></div>
+            <div class="tree-children">
+              <div class="tree-node">
+                <div class="tree-box parent">Header</div>
+              </div>
+              <div class="tree-node">
+                <div class="tree-box parent">StudentStats</div>
+              </div>
+              <div class="tree-node">
+                <div class="tree-box parent">StudentForm</div>
+              </div>
+              <div class="tree-node">
+                <div class="tree-box parent">StudentList</div>
+                <div class="tree-connector"></div>
+                <div class="tree-children">
+                  <div class="tree-box child">StudentCard</div>
+                  <div class="tree-box child">StudentCard</div>
+                  <div class="tree-box child">StudentCard</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>📝 Component Implementation</h3>
+
+        <h4 style="color: var(--react); margin: 1.5rem 0 0.75rem;">1️⃣ App.jsx - Root Component (State Owner)</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; App.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> Header <span class="kw">from</span> <span class="str">'./Header'</span>;
+<span class="kw">import</span> StudentStats <span class="kw">from</span> <span class="str">'./StudentStats'</span>;
+<span class="kw">import</span> StudentForm <span class="kw">from</span> <span class="str">'./StudentForm'</span>;
+<span class="kw">import</span> StudentList <span class="kw">from</span> <span class="str">'./StudentList'</span>;
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="cmt">// State lives at the TOP (lifted state)</span>
+  <span class="kw">const</span> [students, setStudents] = <span class="hook">useState</span>([
+    { id: <span class="num">1</span>, name: <span class="str">'Alice Johnson'</span>, age: <span class="num">15</span>, grade: <span class="str">'A'</span>, subjects: [<span class="str">'Math'</span>, <span class="str">'Science'</span>] },
+    { id: <span class="num">2</span>, name: <span class="str">'Bob Smith'</span>, age: <span class="num">16</span>, grade: <span class="str">'B'</span>, subjects: [<span class="str">'English'</span>, <span class="str">'History'</span>] },
+    { id: <span class="num">3</span>, name: <span class="str">'Charlie Brown'</span>, age: <span class="num">14</span>, grade: <span class="str">'A'</span>, subjects: [<span class="str">'Math'</span>, <span class="str">'Art'</span>] },
+  ]);
+
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="cmt">//  HANDLER FUNCTIONS (passed as props to children)</span>
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> <span class="fn">handleAddStudent</span> = (newStudent) => {
+    <span class="fn">setStudents</span>(prev => [
+      ...prev,
+      { ...newStudent, id: Date.<span class="fn">now</span>(), subjects: [] }
+    ]);
+  };
+
+  <span class="kw">const</span> <span class="fn">handleDeleteStudent</span> = (id) => {
+    <span class="fn">setStudents</span>(prev => prev.<span class="fn">filter</span>(s => s.id !== id));
+  };
+
+  <span class="kw">const</span> <span class="fn">handleEditStudent</span> = (id, updates) => {
+    <span class="fn">setStudents</span>(prev => prev.<span class="fn">map</span>(s =>
+      s.id === id ? { ...s, ...updates } : s
+    ));
+  };
+
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="cmt">//  COMPUTED VALUES (derived from state)</span>
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> stats = {
+    total: students.length,
+    gradeA: students.<span class="fn">filter</span>(s => s.grade === <span class="str">'A'</span>).length,
+    gradeB: students.<span class="fn">filter</span>(s => s.grade === <span class="str">'B'</span>).length,
+    gradeC: students.<span class="fn">filter</span>(s => s.grade === <span class="str">'C'</span>).length,
+    avgAge: students.length > <span class="num">0</span>
+      ? (students.<span class="fn">reduce</span>((sum, s) => sum + s.age, <span class="num">0</span>) / students.length).<span class="fn">toFixed</span>(<span class="num">1</span>)
+      : <span class="num">0</span>
+  };
+
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="cmt">//  RENDER - Compose child components</span>
+  <span class="cmt">// ─────────────────────────────────────────────────────────────</span>
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;Header</span> <span class="attr">title</span>=<span class="str">"🎓 Student Management"</span> <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;main&gt;</span>
+        <span class="tag">&lt;StudentStats</span> <span class="attr">stats</span>={stats} <span class="tag">/&gt;</span>
+        
+        <span class="tag">&lt;StudentForm</span> <span class="attr">onAddStudent</span>={handleAddStudent} <span class="tag">/&gt;</span>
+        
+        <span class="tag">&lt;StudentList</span>
+          <span class="attr">students</span>={students}
+          <span class="attr">onDeleteStudent</span>={handleDeleteStudent}
+          <span class="attr">onEditStudent</span>={handleEditStudent}
+        <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/main&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> App;</pre></div>
+        </div>
+
+        <h4 style="color: var(--accent); margin: 1.5rem 0 0.75rem;">2️⃣ Header.jsx - Simple Presentational Component</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Header.jsx</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Header</span>({ title }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;header</span> <span class="attr">className</span>=<span class="str">"header"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>{title}<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;nav&gt;</span>
+        <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"#students"</span><span class="tag">&gt;</span>Students<span class="tag">&lt;/a&gt;</span>
+        <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="str">"#reports"</span><span class="tag">&gt;</span>Reports<span class="tag">&lt;/a&gt;</span>
+      <span class="tag">&lt;/nav&gt;</span>
+    <span class="tag">&lt;/header&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> Header;</pre></div>
+        </div>
+
+        <h4 style="color: var(--warning); margin: 1.5rem 0 0.75rem;">3️⃣ StudentStats.jsx - Display Computed Data</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentStats.jsx</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StudentStats</span>({ stats }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stats-container"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stat-card"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-value"</span><span class="tag">&gt;</span>{stats.total}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-label"</span><span class="tag">&gt;</span>Total Students<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stat-card"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-value"</span><span class="tag">&gt;</span>{stats.avgAge}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-label"</span><span class="tag">&gt;</span>Average Age<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stat-card grade-a"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-value"</span><span class="tag">&gt;</span>{stats.gradeA}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-label"</span><span class="tag">&gt;</span>Grade A<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stat-card grade-b"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-value"</span><span class="tag">&gt;</span>{stats.gradeB}<span class="tag">&lt;/span&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"stat-label"</span><span class="tag">&gt;</span>Grade B<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentStats;</pre></div>
+        </div>
+
+        <h4 style="color: var(--secondary); margin: 1.5rem 0 0.75rem;">4️⃣ StudentList.jsx - Container Component</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentList.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> StudentCard <span class="kw">from</span> <span class="str">'./StudentCard'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentList</span>({ students, onDeleteStudent, onEditStudent }) {
+  <span class="kw">if</span> (students.length === <span class="num">0</span>) {
+    <span class="kw">return</span> (
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"empty-state"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;p&gt;</span>No students yet. Add one above!<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    );
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"student-list"</span><span class="tag">&gt;</span>
+      {students.<span class="fn">map</span>(student => (
+        <span class="tag">&lt;StudentCard</span>
+          <span class="attr">key</span>={student.id}
+          <span class="attr">student</span>={student}
+          <span class="attr">onDelete</span>={() => <span class="fn">onDeleteStudent</span>(student.id)}
+          <span class="attr">onEdit</span>={(updates) => <span class="fn">onEditStudent</span>(student.id, updates)}
+        <span class="tag">/&gt;</span>
+      ))}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentList;</pre></div>
+        </div>
+
+        <h4 style="color: var(--danger); margin: 1.5rem 0 0.75rem;">5️⃣ StudentCard.jsx - Interactive Card Component</h4>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="hook">useState</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> Badge <span class="kw">from</span> <span class="str">'./Badge'</span>;
+<span class="kw">import</span> Button <span class="kw">from</span> <span class="str">'./Button'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, onDelete, onEdit }) {
+  <span class="kw">const</span> [isExpanded, setIsExpanded] = <span class="hook">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [isEditing, setIsEditing] = <span class="hook">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [editName, setEditName] = <span class="hook">useState</span>(student.name);
+
+  <span class="kw">const</span> <span class="fn">handleSave</span> = () => {
+    <span class="fn">onEdit</span>({ name: editName });
+    <span class="fn">setIsEditing</span>(<span class="kw">false</span>);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="str">`student-card </span>${isExpanded ? <span class="str">'expanded'</span> : <span class="str">''</span>}<span class="str">`</span>}<span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-header"</span> <span class="attr">onClick</span>={() => <span class="fn">setIsExpanded</span>(!isExpanded)}<span class="tag">&gt;</span>
+        {isEditing ? (
+          <span class="tag">&lt;input</span>
+            <span class="attr">value</span>={editName}
+            <span class="attr">onChange</span>={(e) => <span class="fn">setEditName</span>(e.target.value)}
+            <span class="attr">onClick</span>={(e) => e.<span class="fn">stopPropagation</span>()}
+          <span class="tag">/&gt;</span>
+        ) : (
+          <span class="tag">&lt;h3&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+        )}
+        <span class="tag">&lt;Badge</span> <span class="attr">grade</span>={student.grade} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      {isExpanded && (
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-details"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;p&gt;</span><span class="tag">&lt;strong&gt;</span>Age:<span class="tag">&lt;/strong&gt;</span> {student.age}<span class="tag">&lt;/p&gt;</span>
+          <span class="tag">&lt;p&gt;</span><span class="tag">&lt;strong&gt;</span>Subjects:<span class="tag">&lt;/strong&gt;</span> {student.subjects.join(<span class="str">', '</span>) || <span class="str">'None'</span>}<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      )}
+
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-actions"</span><span class="tag">&gt;</span>
+        {isEditing ? (
+          <span class="tag">&lt;Button</span> <span class="attr">variant</span>=<span class="str">"success"</span> <span class="attr">onClick</span>={handleSave}<span class="tag">&gt;</span>Save<span class="tag">&lt;/Button&gt;</span>
+        ) : (
+          <span class="tag">&lt;Button</span> <span class="attr">variant</span>=<span class="str">"primary"</span> <span class="attr">onClick</span>={() => <span class="fn">setIsEditing</span>(<span class="kw">true</span>)}<span class="tag">&gt;</span>Edit<span class="tag">&lt;/Button&gt;</span>
+        )}
+        <span class="tag">&lt;Button</span> <span class="attr">variant</span>=<span class="str">"danger"</span> <span class="attr">onClick</span>={onDelete}<span class="tag">&gt;</span>Delete<span class="tag">&lt;/Button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentCard;</pre></div>
+        </div>
+
+        <h4 style="color: #818cf8; margin: 1.5rem 0 0.75rem;">6️⃣ Reusable UI Components</h4>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Badge.jsx</div>
+            <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Badge</span>({ grade }) {
+  <span class="kw">const</span> colors = {
+    <span class="str">'A'</span>: <span class="str">'#22c55e'</span>,
+    <span class="str">'B'</span>: <span class="str">'#3b82f6'</span>,
+    <span class="str">'C'</span>: <span class="str">'#f59e0b'</span>,
+    <span class="str">'D'</span>: <span class="str">'#f97316'</span>,
+    <span class="str">'F'</span>: <span class="str">'#ef4444'</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;span</span>
+      <span class="attr">className</span>=<span class="str">"badge"</span>
+      <span class="attr">style</span>={{ backgroundColor: colors[grade] }}
+    <span class="tag">&gt;</span>
+      {grade}
+    <span class="tag">&lt;/span&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> Badge;</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Button.jsx</div>
+            <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Button</span>({ 
+  children, 
+  variant = <span class="str">'primary'</span>, 
+  onClick,
+  disabled = <span class="kw">false</span>
+}) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span>
+      <span class="attr">className</span>={<span class="str">`btn btn-</span>${variant}<span class="str">`</span>}
+      <span class="attr">onClick</span>={onClick}
+      <span class="attr">disabled</span>={disabled}
+    <span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> Button;</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Component Composition -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-composition">🏗️</div>
+        <div class="section-title">Part 6: Component Composition Patterns</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Building Complex UIs from Simple Components</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Composition</strong> is the primary way to build complex UIs in React. Instead of inheritance, we compose components together.
+        </p>
+
+        <h3>🧩 Composition Pattern 1: Children Prop</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          The <code>children</code> prop lets you pass any content between component tags.
+        </p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Card Component with children</div>
+          <div class="code-body"><pre><span class="cmt">// Generic Card container</span>
+<span class="kw">function</span> <span class="fn">Card</span>({ title, children }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card"</span><span class="tag">&gt;</span>
+      {title && <span class="tag">&lt;h3</span> <span class="attr">className</span>=<span class="str">"card-title"</span><span class="tag">&gt;</span>{title}<span class="tag">&lt;/h3&gt;</span>}
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-body"</span><span class="tag">&gt;</span>
+        {children}  <span class="cmt">{/* Whatever is passed between tags */}</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Using the Card with different content</span>
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="tag">&lt;Card</span> <span class="attr">title</span>=<span class="str">"Student Info"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Name: Alice<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Grade: A<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/Card&gt;</span>
+
+      <span class="tag">&lt;Card</span> <span class="attr">title</span>=<span class="str">"Actions"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button&gt;</span>Edit<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button&gt;</span>Delete<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/Card&gt;</span>
+
+      <span class="tag">&lt;Card&gt;</span>
+        <span class="tag">&lt;StudentForm /&gt;</span>  <span class="cmt">{/* Nesting components! */}</span>
+      <span class="tag">&lt;/Card&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Composition Pattern 2: Specialized Components</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          Create specific versions of generic components by wrapping them.
+        </p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Specialized Components</div>
+          <div class="code-body"><pre><span class="cmt">// Generic Dialog</span>
+<span class="kw">function</span> <span class="fn">Dialog</span>({ title, message, children }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"dialog"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>{title}<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{message}<span class="tag">&lt;/p&gt;</span>
+      {children}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Specialized: Confirmation Dialog</span>
+<span class="kw">function</span> <span class="fn">ConfirmDialog</span>({ onConfirm, onCancel }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;Dialog</span>
+      <span class="attr">title</span>=<span class="str">"Are you sure?"</span>
+      <span class="attr">message</span>=<span class="str">"This action cannot be undone."</span>
+    <span class="tag">&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onConfirm}<span class="tag">&gt;</span>Confirm<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onCancel}<span class="tag">&gt;</span>Cancel<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/Dialog&gt;</span>
+  );
+}
+
+<span class="cmt">// Specialized: Delete Student Dialog</span>
+<span class="kw">function</span> <span class="fn">DeleteStudentDialog</span>({ studentName, onDelete, onCancel }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;Dialog</span>
+      <span class="attr">title</span>=<span class="str">"Delete Student"</span>
+      <span class="attr">message</span>={<span class="str">`Delete </span>${studentName}<span class="str">? This cannot be undone.`</span>}
+    <span class="tag">&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">className</span>=<span class="str">"danger"</span> <span class="attr">onClick</span>={onDelete}<span class="tag">&gt;</span>Delete<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onCancel}<span class="tag">&gt;</span>Keep<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/Dialog&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📦 Composition Pattern 3: Compound Components</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          Related components that work together, often with shared state.
+        </p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Compound Component Pattern</div>
+          <div class="code-body"><pre><span class="cmt">// Main component with sub-components</span>
+<span class="kw">function</span> <span class="fn">Card</span>({ children }) {
+  <span class="kw">return</span> <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card"</span><span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>;
+}
+
+<span class="cmt">// Sub-components attached to main component</span>
+Card.Header = <span class="kw">function</span> <span class="fn">CardHeader</span>({ children }) {
+  <span class="kw">return</span> <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-header"</span><span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>;
+};
+
+Card.Body = <span class="kw">function</span> <span class="fn">CardBody</span>({ children }) {
+  <span class="kw">return</span> <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-body"</span><span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>;
+};
+
+Card.Footer = <span class="kw">function</span> <span class="fn">CardFooter</span>({ children }) {
+  <span class="kw">return</span> <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-footer"</span><span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>;
+};
+
+<span class="cmt">// Usage - Very flexible and readable!</span>
+<span class="kw">function</span> <span class="fn">StudentProfile</span>({ student }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;Card&gt;</span>
+      <span class="tag">&lt;Card.Header&gt;</span>
+        <span class="tag">&lt;h3&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;Badge</span> <span class="attr">grade</span>={student.grade} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/Card.Header&gt;</span>
+      
+      <span class="tag">&lt;Card.Body&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Age: {student.age}<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Subjects: {student.subjects.length}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/Card.Body&gt;</span>
+      
+      <span class="tag">&lt;Card.Footer&gt;</span>
+        <span class="tag">&lt;Button&gt;</span>Edit<span class="tag">&lt;/Button&gt;</span>
+        <span class="tag">&lt;Button</span> <span class="attr">variant</span>=<span class="str">"danger"</span><span class="tag">&gt;</span>Delete<span class="tag">&lt;/Button&gt;</span>
+      <span class="tag">&lt;/Card.Footer&gt;</span>
+    <span class="tag">&lt;/Card&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Composition Over Inheritance</div>
+          <div class="tip-content">
+            React recommends composition over inheritance. Instead of extending classes, wrap components and pass data via props. This is more flexible and easier to understand.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Component Communication -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-communication">🔗</div>
+        <div class="section-title">Part 7: Component Communication</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>How Components Talk to Each Other</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Components communicate through <strong>props</strong> (parent to child) and <strong>callback functions</strong> (child to parent).
+        </p>
+
+        <h3>⬇️ Parent → Child (Props)</h3>
+        <div class="flow-diagram">
+          <div class="flow-box" style="border-color: var(--react);">
+            <div style="font-weight: 600; color: var(--react);">Parent</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Has data</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div style="text-align: center; color: var(--accent);">
+            <div style="font-size: 0.9rem;">Props</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">student={data}</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color: var(--accent);">
+            <div style="font-weight: 600; color: var(--accent);">Child</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Receives & displays</div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Props: Parent → Child</div>
+          <div class="code-body"><pre><span class="cmt">// Parent passes data DOWN via props</span>
+<span class="kw">function</span> <span class="fn">Parent</span>() {
+  <span class="kw">const</span> student = { name: <span class="str">'Alice'</span>, grade: <span class="str">'A'</span> };
+  
+  <span class="kw">return</span> <span class="tag">&lt;Child</span> <span class="attr">student</span>={student} <span class="tag">/&gt;</span>;
+}
+
+<span class="cmt">// Child receives and uses the data</span>
+<span class="kw">function</span> <span class="fn">Child</span>({ student }) {
+  <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>{student.name} - {student.grade}<span class="tag">&lt;/p&gt;</span>;
+}</pre></div>
+        </div>
+
+        <h3>⬆️ Child → Parent (Callbacks)</h3>
+        <div class="flow-diagram">
+          <div class="flow-box" style="border-color: var(--accent);">
+            <div style="font-weight: 600; color: var(--accent);">Child</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">User clicks</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div style="text-align: center; color: var(--warning);">
+            <div style="font-size: 0.9rem;">Callback</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">onDelete(id)</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color: var(--react);">
+            <div style="font-weight: 600; color: var(--react);">Parent</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Updates state</div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Callbacks: Child → Parent</div>
+          <div class="code-body"><pre><span class="cmt">// Parent defines handler and passes it as prop</span>
+<span class="kw">function</span> <span class="fn">Parent</span>() {
+  <span class="kw">const</span> [students, setStudents] = <span class="hook">useState</span>([...]);
+
+  <span class="kw">const</span> <span class="fn">handleDelete</span> = (id) => {
+    <span class="fn">setStudents</span>(students.<span class="fn">filter</span>(s => s.id !== id));
+  };
+
+  <span class="kw">return</span> <span class="tag">&lt;Child</span> <span class="attr">onDelete</span>={handleDelete} <span class="tag">/&gt;</span>;
+}
+
+<span class="cmt">// Child calls the callback to notify parent</span>
+<span class="kw">function</span> <span class="fn">Child</span>({ student, onDelete }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{student.name}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">onDelete</span>(student.id)}<span class="tag">&gt;</span>
+        Delete
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📊 Complete Data Flow Diagram</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Data Flow in Student Management App</div>
+          <div class="code-body"><pre style="color: var(--muted);">
+┌─────────────────────────────────────────────────────────────────────┐
+│                            <span style="color: var(--react);">APP</span>                                     │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │ <span style="color: var(--accent);">State:</span> students = [{id:1, name:'Alice'}, {id:2, name:'Bob'}]  │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+│                              │                                       │
+│         ┌────────────────────┼────────────────────┐                 │
+│         │                    │                    │                 │
+│         ▼                    ▼                    ▼                 │
+│  ┌─────────────┐    ┌────────────────┐    ┌─────────────────┐       │
+│  │ <span style="color: var(--warning);">StudentStats</span> │    │  <span style="color: var(--secondary);">StudentForm</span>    │    │  <span style="color: var(--accent);">StudentList</span>    │       │
+│  │             │    │                │    │                 │       │
+│  │ <span style="color: var(--primary);">Props:</span>      │    │ <span style="color: var(--primary);">Props:</span>         │    │ <span style="color: var(--primary);">Props:</span>          │       │
+│  │ stats={...} │    │ onAdd={fn}     │    │ students=[...]  │       │
+│  │             │    │                │    │ onDelete={fn}   │       │
+│  │ <span style="color: var(--muted);">(displays)</span>  │    │ <span style="color: var(--warning);">⬆️ Calls</span>      │    │                 │       │
+│  └─────────────┘    │ <span style="color: var(--warning);">onAdd(data)</span>    │    │        │        │       │
+│                     └────────────────┘    │        ▼        │       │
+│                                           │  ┌───────────┐  │       │
+│                                           │  │<span style="color: var(--danger);">StudentCard</span>│  │       │
+│                                           │  │           │  │       │
+│         <span style="color: var(--warning);">User clicks "Delete"</span>              │  │ <span style="color: var(--warning);">⬆️ Calls</span> │  │       │
+│               │                           │  │onDelete() │  │       │
+│               │                           │  └───────────┘  │       │
+│               ▼                           └─────────────────┘       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │        <span style="color: var(--warning);">handleDelete(id)</span> → <span style="color: var(--accent);">setStudents(filtered)</span>              │ │
+│  │                              │                                  │ │
+│  │                              ▼                                  │ │
+│  │              <span style="color: var(--react);">React re-renders with new state!</span>                │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+
+<span style="color: var(--primary);">Legend:</span>
+  <span style="color: var(--accent);">───▶</span> Props (data down)
+  <span style="color: var(--warning);">⬆️</span>   Callbacks (events up)
+</pre></div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 Key Communication Rules</div>
+          <div class="note-content">
+            1. <strong>Props flow down:</strong> Parent → Child<br>
+            2. <strong>Events flow up:</strong> Child → Parent (via callbacks)<br>
+            3. <strong>State lives at the lowest common ancestor</strong> of components that need it<br>
+            4. <strong>Lift state up</strong> when siblings need to share data
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Complete Workflow -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon icon-workflow">🔄</div>
+        <div class="section-title">Part 8: Complete Component Workflow - Step by Step</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Understanding the Component Lifecycle</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Let's trace through exactly what happens when a user adds a new student in our app.
+        </p>
+
+        <h3>📌 Workflow: Adding a Student</h3>
+
+        <div class="workflow-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>User Types in StudentForm</h4>
+            <p style="color: var(--muted);">Local state in StudentForm updates with each keystroke</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// StudentForm's local state changes</span>
+<span class="fn">setName</span>(<span class="str">"Emma Watson"</span>);  <span class="cmt">// Re-renders just StudentForm</span>
+<span class="fn">setAge</span>(<span class="str">"14"</span>);
+<span class="fn">setGrade</span>(<span class="str">"A"</span>);</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>User Clicks "Add Student" Button</h4>
+            <p style="color: var(--muted);">handleSubmit is triggered in StudentForm</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="kw">const</span> <span class="fn">handleSubmit</span> = (e) => {
+  e.<span class="fn">preventDefault</span>();
+  <span class="cmt">// Create student object from local state</span>
+  <span class="kw">const</span> newStudent = { name, age: <span class="fn">parseInt</span>(age), grade };
+  
+  <span class="cmt">// Call parent's callback (passed as prop)</span>
+  <span class="fn">onAddStudent</span>(newStudent);  <span class="cmt">// → Goes UP to App</span>
+};</pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>App's handleAddStudent Executes</h4>
+            <p style="color: var(--muted);">The callback in App receives the new student data</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// In App.jsx</span>
+<span class="kw">const</span> <span class="fn">handleAddStudent</span> = (newStudent) => {
+  <span class="fn">setStudents</span>(prev => [
+    ...prev,
+    { ...newStudent, id: Date.<span class="fn">now</span>(), subjects: [] }
+  ]);
+};
+
+<span class="cmt">// State BEFORE: [{id:1, name:'Alice'}, {id:2, name:'Bob'}]</span>
+<span class="cmt">// State AFTER:  [{id:1, name:'Alice'}, {id:2, name:'Bob'}, {id:3, name:'Emma'}]</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h4>React Schedules Re-render</h4>
+            <p style="color: var(--muted);">setStudents triggers React to plan an update</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// React's internal process:</span>
+<span class="cmt">// 1. State changed in App</span>
+<span class="cmt">// 2. App needs to re-render</span>
+<span class="cmt">// 3. All children receive new props</span>
+<span class="cmt">// 4. Children that received different props re-render</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <h4>Component Tree Re-renders</h4>
+            <p style="color: var(--muted);">React efficiently updates only what changed</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// What gets re-rendered:</span>
+✅ App          <span class="cmt">// State changed here</span>
+✅ StudentStats <span class="cmt">// stats prop changed (total: 2 → 3)</span>
+✅ StudentList  <span class="cmt">// students prop changed (new item)</span>
+✅ StudentCard  <span class="cmt">// New card for Emma created</span>
+❌ Header       <span class="cmt">// Props didn't change, React skips!</span>
+❌ StudentForm  <span class="cmt">// onAddStudent reference same, skips!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <div class="step-number">6</div>
+          <div class="step-content">
+            <h4>DOM Updates</h4>
+            <p style="color: var(--muted);">React's Virtual DOM diffing updates only necessary DOM nodes</p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">// Virtual DOM comparison:</span>
+<span class="cmt">// Old: &lt;div&gt;2 cards&lt;/div&gt;</span>
+<span class="cmt">// New: &lt;div&gt;3 cards&lt;/div&gt;</span>
+
+<span class="cmt">// Real DOM updates:</span>
+<span class="cmt">// 1. StudentStats total text: "2" → "3"</span>
+<span class="cmt">// 2. StudentList: Append new StudentCard element</span>
+<span class="cmt">// 3. Everything else stays unchanged!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 2rem;">📊 Complete Component Lifecycle</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Component Lifecycle Overview</div>
+          <div class="code-body"><pre style="color: var(--muted);">
+┌─────────────────────────────────────────────────────────────────────┐
+│                    <span style="color: var(--react);">COMPONENT LIFECYCLE</span>                             │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  <span style="color: var(--accent);">1. MOUNTING (Component appears)</span>                                  │
+│  ─────────────────────────────────                                  │
+│  • Component function called for the first time                     │
+│  • useState initializes with initial values                         │
+│  • JSX returned → React creates DOM elements                        │
+│  • useEffect runs AFTER paint ([] dependency = once)                │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  <span style="color: var(--warning);">2. UPDATING (Props or State change)</span>                              │
+│  ────────────────────────────────────                               │
+│  • New props received OR setState called                            │
+│  • Component function re-runs                                       │
+│  • useState returns CURRENT values (not initial!)                   │
+│  • New JSX compared with previous (Virtual DOM diff)                │
+│  • Only changed DOM nodes updated                                   │
+│  • useEffect cleanup runs (if deps changed)                         │
+│  • useEffect runs again (if deps changed)                           │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  <span style="color: var(--danger);">3. UNMOUNTING (Component removed)</span>                                │
+│  ──────────────────────────────────                                 │
+│  • Parent stops rendering this component                            │
+│  • useEffect cleanup runs (return function)                         │
+│  • DOM elements removed                                             │
+│  • Component instance destroyed                                     │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+</pre></div>
+        </div>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--react); margin-bottom: 0.75rem;">🎯 Key Takeaways</h4>
+          <ul style="color: var(--muted); padding-left: 1.5rem;">
+            <li><strong>Components are functions</strong> that return JSX</li>
+            <li><strong>Props</strong> flow down (parent → child)</li>
+            <li><strong>Events</strong> flow up (child → parent via callbacks)</li>
+            <li><strong>State changes</strong> trigger re-renders</li>
+            <li><strong>React optimizes</strong> by only updating changed DOM nodes</li>
+            <li><strong>Composition</strong> is preferred over inheritance</li>
+            <li><strong>Functional components + Hooks</strong> are the modern standard</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(97,218,251,0.1), rgba(52,211,153,0.05)); border-radius: 16px; border: 1px solid var(--border);">
+      <h3 style="color: var(--react); margin-bottom: 0.5rem;">🎉 You've Mastered React Components!</h3>
+      <p style="color: var(--muted);">From basic structure to advanced composition - You're ready to build amazing UIs!</p>
+      <div style="margin-top: 1rem;">
+        <span class="badge badge-primary" style="margin: 0.25rem;">Component Basics</span>
+        <span class="badge badge-accent" style="margin: 0.25rem;">JSX</span>
+        <span class="badge badge-secondary" style="margin: 0.25rem;">Props & State</span>
+        <span class="badge badge-warning" style="margin: 0.25rem;">Composition</span>
+        <span class="badge badge-danger" style="margin: 0.25rem;">Communication</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

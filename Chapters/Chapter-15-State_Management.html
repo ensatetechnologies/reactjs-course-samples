@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State Management - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb; --server: #f97316; --client: #8b5cf6; --state: #10b981;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(16,185,129,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(97,218,251,0.1) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--state), var(--react)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-state { background: var(--state); color: white; }
+    .badge-server { background: var(--server); color: white; }
+    .badge-client { background: var(--client); color: white; }
+    .badge-react { background: #20232a; color: var(--react); }
+    
+    .part-divider { background: linear-gradient(135deg, var(--surface2), var(--surface)); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem 2rem; margin: 2.5rem 0; text-align: center; }
+    .part-divider h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .part-divider p { color: var(--muted); }
+    .part-divider.server { border-color: var(--server); background: linear-gradient(135deg, rgba(249,115,22,0.1), transparent); }
+    .part-divider.server h2 { color: var(--server); }
+    .part-divider.client { border-color: var(--client); background: linear-gradient(135deg, rgba(139,92,246,0.1), transparent); }
+    .part-divider.client h2 { color: var(--client); }
+    .part-divider.react { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.1), transparent); }
+    .part-divider.react h2 { color: var(--react); }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; }
+    .icon-intro { background: linear-gradient(135deg, var(--state), #059669); color: white; }
+    .icon-server { background: linear-gradient(135deg, var(--server), #ea580c); color: white; }
+    .icon-client { background: linear-gradient(135deg, var(--client), #7c3aed); color: white; }
+    .icon-react { background: linear-gradient(135deg, var(--react), #0891b2); color: #000; }
+    .icon-usestate { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+    .icon-reducer { background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; }
+    .icon-context { background: linear-gradient(135deg, var(--warning), #d97706); color: white; }
+    .icon-lifting { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    .icon-global { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
+    .icon-patterns { background: linear-gradient(135deg, #ec4899, #db2777); color: white; }
+    .icon-project { background: linear-gradient(135deg, var(--primary), #0891b2); color: #000; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-badge { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .prop { color: #e5c07b; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+    .card-server { border-color: var(--server); background: linear-gradient(135deg, rgba(249,115,22,0.08), transparent); }
+    .card-client { border-color: var(--client); background: linear-gradient(135deg, rgba(139,92,246,0.08), transparent); }
+    .card-react { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.08), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--state); box-shadow: 0 0 20px rgba(16,185,129,0.2); }
+    .flow-box.server { border-color: var(--server); background: linear-gradient(135deg, rgba(249,115,22,0.1), transparent); }
+    .flow-box.client { border-color: var(--client); background: linear-gradient(135deg, rgba(139,92,246,0.1), transparent); }
+    .flow-box.react { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.1), transparent); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    .highlight-box { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(97,218,251,0.05)); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    
+    .state-diagram { background: var(--surface2); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    
+    h2 { color: var(--state); margin-bottom: 1rem; }
+    h3 { color: var(--primary); margin: 1.5rem 0 1rem; }
+    
+    .method-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; transition: all 0.3s; }
+    .method-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .method-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .method-name { font-weight: 600; margin-bottom: 0.25rem; }
+    .method-desc { color: var(--muted); font-size: 0.85rem; }
+    
+    .state-flow { display: flex; flex-direction: column; gap: 1rem; padding: 1.5rem; background: var(--surface2); border-radius: 12px; }
+    .state-flow-row { display: flex; align-items: center; gap: 1rem; }
+    .state-flow-label { min-width: 100px; color: var(--muted); font-size: 0.9rem; }
+    .state-flow-content { flex: 1; padding: 0.75rem 1rem; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-state">🔄 State</span>
+        <span class="hero-badge badge-server">🖥️ Server</span>
+        <span class="hero-badge badge-client">💻 Client</span>
+        <span class="hero-badge badge-react">⚛️ React</span>
+      </div>
+      <h1>State Management</h1>
+      <p>Complete Guide: From Web Fundamentals to React Mastery</p>
+    </div>
+
+    <!-- ==================== PART 1: INTRODUCTION ==================== -->
+    <div class="part-divider">
+      <h2>📚 Part 1: Introduction to State</h2>
+      <p>Understanding what state is and why we need to manage it</p>
+    </div>
+
+    <!-- Section 1: What is State -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-intro">💡</div>
+        <div class="section-title">What is State?</div>
+        <span class="section-badge" style="background: rgba(16,185,129,0.2); color: var(--state);">Fundamentals</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Understanding State in Web Applications</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>State</strong> is data that changes over time and affects what we see or how the application behaves.
+          It's the "memory" of your application at any given moment.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--state); margin-bottom: 0.75rem;">🎯 Simple Definition</h4>
+          <p style="color: var(--text); font-size: 1.1rem;">
+            <strong>State = Data that can change</strong>
+          </p>
+          <p style="color: var(--muted); margin-top: 0.5rem;">
+            If data never changes, it's just static content. If it CAN change (user input, API response, time), it's state!
+          </p>
+        </div>
+
+        <h3>🌍 Real-World Examples of State</h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4 style="color: var(--primary);">🛒 Shopping Cart</h4>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1rem;">
+              <li>Items in cart</li>
+              <li>Quantities</li>
+              <li>Total price</li>
+              <li>Applied coupons</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary);">👤 User Session</h4>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1rem;">
+              <li>Logged in / out</li>
+              <li>User profile data</li>
+              <li>Permissions</li>
+              <li>Preferences</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--accent);">📝 Form Data</h4>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1rem;">
+              <li>Input values</li>
+              <li>Validation errors</li>
+              <li>Submit status</li>
+              <li>Dirty/touched fields</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>📊 Types of State</h3>
+        <div class="grid-2">
+          <div class="card card-server">
+            <h4 style="color: var(--server); margin-bottom: 0.75rem;">🖥️ Server State</h4>
+            <p style="color: var(--muted); margin-bottom: 0.75rem;">Data that lives on the server and needs to be fetched.</p>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1rem;">
+              <li>Database records</li>
+              <li>User data from API</li>
+              <li>Search results</li>
+              <li>Third-party data</li>
+            </ul>
+            <p style="color: var(--server); font-size: 0.85rem; margin-top: 0.75rem;">
+              <strong>Challenge:</strong> Caching, syncing, stale data
+            </p>
+          </div>
+          <div class="card card-client">
+            <h4 style="color: var(--client); margin-bottom: 0.75rem;">💻 Client State</h4>
+            <p style="color: var(--muted); margin-bottom: 0.75rem;">Data that exists only in the browser/app.</p>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1rem;">
+              <li>UI state (modal open/closed)</li>
+              <li>Form inputs</li>
+              <li>Selected items</li>
+              <li>Theme preference</li>
+            </ul>
+            <p style="color: var(--client); font-size: 0.85rem; margin-top: 0.75rem;">
+              <strong>Challenge:</strong> Sharing between components
+            </p>
+          </div>
+        </div>
+
+        <h3>🔄 The State Lifecycle</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📥</div>
+            <div style="font-weight: 600;">Initialize</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Set default value</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📖</div>
+            <div style="font-weight: 600;">Read</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Display in UI</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">✏️</div>
+            <div style="font-weight: 600; color: var(--state);">Update</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">User action / Event</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">🔁</div>
+            <div style="font-weight: 600;">Re-render</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">UI updates</div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Why State Management Matters</div>
+          <div class="tip-content">
+            Without proper state management, your app becomes:<br>
+            • <strong>Buggy</strong> - Data gets out of sync<br>
+            • <strong>Hard to debug</strong> - Can't track what changed<br>
+            • <strong>Unmaintainable</strong> - Spaghetti code everywhere<br>
+            • <strong>Slow</strong> - Unnecessary re-renders
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PART 2: SERVER-SIDE STATE ==================== -->
+    <div class="part-divider server">
+      <h2>🖥️ Part 2: Server-Side State Management</h2>
+      <p>Traditional web applications with server-managed state</p>
+    </div>
+
+    <!-- Section 2: Server-Side State -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-server">🖥️</div>
+        <div class="section-title">Server-Side State Management</div>
+        <span class="section-badge" style="background: rgba(249,115,22,0.2); color: var(--server);">Server</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>How Traditional Web Apps Manage State</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          In traditional (server-rendered) web applications, the server is the "source of truth" for most state.
+          The browser just displays what the server sends.
+        </p>
+
+        <h3>📊 Server-Side State Flow</h3>
+        <div class="flow-diagram">
+          <div class="flow-box client">
+            <div style="font-size: 1.5rem;">👤</div>
+            <div style="font-weight: 600;">User</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Makes request</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box server">
+            <div style="font-size: 1.5rem;">🖥️</div>
+            <div style="font-weight: 600; color: var(--server);">Server</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Processes request</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">💾</div>
+            <div style="font-weight: 600;">Database</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Stores state</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box client">
+            <div style="font-size: 1.5rem;">📄</div>
+            <div style="font-weight: 600;">HTML Page</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Sent to browser</div>
+          </div>
+        </div>
+
+        <h3>🍪 1. Sessions & Cookies</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          Sessions store user data on the server. Cookies identify the user's session.
+        </p>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Server (Node.js/Express)</div>
+            <div class="code-body"><pre><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> session = <span class="fn">require</span>(<span class="str">'express-session'</span>);
+
+<span class="kw">const</span> app = <span class="fn">express</span>();
+
+<span class="cmt">// Setup session middleware</span>
+app.<span class="fn">use</span>(<span class="fn">session</span>({
+  <span class="prop">secret</span>: <span class="str">'your-secret-key'</span>,
+  <span class="prop">resave</span>: <span class="kw">false</span>,
+  <span class="prop">saveUninitialized</span>: <span class="kw">true</span>,
+  <span class="prop">cookie</span>: { <span class="prop">maxAge</span>: <span class="num">24</span> * <span class="num">60</span> * <span class="num">60</span> * <span class="num">1000</span> } <span class="cmt">// 1 day</span>
+}));
+
+<span class="cmt">// Login - Store user in session</span>
+app.<span class="fn">post</span>(<span class="str">'/login'</span>, (req, res) => {
+  <span class="kw">const</span> { username, password } = req.body;
+  
+  <span class="cmt">// Verify credentials...</span>
+  <span class="kw">if</span> (validUser) {
+    <span class="cmt">// Store state in session (server-side)</span>
+    req.session.user = {
+      <span class="prop">id</span>: user.id,
+      <span class="prop">name</span>: user.name,
+      <span class="prop">role</span>: user.role
+    };
+    req.session.isLoggedIn = <span class="kw">true</span>;
+    
+    res.<span class="fn">redirect</span>(<span class="str">'/dashboard'</span>);
+  }
+});
+
+<span class="cmt">// Access session state</span>
+app.<span class="fn">get</span>(<span class="str">'/dashboard'</span>, (req, res) => {
+  <span class="kw">if</span> (!req.session.isLoggedIn) {
+    <span class="kw">return</span> res.<span class="fn">redirect</span>(<span class="str">'/login'</span>);
+  }
+  
+  <span class="cmt">// Read state from session</span>
+  <span class="kw">const</span> userName = req.session.user.name;
+  res.<span class="fn">render</span>(<span class="str">'dashboard'</span>, { userName });
+});</pre></div>
+          </div>
+          <div class="card card-server">
+            <h4 style="color: var(--server); margin-bottom: 0.75rem;">🍪 How It Works</h4>
+            <ol style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>User logs in</li>
+              <li>Server creates session, stores data</li>
+              <li>Server sends session ID as cookie</li>
+              <li>Browser stores cookie</li>
+              <li>Every request sends cookie</li>
+              <li>Server identifies user by session ID</li>
+            </ol>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(249,115,22,0.1); border-radius: 8px;">
+              <strong style="color: var(--server);">Session State Examples:</strong>
+              <ul style="color: var(--muted); font-size: 0.85rem; padding-left: 1rem; margin-top: 0.5rem;">
+                <li>User authentication</li>
+                <li>Shopping cart (temporary)</li>
+                <li>Form wizard progress</li>
+                <li>Flash messages</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <h3>💾 2. Database State</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">
+          Permanent data stored in databases - the "permanent memory" of your application.
+        </p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Database State Example</div>
+          <div class="code-body"><pre><span class="cmt">// Student Management - Server manages all state in database</span>
+
+<span class="cmt">// CREATE - Add new state</span>
+app.<span class="fn">post</span>(<span class="str">'/students'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { name, age, grade } = req.body;
+  
+  <span class="cmt">// State is stored in database</span>
+  <span class="kw">const</span> student = <span class="kw">await</span> db.<span class="fn">query</span>(
+    <span class="str">'INSERT INTO students (name, age, grade) VALUES ($1, $2, $3) RETURNING *'</span>,
+    [name, age, grade]
+  );
+  
+  <span class="cmt">// Redirect to page that shows updated state</span>
+  res.<span class="fn">redirect</span>(<span class="str">'/students'</span>);
+});
+
+<span class="cmt">// READ - Get current state</span>
+app.<span class="fn">get</span>(<span class="str">'/students'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="cmt">// Fetch state from database</span>
+  <span class="kw">const</span> students = <span class="kw">await</span> db.<span class="fn">query</span>(<span class="str">'SELECT * FROM students ORDER BY name'</span>);
+  
+  <span class="cmt">// Render HTML with current state</span>
+  res.<span class="fn">render</span>(<span class="str">'students/list'</span>, { 
+    <span class="prop">students</span>: students.rows,
+    <span class="prop">count</span>: students.rows.length
+  });
+});
+
+<span class="cmt">// UPDATE - Modify state</span>
+app.<span class="fn">put</span>(<span class="str">'/students/:id'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { id } = req.params;
+  <span class="kw">const</span> { name, grade } = req.body;
+  
+  <span class="kw">await</span> db.<span class="fn">query</span>(
+    <span class="str">'UPDATE students SET name = $1, grade = $2 WHERE id = $3'</span>,
+    [name, grade, id]
+  );
+  
+  res.<span class="fn">redirect</span>(<span class="str">`/students/${id}`</span>);
+});
+
+<span class="cmt">// DELETE - Remove state</span>
+app.<span class="fn">delete</span>(<span class="str">'/students/:id'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">await</span> db.<span class="fn">query</span>(<span class="str">'DELETE FROM students WHERE id = $1'</span>, [req.params.id]);
+  res.<span class="fn">redirect</span>(<span class="str">'/students'</span>);
+});</pre></div>
+        </div>
+
+        <h3>⚖️ Server-Side State Pros & Cons</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ Advantages</h4>
+            <ul style="color: var(--muted); padding-left: 1rem; font-size: 0.9rem;">
+              <li><strong>Security</strong> - Sensitive data never leaves server</li>
+              <li><strong>Consistency</strong> - Single source of truth</li>
+              <li><strong>Persistence</strong> - Survives browser close</li>
+              <li><strong>Shared</strong> - Same state across devices</li>
+              <li><strong>SEO friendly</strong> - Full HTML sent to browser</li>
+            </ul>
+          </div>
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ Disadvantages</h4>
+            <ul style="color: var(--muted); padding-left: 1rem; font-size: 0.9rem;">
+              <li><strong>Full page reloads</strong> - Every action reloads page</li>
+              <li><strong>Slower UX</strong> - Network round-trip for changes</li>
+              <li><strong>Server load</strong> - All processing on server</li>
+              <li><strong>No offline</strong> - Requires connection</li>
+              <li><strong>Less interactive</strong> - Limited real-time updates</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 When Server-Side State is Best</div>
+          <div class="note-content">
+            • User authentication & authorization<br>
+            • Sensitive data that shouldn't be in browser<br>
+            • Data that multiple users need to see in sync<br>
+            • SEO-critical content (blogs, e-commerce products)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PART 3: CLIENT-SIDE STATE ==================== -->
+    <div class="part-divider client">
+      <h2>💻 Part 3: Client-Side State Management</h2>
+      <p>State managed in the browser with JavaScript</p>
+    </div>
+
+    <!-- Section 3: Client-Side State -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-client">💻</div>
+        <div class="section-title">Client-Side State Management (Vanilla JS)</div>
+        <span class="section-badge" style="background: rgba(139,92,246,0.2); color: var(--client);">Client</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Managing State in the Browser</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          With JavaScript, we can manage state directly in the browser for faster, more interactive experiences.
+          No need to reload the page for every change!
+        </p>
+
+        <h3>🗃️ Client Storage Options</h3>
+        <div class="grid-4">
+          <div class="method-card">
+            <div class="method-icon">📦</div>
+            <div class="method-name">Variables</div>
+            <div class="method-desc">In-memory, lost on refresh</div>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">💾</div>
+            <div class="method-name">localStorage</div>
+            <div class="method-desc">Persistent, 5-10MB</div>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">🔒</div>
+            <div class="method-name">sessionStorage</div>
+            <div class="method-desc">Tab-scoped, 5-10MB</div>
+          </div>
+          <div class="method-card">
+            <div class="method-icon">🗄️</div>
+            <div class="method-name">IndexedDB</div>
+            <div class="method-desc">Large data, async</div>
+          </div>
+        </div>
+
+        <h3>📦 1. JavaScript Variables (In-Memory State)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; In-Memory State</div>
+          <div class="code-body"><pre><span class="cmt">// Simple state management with vanilla JS</span>
+
+<span class="cmt">// 1. Define state</span>
+<span class="kw">let</span> state = {
+  <span class="prop">students</span>: [],
+  <span class="prop">selectedId</span>: <span class="kw">null</span>,
+  <span class="prop">isLoading</span>: <span class="kw">false</span>,
+  <span class="prop">filter</span>: <span class="str">'all'</span>
+};
+
+<span class="cmt">// 2. Update state</span>
+<span class="kw">function</span> <span class="fn">addStudent</span>(student) {
+  state.students.<span class="fn">push</span>(student);
+  <span class="fn">render</span>();  <span class="cmt">// Must manually update UI!</span>
+}
+
+<span class="kw">function</span> <span class="fn">selectStudent</span>(id) {
+  state.selectedId = id;
+  <span class="fn">render</span>();
+}
+
+<span class="kw">function</span> <span class="fn">setFilter</span>(filter) {
+  state.filter = filter;
+  <span class="fn">render</span>();
+}
+
+<span class="cmt">// 3. Render UI based on state</span>
+<span class="kw">function</span> <span class="fn">render</span>() {
+  <span class="kw">const</span> list = document.<span class="fn">getElementById</span>(<span class="str">'student-list'</span>);
+  
+  <span class="cmt">// Filter students based on state</span>
+  <span class="kw">let</span> filtered = state.students;
+  <span class="kw">if</span> (state.filter !== <span class="str">'all'</span>) {
+    filtered = state.students.<span class="fn">filter</span>(s => s.grade === state.filter);
+  }
+  
+  <span class="cmt">// Generate HTML from state</span>
+  list.innerHTML = filtered.<span class="fn">map</span>(student => <span class="str">`
+    &lt;div class="student ${student.id === state.selectedId ? 'selected' : ''}"
+         onclick="selectStudent(${student.id})"&gt;
+      &lt;h3&gt;${student.name}&lt;/h3&gt;
+      &lt;span&gt;Grade: ${student.grade}&lt;/span&gt;
+    &lt;/div&gt;
+  `</span>).<span class="fn">join</span>(<span class="str">''</span>);
+}
+
+<span class="cmt">// Problem: State is lost when page refreshes!</span></pre></div>
+        </div>
+
+        <h3>💾 2. localStorage (Persistent State)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; localStorage Example</div>
+          <div class="code-body"><pre><span class="cmt">// localStorage persists even after browser closes</span>
+
+<span class="cmt">// SAVE state</span>
+<span class="kw">function</span> <span class="fn">saveState</span>() {
+  localStorage.<span class="fn">setItem</span>(<span class="str">'students'</span>, JSON.<span class="fn">stringify</span>(state.students));
+  localStorage.<span class="fn">setItem</span>(<span class="str">'theme'</span>, state.theme);
+}
+
+<span class="cmt">// LOAD state</span>
+<span class="kw">function</span> <span class="fn">loadState</span>() {
+  <span class="kw">const</span> saved = localStorage.<span class="fn">getItem</span>(<span class="str">'students'</span>);
+  <span class="kw">if</span> (saved) {
+    state.students = JSON.<span class="fn">parse</span>(saved);
+  }
+  
+  state.theme = localStorage.<span class="fn">getItem</span>(<span class="str">'theme'</span>) || <span class="str">'light'</span>;
+}
+
+<span class="cmt">// DELETE state</span>
+<span class="kw">function</span> <span class="fn">clearState</span>() {
+  localStorage.<span class="fn">removeItem</span>(<span class="str">'students'</span>);
+  <span class="cmt">// or clear everything:</span>
+  localStorage.<span class="fn">clear</span>();
+}
+
+<span class="cmt">// Initialize on page load</span>
+document.<span class="fn">addEventListener</span>(<span class="str">'DOMContentLoaded'</span>, () => {
+  <span class="fn">loadState</span>();
+  <span class="fn">render</span>();
+});
+
+<span class="cmt">// Save when state changes</span>
+<span class="kw">function</span> <span class="fn">addStudent</span>(student) {
+  state.students.<span class="fn">push</span>(student);
+  <span class="fn">saveState</span>();  <span class="cmt">// Persist!</span>
+  <span class="fn">render</span>();
+}</pre></div>
+        </div>
+
+        <h3>🔒 3. sessionStorage (Tab-Scoped State)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; sessionStorage Example</div>
+          <div class="code-body"><pre><span class="cmt">// sessionStorage - same API as localStorage, but:</span>
+<span class="cmt">// - Cleared when tab/window closes</span>
+<span class="cmt">// - Not shared between tabs</span>
+
+<span class="cmt">// Great for: Form wizard progress, temporary selections</span>
+
+<span class="cmt">// Multi-step form example</span>
+<span class="kw">function</span> <span class="fn">saveFormStep</span>(step, data) {
+  <span class="kw">const</span> formData = JSON.<span class="fn">parse</span>(sessionStorage.<span class="fn">getItem</span>(<span class="str">'formData'</span>) || <span class="str">'{}'</span>);
+  formData[<span class="str">`step${step}`</span>] = data;
+  sessionStorage.<span class="fn">setItem</span>(<span class="str">'formData'</span>, JSON.<span class="fn">stringify</span>(formData));
+}
+
+<span class="kw">function</span> <span class="fn">getFormStep</span>(step) {
+  <span class="kw">const</span> formData = JSON.<span class="fn">parse</span>(sessionStorage.<span class="fn">getItem</span>(<span class="str">'formData'</span>) || <span class="str">'{}'</span>);
+  <span class="kw">return</span> formData[<span class="str">`step${step}`</span>] || {};
+}
+
+<span class="cmt">// User closes tab? Data is automatically cleared.</span>
+<span class="cmt">// User opens new tab? Fresh form state.</span></pre></div>
+        </div>
+
+        <h3>⚖️ Storage Comparison</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Variables</th>
+              <th>localStorage</th>
+              <th>sessionStorage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Persists on refresh?</strong></td>
+              <td>❌ No</td>
+              <td>✅ Yes</td>
+              <td>✅ Yes</td>
+            </tr>
+            <tr>
+              <td><strong>Persists on close?</strong></td>
+              <td>❌ No</td>
+              <td>✅ Yes</td>
+              <td>❌ No</td>
+            </tr>
+            <tr>
+              <td><strong>Shared across tabs?</strong></td>
+              <td>❌ No</td>
+              <td>✅ Yes</td>
+              <td>❌ No</td>
+            </tr>
+            <tr>
+              <td><strong>Capacity</strong></td>
+              <td>RAM limit</td>
+              <td>~5-10 MB</td>
+              <td>~5-10 MB</td>
+            </tr>
+            <tr>
+              <td><strong>Best for</strong></td>
+              <td>UI state</td>
+              <td>Preferences, cached data</td>
+              <td>Form wizards, temp data</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ The Pain of Vanilla JS State Management</div>
+          <div class="warning-content">
+            Notice how we must <strong>manually call render()</strong> every time state changes?
+            And manually keep DOM in sync with state?<br><br>
+            This is exactly why <strong>React was created</strong> - to handle this automatically!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PART 4: REACT STATE ==================== -->
+    <div class="part-divider react">
+      <h2>⚛️ Part 4: React State Management</h2>
+      <p>Modern, declarative state management with React</p>
+    </div>
+
+    <!-- Section 4: useState -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-usestate">📊</div>
+        <div class="section-title">useState Hook - Component State</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>The Foundation: useState</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <code>useState</code> is the most basic and commonly used hook for managing state in React.
+          It gives you a state variable and a function to update it.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--react); margin-bottom: 0.75rem;">⚛️ The Magic of React State</h4>
+          <p style="color: var(--text);">
+            When state changes, React <strong>automatically re-renders</strong> the component!
+            No manual DOM manipulation needed.
+          </p>
+        </div>
+
+        <h3>📝 Basic useState Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; useState Basics</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="cmt">// Syntax: const [stateValue, setterFunction] = useState(initialValue)</span>
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Count: {count}<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="cmt">{/* Update state → Component re-renders → UI updates */}</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(count + <span class="num">1</span>)}<span class="tag">&gt;</span>
+        Increment
+      <span class="tag">&lt;/button&gt;</span>
+      
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(<span class="num">0</span>)}<span class="tag">&gt;</span>
+        Reset
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📚 Different State Types</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Various State Types</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StateExamples</span>() {
+  <span class="cmt">// Primitive values</span>
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);           <span class="cmt">// Number</span>
+  <span class="kw">const</span> [name, setName] = <span class="fn">useState</span>(<span class="str">''</span>);            <span class="cmt">// String</span>
+  <span class="kw">const</span> [isActive, setIsActive] = <span class="fn">useState</span>(<span class="kw">false</span>); <span class="cmt">// Boolean</span>
+  
+  <span class="cmt">// Objects</span>
+  <span class="kw">const</span> [user, setUser] = <span class="fn">useState</span>({
+    <span class="prop">name</span>: <span class="str">''</span>,
+    <span class="prop">email</span>: <span class="str">''</span>,
+    <span class="prop">age</span>: <span class="num">0</span>
+  });
+  
+  <span class="cmt">// Arrays</span>
+  <span class="kw">const</span> [students, setStudents] = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [selectedIds, setSelectedIds] = <span class="fn">useState</span>([]);
+  
+  <span class="cmt">// null initial value (for data to be loaded)</span>
+  <span class="kw">const</span> [data, setData] = <span class="fn">useState</span>(<span class="kw">null</span>);
+  
+  <span class="cmt">// Lazy initialization (expensive computation)</span>
+  <span class="kw">const</span> [expensiveValue, setExpensiveValue] = <span class="fn">useState</span>(() => {
+    <span class="kw">return</span> <span class="fn">heavyComputation</span>();  <span class="cmt">// Only runs once!</span>
+  });
+  
+  <span class="cmt">// ...</span>
+}</pre></div>
+        </div>
+
+        <h3>🔄 Updating State Correctly</h3>
+        <div class="grid-2">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ Wrong Ways</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// DON'T mutate state directly!</span>
+user.name = <span class="str">'John'</span>;  <span class="cmt">// ❌ Won't re-render</span>
+
+students.<span class="fn">push</span>(newStudent);  <span class="cmt">// ❌ Mutation!</span>
+
+<span class="cmt">// DON'T rely on current state value</span>
+<span class="fn">setCount</span>(count + <span class="num">1</span>);  <span class="cmt">// ❌ May be stale</span>
+<span class="fn">setCount</span>(count + <span class="num">1</span>);  <span class="cmt">// Still uses old count!</span></pre></div>
+            </div>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ Correct Ways</h4>
+            <div class="code-block" style="margin: 0.5rem 0;">
+              <div class="code-body"><pre><span class="cmt">// Create new object with spread</span>
+<span class="fn">setUser</span>({ ...user, <span class="prop">name</span>: <span class="str">'John'</span> });
+
+<span class="cmt">// Create new array</span>
+<span class="fn">setStudents</span>([...students, newStudent]);
+
+<span class="cmt">// Use functional update for current value</span>
+<span class="fn">setCount</span>(prev => prev + <span class="num">1</span>);
+<span class="fn">setCount</span>(prev => prev + <span class="num">1</span>);  <span class="cmt">// Works!</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>📋 Complete Student Form Example</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentForm.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentForm</span>() {
+  <span class="cmt">// Form state</span>
+  <span class="kw">const</span> [formData, setFormData] = <span class="fn">useState</span>({
+    <span class="prop">name</span>: <span class="str">''</span>,
+    <span class="prop">age</span>: <span class="str">''</span>,
+    <span class="prop">grade</span>: <span class="str">'A'</span>
+  });
+  
+  <span class="cmt">// List state</span>
+  <span class="kw">const</span> [students, setStudents] = <span class="fn">useState</span>([]);
+  
+  <span class="cmt">// UI state</span>
+  <span class="kw">const</span> [isSubmitting, setIsSubmitting] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [errors, setErrors] = <span class="fn">useState</span>({});
+
+  <span class="cmt">// Handle input changes</span>
+  <span class="kw">const</span> <span class="fn">handleChange</span> = (e) => {
+    <span class="kw">const</span> { name, value } = e.target;
+    <span class="fn">setFormData</span>(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    <span class="cmt">// Clear error when user types</span>
+    <span class="kw">if</span> (errors[name]) {
+      <span class="fn">setErrors</span>(prev => ({ ...prev, [name]: <span class="kw">null</span> }));
+    }
+  };
+
+  <span class="cmt">// Validate form</span>
+  <span class="kw">const</span> <span class="fn">validate</span> = () => {
+    <span class="kw">const</span> newErrors = {};
+    <span class="kw">if</span> (!formData.name.trim()) newErrors.<span class="prop">name</span> = <span class="str">'Name is required'</span>;
+    <span class="kw">if</span> (!formData.age || formData.age < <span class="num">5</span>) newErrors.<span class="prop">age</span> = <span class="str">'Valid age required'</span>;
+    <span class="fn">setErrors</span>(newErrors);
+    <span class="kw">return</span> Object.<span class="fn">keys</span>(newErrors).length === <span class="num">0</span>;
+  };
+
+  <span class="cmt">// Handle form submit</span>
+  <span class="kw">const</span> <span class="fn">handleSubmit</span> = (e) => {
+    e.<span class="fn">preventDefault</span>();
+    
+    <span class="kw">if</span> (!<span class="fn">validate</span>()) <span class="kw">return</span>;
+    
+    <span class="fn">setIsSubmitting</span>(<span class="kw">true</span>);
+    
+    <span class="cmt">// Add new student to list</span>
+    <span class="kw">const</span> newStudent = {
+      <span class="prop">id</span>: Date.<span class="fn">now</span>(),
+      ...formData
+    };
+    
+    <span class="fn">setStudents</span>(prev => [...prev, newStudent]);
+    
+    <span class="cmt">// Reset form</span>
+    <span class="fn">setFormData</span>({ <span class="prop">name</span>: <span class="str">''</span>, <span class="prop">age</span>: <span class="str">''</span>, <span class="prop">grade</span>: <span class="str">'A'</span> });
+    <span class="fn">setIsSubmitting</span>(<span class="kw">false</span>);
+  };
+
+  <span class="cmt">// Delete student</span>
+  <span class="kw">const</span> <span class="fn">deleteStudent</span> = (id) => {
+    <span class="fn">setStudents</span>(prev => prev.<span class="fn">filter</span>(s => s.id !== id));
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit}<span class="tag">&gt;</span>
+        <span class="tag">&lt;div&gt;</span>
+          <span class="tag">&lt;input</span>
+            <span class="attr">name</span>=<span class="str">"name"</span>
+            <span class="attr">value</span>={formData.name}
+            <span class="attr">onChange</span>={handleChange}
+            <span class="attr">placeholder</span>=<span class="str">"Student name"</span>
+          <span class="tag">/&gt;</span>
+          {errors.name && <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"error"</span><span class="tag">&gt;</span>{errors.name}<span class="tag">&lt;/span&gt;</span>}
+        <span class="tag">&lt;/div&gt;</span>
+        
+        <span class="tag">&lt;div&gt;</span>
+          <span class="tag">&lt;input</span>
+            <span class="attr">name</span>=<span class="str">"age"</span>
+            <span class="attr">type</span>=<span class="str">"number"</span>
+            <span class="attr">value</span>={formData.age}
+            <span class="attr">onChange</span>={handleChange}
+            <span class="attr">placeholder</span>=<span class="str">"Age"</span>
+          <span class="tag">/&gt;</span>
+          {errors.age && <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"error"</span><span class="tag">&gt;</span>{errors.age}<span class="tag">&lt;/span&gt;</span>}
+        <span class="tag">&lt;/div&gt;</span>
+        
+        <span class="tag">&lt;select</span> <span class="attr">name</span>=<span class="str">"grade"</span> <span class="attr">value</span>={formData.grade} <span class="attr">onChange</span>={handleChange}<span class="tag">&gt;</span>
+          <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"A"</span><span class="tag">&gt;</span>Grade A<span class="tag">&lt;/option&gt;</span>
+          <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"B"</span><span class="tag">&gt;</span>Grade B<span class="tag">&lt;/option&gt;</span>
+          <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"C"</span><span class="tag">&gt;</span>Grade C<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;/select&gt;</span>
+        
+        <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span> <span class="attr">disabled</span>={isSubmitting}<span class="tag">&gt;</span>
+          {isSubmitting ? <span class="str">'Adding...'</span> : <span class="str">'Add Student'</span>}
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/form&gt;</span>
+      
+      <span class="tag">&lt;ul&gt;</span>
+        {students.<span class="fn">map</span>(student => (
+          <span class="tag">&lt;li</span> <span class="attr">key</span>={student.id}<span class="tag">&gt;</span>
+            {student.name} - Age: {student.age} - Grade: {student.grade}
+            <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">deleteStudent</span>(student.id)}<span class="tag">&gt;</span>Delete<span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;/li&gt;</span>
+        ))}
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 useState Rules</div>
+          <div class="tip-content">
+            1. Only call at the <strong>top level</strong> of your component<br>
+            2. Never call inside loops, conditions, or nested functions<br>
+            3. Always use the setter function to update (never mutate directly)<br>
+            4. Use functional updates when new state depends on previous state
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: useReducer -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-reducer">🔄</div>
+        <div class="section-title">useReducer Hook - Complex State</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Managing Complex State Logic</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <code>useReducer</code> is an alternative to <code>useState</code> for complex state logic.
+          It's especially useful when state transitions depend on the previous state or involve multiple sub-values.
+        </p>
+
+        <h3>🔄 The Reducer Pattern</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">👆</div>
+            <div style="font-weight: 600;">User Action</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Click, submit, etc.</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📤</div>
+            <div style="font-weight: 600;">Dispatch</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">dispatch(action)</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">⚙️</div>
+            <div style="font-weight: 600; color: var(--state);">Reducer</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Calculates new state</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box react">
+            <div style="font-size: 1.5rem;">🔁</div>
+            <div style="font-weight: 600;">Re-render</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">UI updates</div>
+          </div>
+        </div>
+
+        <h3>📝 useReducer Syntax</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; useReducer Pattern</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useReducer } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// 1. Define initial state</span>
+<span class="kw">const</span> initialState = {
+  <span class="prop">count</span>: <span class="num">0</span>,
+  <span class="prop">step</span>: <span class="num">1</span>
+};
+
+<span class="cmt">// 2. Define reducer function</span>
+<span class="cmt">// (state, action) => newState</span>
+<span class="kw">function</span> <span class="fn">reducer</span>(state, action) {
+  <span class="kw">switch</span> (action.type) {
+    <span class="kw">case</span> <span class="str">'INCREMENT'</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">count</span>: state.count + state.step };
+    
+    <span class="kw">case</span> <span class="str">'DECREMENT'</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">count</span>: state.count - state.step };
+    
+    <span class="kw">case</span> <span class="str">'SET_STEP'</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">step</span>: action.payload };
+    
+    <span class="kw">case</span> <span class="str">'RESET'</span>:
+      <span class="kw">return</span> initialState;
+    
+    <span class="kw">default</span>:
+      <span class="kw">return</span> state;
+  }
+}
+
+<span class="cmt">// 3. Use in component</span>
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="kw">const</span> [state, dispatch] = <span class="fn">useReducer</span>(reducer, initialState);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Count: {state.count}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Step: {state.step}<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">dispatch</span>({ <span class="prop">type</span>: <span class="str">'INCREMENT'</span> })}<span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">dispatch</span>({ <span class="prop">type</span>: <span class="str">'DECREMENT'</span> })}<span class="tag">&gt;</span>-<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">dispatch</span>({ <span class="prop">type</span>: <span class="str">'RESET'</span> })}<span class="tag">&gt;</span>Reset<span class="tag">&lt;/button&gt;</span>
+      
+      <span class="tag">&lt;input</span>
+        <span class="attr">type</span>=<span class="str">"number"</span>
+        <span class="attr">value</span>={state.step}
+        <span class="attr">onChange</span>={(e) => <span class="fn">dispatch</span>({ 
+          <span class="prop">type</span>: <span class="str">'SET_STEP'</span>, 
+          <span class="prop">payload</span>: Number(e.target.value) 
+        })}
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📚 Real Example: Student Management</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentManager with useReducer</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useReducer } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Initial state</span>
+<span class="kw">const</span> initialState = {
+  <span class="prop">students</span>: [],
+  <span class="prop">selectedId</span>: <span class="kw">null</span>,
+  <span class="prop">filter</span>: <span class="str">'all'</span>,
+  <span class="prop">sortBy</span>: <span class="str">'name'</span>,
+  <span class="prop">isLoading</span>: <span class="kw">false</span>,
+  <span class="prop">error</span>: <span class="kw">null</span>
+};
+
+<span class="cmt">// Action types as constants (prevents typos)</span>
+<span class="kw">const</span> ACTIONS = {
+  <span class="prop">ADD_STUDENT</span>: <span class="str">'ADD_STUDENT'</span>,
+  <span class="prop">DELETE_STUDENT</span>: <span class="str">'DELETE_STUDENT'</span>,
+  <span class="prop">UPDATE_STUDENT</span>: <span class="str">'UPDATE_STUDENT'</span>,
+  <span class="prop">SELECT_STUDENT</span>: <span class="str">'SELECT_STUDENT'</span>,
+  <span class="prop">SET_FILTER</span>: <span class="str">'SET_FILTER'</span>,
+  <span class="prop">SET_SORT</span>: <span class="str">'SET_SORT'</span>,
+  <span class="prop">SET_LOADING</span>: <span class="str">'SET_LOADING'</span>,
+  <span class="prop">SET_ERROR</span>: <span class="str">'SET_ERROR'</span>,
+  <span class="prop">CLEAR_SELECTION</span>: <span class="str">'CLEAR_SELECTION'</span>
+};
+
+<span class="cmt">// Reducer function</span>
+<span class="kw">function</span> <span class="fn">studentReducer</span>(state, action) {
+  <span class="kw">switch</span> (action.type) {
+    <span class="kw">case</span> ACTIONS.ADD_STUDENT:
+      <span class="kw">return</span> {
+        ...state,
+        <span class="prop">students</span>: [...state.students, {
+          <span class="prop">id</span>: Date.<span class="fn">now</span>(),
+          ...action.payload
+        }]
+      };
+
+    <span class="kw">case</span> ACTIONS.DELETE_STUDENT:
+      <span class="kw">return</span> {
+        ...state,
+        <span class="prop">students</span>: state.students.<span class="fn">filter</span>(s => s.id !== action.payload),
+        <span class="prop">selectedId</span>: state.selectedId === action.payload ? <span class="kw">null</span> : state.selectedId
+      };
+
+    <span class="kw">case</span> ACTIONS.UPDATE_STUDENT:
+      <span class="kw">return</span> {
+        ...state,
+        <span class="prop">students</span>: state.students.<span class="fn">map</span>(s =>
+          s.id === action.payload.id ? { ...s, ...action.payload } : s
+        )
+      };
+
+    <span class="kw">case</span> ACTIONS.SELECT_STUDENT:
+      <span class="kw">return</span> { ...state, <span class="prop">selectedId</span>: action.payload };
+
+    <span class="kw">case</span> ACTIONS.SET_FILTER:
+      <span class="kw">return</span> { ...state, <span class="prop">filter</span>: action.payload };
+
+    <span class="kw">case</span> ACTIONS.SET_SORT:
+      <span class="kw">return</span> { ...state, <span class="prop">sortBy</span>: action.payload };
+
+    <span class="kw">case</span> ACTIONS.SET_LOADING:
+      <span class="kw">return</span> { ...state, <span class="prop">isLoading</span>: action.payload };
+
+    <span class="kw">case</span> ACTIONS.SET_ERROR:
+      <span class="kw">return</span> { ...state, <span class="prop">error</span>: action.payload, <span class="prop">isLoading</span>: <span class="kw">false</span> };
+
+    <span class="kw">case</span> ACTIONS.CLEAR_SELECTION:
+      <span class="kw">return</span> { ...state, <span class="prop">selectedId</span>: <span class="kw">null</span> };
+
+    <span class="kw">default</span>:
+      <span class="kw">return</span> state;
+  }
+}
+
+<span class="cmt">// Component</span>
+<span class="kw">function</span> <span class="fn">StudentManager</span>() {
+  <span class="kw">const</span> [state, dispatch] = <span class="fn">useReducer</span>(studentReducer, initialState);
+
+  <span class="cmt">// Computed values (derived state)</span>
+  <span class="kw">const</span> filteredStudents = state.students
+    .<span class="fn">filter</span>(s => state.filter === <span class="str">'all'</span> || s.grade === state.filter)
+    .<span class="fn">sort</span>((a, b) => a[state.sortBy].<span class="fn">localeCompare</span>(b[state.sortBy]));
+
+  <span class="kw">const</span> selectedStudent = state.students.<span class="fn">find</span>(s => s.id === state.selectedId);
+
+  <span class="cmt">// Action creators (optional, but cleaner)</span>
+  <span class="kw">const</span> addStudent = (student) => {
+    <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.ADD_STUDENT, <span class="prop">payload</span>: student });
+  };
+
+  <span class="kw">const</span> deleteStudent = (id) => {
+    <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.DELETE_STUDENT, <span class="prop">payload</span>: id });
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* Filter & Sort Controls */}</span>
+      <span class="tag">&lt;select</span> 
+        <span class="attr">value</span>={state.filter}
+        <span class="attr">onChange</span>={(e) => <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.SET_FILTER, <span class="prop">payload</span>: e.target.value })}
+      <span class="tag">&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"all"</span><span class="tag">&gt;</span>All Grades<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"A"</span><span class="tag">&gt;</span>Grade A<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"B"</span><span class="tag">&gt;</span>Grade B<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;/select&gt;</span>
+      
+      <span class="cmt">{/* Student List */}</span>
+      {filteredStudents.<span class="fn">map</span>(student => (
+        <span class="tag">&lt;div</span>
+          <span class="attr">key</span>={student.id}
+          <span class="attr">onClick</span>={() => <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.SELECT_STUDENT, <span class="prop">payload</span>: student.id })}
+          <span class="attr">className</span>={student.id === state.selectedId ? <span class="str">'selected'</span> : <span class="str">''</span|}
+        <span class="tag">&gt;</span>
+          {student.name}
+          <span class="tag">&lt;button</span> <span class="attr">onClick</span>={(e) => { e.<span class="fn">stopPropagation</span>(); <span class="fn">deleteStudent</span>(student.id); }}<span class="tag">&gt;</span>
+            Delete
+          <span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      ))}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>⚖️ useState vs useReducer</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>useState</th>
+              <th>useReducer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Best for</strong></td>
+              <td>Simple, independent values</td>
+              <td>Complex, related values</td>
+            </tr>
+            <tr>
+              <td><strong>State shape</strong></td>
+              <td>Primitives, simple objects</td>
+              <td>Objects with multiple fields</td>
+            </tr>
+            <tr>
+              <td><strong>Updates</strong></td>
+              <td>Direct value setting</td>
+              <td>Action-based transitions</td>
+            </tr>
+            <tr>
+              <td><strong>Logic location</strong></td>
+              <td>In component</td>
+              <td>In reducer (testable!)</td>
+            </tr>
+            <tr>
+              <td><strong>Debugging</strong></td>
+              <td>Track each setter</td>
+              <td>Track actions (easier)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 When to Use useReducer</div>
+          <div class="tip-content">
+            • Multiple related pieces of state<br>
+            • Next state depends on previous state<br>
+            • Complex update logic<br>
+            • Want to keep update logic separate (testable)<br>
+            • Passing updates down through many components
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Lifting State Up -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-lifting">⬆️</div>
+        <div class="section-title">Lifting State Up - Sharing Between Components</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Sharing State Between Components</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          When two components need to share and update the same state, we <strong>"lift"</strong> 
+          the state up to their closest common ancestor.
+        </p>
+
+        <h3>🎯 The Problem</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Problem: Separate States Don't Sync</div>
+          <div class="code-body"><pre><span class="cmt">// ❌ Each component has its own state - they don't sync!</span>
+
+<span class="kw">function</span> <span class="fn">StudentList</span>() {
+  <span class="kw">const</span> [selectedId, setSelectedId] = <span class="fn">useState</span>(<span class="kw">null</span>);  <span class="cmt">// Own state</span>
+  <span class="cmt">// ...</span>
+}
+
+<span class="kw">function</span> <span class="fn">StudentDetails</span>() {
+  <span class="kw">const</span> [selectedId, setSelectedId] = <span class="fn">useState</span>(<span class="kw">null</span>);  <span class="cmt">// Different state!</span>
+  <span class="cmt">// ...</span>
+}
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;StudentList</span> <span class="tag">/&gt;</span>     <span class="cmt">{/* Has its own selectedId */}</span>
+      <span class="tag">&lt;StudentDetails</span> <span class="tag">/&gt;</span>  <span class="cmt">{/* Has different selectedId! */}</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>✅ The Solution: Lift State Up</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Solution: Shared State in Parent</div>
+          <div class="code-body"><pre><span class="cmt">// ✅ State lives in parent, passed down as props</span>
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="cmt">// State "lifted" to common ancestor</span>
+  <span class="kw">const</span> [students, setStudents] = <span class="fn">useState</span>([
+    { <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">name</span>: <span class="str">'John'</span>, <span class="prop">grade</span>: <span class="str">'A'</span> },
+    { <span class="prop">id</span>: <span class="num">2</span>, <span class="prop">name</span>: <span class="str">'Jane'</span>, <span class="prop">grade</span>: <span class="str">'B'</span> },
+  ]);
+  <span class="kw">const</span> [selectedId, setSelectedId] = <span class="fn">useState</span>(<span class="kw">null</span>);
+  
+  <span class="cmt">// Derived state</span>
+  <span class="kw">const</span> selectedStudent = students.<span class="fn">find</span>(s => s.id === selectedId);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+      <span class="cmt">{/* Pass state and setters down */}</span>
+      <span class="tag">&lt;StudentList</span>
+        <span class="attr">students</span>={students}
+        <span class="attr">selectedId</span>={selectedId}
+        <span class="attr">onSelect</span>={setSelectedId}
+      <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;StudentDetails</span>
+        <span class="attr">student</span>={selectedStudent}
+        <span class="attr">onUpdate</span>={(updated) => {
+          <span class="fn">setStudents</span>(students.<span class="fn">map</span>(s => 
+            s.id === updated.id ? updated : s
+          ));
+        }}
+      <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Child component - receives state as props</span>
+<span class="kw">function</span> <span class="fn">StudentList</span>({ students, selectedId, onSelect }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {students.<span class="fn">map</span>(student => (
+        <span class="tag">&lt;li</span>
+          <span class="attr">key</span>={student.id}
+          <span class="attr">className</span>={student.id === selectedId ? <span class="str">'selected'</span> : <span class="str">''</span>}
+          <span class="attr">onClick</span>={() => <span class="fn">onSelect</span>(student.id)}
+        <span class="tag">&gt;</span>
+          {student.name}
+        <span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}
+
+<span class="cmt">// Child component - receives selected student</span>
+<span class="kw">function</span> <span class="fn">StudentDetails</span>({ student, onUpdate }) {
+  <span class="kw">if</span> (!student) <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Select a student<span class="tag">&lt;/p&gt;</span>;
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"details"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>{student.name}<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Grade: {student.grade}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">onUpdate</span>({ ...student, <span class="prop">grade</span>: <span class="str">'A+'</span> })}<span class="tag">&gt;</span>
+        Upgrade Grade
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📊 Data Flow Visualization</h3>
+        <div class="state-diagram">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="display: inline-block; padding: 1rem 2rem; background: var(--surface); border: 2px solid var(--react); border-radius: 12px;">
+              <div style="font-weight: 600; color: var(--react);">App (Parent)</div>
+              <div style="font-size: 0.85rem; color: var(--muted);">students, selectedId</div>
+            </div>
+          </div>
+          
+          <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 0.5rem;">
+            <span style="color: var(--accent);">↙ props ↘</span>
+          </div>
+          
+          <div style="display: flex; justify-content: center; gap: 2rem;">
+            <div style="padding: 1rem 1.5rem; background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; text-align: center;">
+              <div style="font-weight: 600; color: var(--accent);">StudentList</div>
+              <div style="font-size: 0.8rem; color: var(--muted);">students, selectedId, onSelect</div>
+            </div>
+            <div style="padding: 1rem 1.5rem; background: var(--surface); border: 1px solid var(--warning); border-radius: 12px; text-align: center;">
+              <div style="font-weight: 600; color: var(--warning);">StudentDetails</div>
+              <div style="font-size: 0.8rem; color: var(--muted);">student, onUpdate</div>
+            </div>
+          </div>
+          
+          <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 0.5rem;">
+            <span style="color: var(--secondary);">↖ callbacks ↗</span>
+          </div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 Key Principle</div>
+          <div class="note-content">
+            <strong>Single Source of Truth:</strong> State lives in ONE place and flows down.
+            Updates flow up through callbacks. This makes debugging much easier!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Context API -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-context">🌐</div>
+        <div class="section-title">Context API - Global State</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Sharing State Without Prop Drilling</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          When state needs to be accessed by many components at different nesting levels,
+          <strong>Context</strong> provides a way to share values without passing props manually.
+        </p>
+
+        <h3>😫 The Problem: Prop Drilling</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Prop Drilling Hell</div>
+          <div class="code-body"><pre><span class="cmt">// ❌ Passing props through many levels</span>
+<span class="tag">&lt;App</span> <span class="attr">user</span>={user}<span class="tag">&gt;</span>
+  <span class="tag">&lt;Layout</span> <span class="attr">user</span>={user}<span class="tag">&gt;</span>
+    <span class="tag">&lt;Sidebar</span> <span class="attr">user</span>={user}<span class="tag">&gt;</span>
+      <span class="tag">&lt;Navigation</span> <span class="attr">user</span>={user}<span class="tag">&gt;</span>
+        <span class="tag">&lt;UserMenu</span> <span class="attr">user</span>={user} <span class="tag">/&gt;</span>  <span class="cmt">{/* Finally uses it! */}</span>
+      <span class="tag">&lt;/Navigation&gt;</span>
+    <span class="tag">&lt;/Sidebar&gt;</span>
+    <span class="tag">&lt;Content</span> <span class="attr">user</span>={user}<span class="tag">&gt;</span>
+      <span class="tag">&lt;Profile</span> <span class="attr">user</span>={user} <span class="tag">/&gt;</span>  <span class="cmt">{/* Also uses it! */}</span>
+    <span class="tag">&lt;/Content&gt;</span>
+  <span class="tag">&lt;/Layout&gt;</span>
+<span class="tag">&lt;/App&gt;</span>
+
+<span class="cmt">// Layout, Sidebar, Navigation, Content don't even USE user!</span>
+<span class="cmt">// They just pass it through. 😫</span></pre></div>
+        </div>
+
+        <h3>✅ The Solution: Context</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Creating Context</div>
+          <div class="code-body"><pre><span class="cmt">// contexts/UserContext.jsx</span>
+<span class="kw">import</span> { createContext, useContext, useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// 1. Create the context</span>
+<span class="kw">const</span> UserContext = <span class="fn">createContext</span>(<span class="kw">null</span>);
+
+<span class="cmt">// 2. Create a provider component</span>
+<span class="kw">export function</span> <span class="fn">UserProvider</span>({ children }) {
+  <span class="kw">const</span> [user, setUser] = <span class="fn">useState</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> [isLoading, setIsLoading] = <span class="fn">useState</span>(<span class="kw">true</span>);
+
+  <span class="kw">const</span> login = <span class="kw">async</span> (credentials) => {
+    <span class="fn">setIsLoading</span>(<span class="kw">true</span>);
+    <span class="cmt">// API call...</span>
+    <span class="kw">const</span> userData = <span class="kw">await</span> api.<span class="fn">login</span>(credentials);
+    <span class="fn">setUser</span>(userData);
+    <span class="fn">setIsLoading</span>(<span class="kw">false</span>);
+  };
+
+  <span class="kw">const</span> logout = () => {
+    <span class="fn">setUser</span>(<span class="kw">null</span>);
+  };
+
+  <span class="cmt">// Value provided to all consumers</span>
+  <span class="kw">const</span> value = {
+    user,
+    isLoading,
+    isLoggedIn: !!user,
+    login,
+    logout
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;UserContext.Provider</span> <span class="attr">value</span>={value}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/UserContext.Provider&gt;</span>
+  );
+}
+
+<span class="cmt">// 3. Custom hook for easy access</span>
+<span class="kw">export function</span> <span class="fn">useUser</span>() {
+  <span class="kw">const</span> context = <span class="fn">useContext</span>(UserContext);
+  <span class="kw">if</span> (!context) {
+    <span class="kw">throw new</span> Error(<span class="str">'useUser must be used within UserProvider'</span>);
+  }
+  <span class="kw">return</span> context;
+}</pre></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Using Context</div>
+          <div class="code-body"><pre><span class="cmt">// App.jsx - Wrap app with provider</span>
+<span class="kw">import</span> { UserProvider } <span class="kw">from</span> <span class="str">'./contexts/UserContext'</span>;
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;UserProvider&gt;</span>
+      <span class="tag">&lt;Layout&gt;</span>
+        <span class="tag">&lt;Sidebar&gt;</span>
+          <span class="tag">&lt;Navigation&gt;</span>
+            <span class="tag">&lt;UserMenu</span> <span class="tag">/&gt;</span>
+          <span class="tag">&lt;/Navigation&gt;</span>
+        <span class="tag">&lt;/Sidebar&gt;</span>
+        <span class="tag">&lt;Content&gt;</span>
+          <span class="tag">&lt;Profile</span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/Content&gt;</span>
+      <span class="tag">&lt;/Layout&gt;</span>
+    <span class="tag">&lt;/UserProvider&gt;</span>
+  );
+}
+
+<span class="cmt">// UserMenu.jsx - Access context directly!</span>
+<span class="kw">import</span> { useUser } <span class="kw">from</span> <span class="str">'../contexts/UserContext'</span>;
+
+<span class="kw">function</span> <span class="fn">UserMenu</span>() {
+  <span class="cmt">// No props needed! Gets user from context</span>
+  <span class="kw">const</span> { user, logout, isLoggedIn } = <span class="fn">useUser</span>();
+
+  <span class="kw">if</span> (!isLoggedIn) {
+    <span class="kw">return</span> <span class="tag">&lt;LoginButton</span> <span class="tag">/&gt;</span>;
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"user-menu"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;span&gt;</span>Welcome, {user.name}!<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={logout}<span class="tag">&gt;</span>Logout<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Profile.jsx - Also access context!</span>
+<span class="kw">function</span> <span class="fn">Profile</span>() {
+  <span class="kw">const</span> { user, isLoading } = <span class="fn">useUser</span>();
+
+  <span class="kw">if</span> (isLoading) <span class="kw">return</span> <span class="tag">&lt;Spinner</span> <span class="tag">/&gt;</span>;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>{user.name}'s Profile<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Email: {user.email}<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎨 Theme Context Example</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; ThemeContext.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { createContext, useContext, useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">const</span> ThemeContext = <span class="fn">createContext</span>();
+
+<span class="kw">export function</span> <span class="fn">ThemeProvider</span>({ children }) {
+  <span class="cmt">// Initialize from localStorage</span>
+  <span class="kw">const</span> [theme, setTheme] = <span class="fn">useState</span>(() => {
+    <span class="kw">return</span> localStorage.<span class="fn">getItem</span>(<span class="str">'theme'</span>) || <span class="str">'light'</span>;
+  });
+
+  <span class="cmt">// Persist to localStorage</span>
+  <span class="fn">useEffect</span>(() => {
+    localStorage.<span class="fn">setItem</span>(<span class="str">'theme'</span>, theme);
+    document.body.className = theme;  <span class="cmt">// Apply to body</span>
+  }, [theme]);
+
+  <span class="kw">const</span> toggleTheme = () => {
+    <span class="fn">setTheme</span>(prev => prev === <span class="str">'light'</span> ? <span class="str">'dark'</span> : <span class="str">'light'</span>);
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ThemeContext.Provider</span> <span class="attr">value</span>={{ theme, toggleTheme }}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/ThemeContext.Provider&gt;</span>
+  );
+}
+
+<span class="kw">export const</span> useTheme = () => <span class="fn">useContext</span>(ThemeContext);
+
+<span class="cmt">// Usage anywhere in the app</span>
+<span class="kw">function</span> <span class="fn">ThemeToggle</span>() {
+  <span class="kw">const</span> { theme, toggleTheme } = <span class="fn">useTheme</span>();
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={toggleTheme}<span class="tag">&gt;</span>
+      {theme === <span class="str">'light'</span> ? <span class="str">'🌙'</span> : <span class="str">'☀️'</span|}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Context Caveats</div>
+          <div class="warning-content">
+            • Don't overuse - not everything needs to be global<br>
+            • Context changes re-render ALL consumers<br>
+            • Split contexts by domain (UserContext, ThemeContext, CartContext)<br>
+            • Consider memoization for performance
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Complete Example -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon icon-project">🚀</div>
+        <div class="section-title">Complete Example: Student Management App</div>
+        <span class="section-badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Putting It All Together</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Let's build a complete Student Management app that demonstrates all state management concepts.
+        </p>
+
+        <h3>📂 Project Structure</h3>
+        <div class="grid-2">
+          <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">
+            <div style="color: var(--warning);">📁 src/</div>
+            <div style="padding-left: 1.5rem; color: var(--warning);">📁 contexts/</div>
+            <div style="padding-left: 3rem; color: var(--text);">📄 StudentContext.jsx</div>
+            <div style="padding-left: 1.5rem; color: var(--warning);">📁 components/</div>
+            <div style="padding-left: 3rem; color: var(--text);">📄 StudentForm.jsx</div>
+            <div style="padding-left: 3rem; color: var(--text);">📄 StudentList.jsx</div>
+            <div style="padding-left: 3rem; color: var(--text);">📄 StudentCard.jsx</div>
+            <div style="padding-left: 3rem; color: var(--text);">📄 FilterBar.jsx</div>
+            <div style="padding-left: 1.5rem; color: var(--text);">📄 App.jsx</div>
+          </div>
+          <div class="card card-react">
+            <h4 style="color: var(--react); margin-bottom: 0.75rem;">🔄 State Distribution</h4>
+            <ul style="color: var(--muted); padding-left: 1rem; font-size: 0.9rem;">
+              <li><strong>Context:</strong> students[], selectedId, filter</li>
+              <li><strong>StudentForm:</strong> formData, errors</li>
+              <li><strong>FilterBar:</strong> local filter state</li>
+              <li><strong>StudentCard:</strong> isEditing</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>🌐 StudentContext.jsx</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; contexts/StudentContext.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { createContext, useContext, useReducer, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Initial state</span>
+<span class="kw">const</span> initialState = {
+  <span class="prop">students</span>: [],
+  <span class="prop">selectedId</span>: <span class="kw">null</span>,
+  <span class="prop">filter</span>: <span class="str">'all'</span>
+};
+
+<span class="cmt">// Action types</span>
+<span class="kw">const</span> ACTIONS = {
+  <span class="prop">LOAD_STUDENTS</span>: <span class="str">'LOAD_STUDENTS'</span>,
+  <span class="prop">ADD_STUDENT</span>: <span class="str">'ADD_STUDENT'</span>,
+  <span class="prop">UPDATE_STUDENT</span>: <span class="str">'UPDATE_STUDENT'</span>,
+  <span class="prop">DELETE_STUDENT</span>: <span class="str">'DELETE_STUDENT'</span>,
+  <span class="prop">SELECT_STUDENT</span>: <span class="str">'SELECT_STUDENT'</span>,
+  <span class="prop">SET_FILTER</span>: <span class="str">'SET_FILTER'</span>
+};
+
+<span class="cmt">// Reducer</span>
+<span class="kw">function</span> <span class="fn">studentReducer</span>(state, action) {
+  <span class="kw">switch</span> (action.type) {
+    <span class="kw">case</span> ACTIONS.LOAD_STUDENTS:
+      <span class="kw">return</span> { ...state, <span class="prop">students</span>: action.payload };
+    
+    <span class="kw">case</span> ACTIONS.ADD_STUDENT:
+      <span class="kw">const</span> newStudent = { <span class="prop">id</span>: Date.<span class="fn">now</span>(), ...action.payload };
+      <span class="kw">return</span> { ...state, <span class="prop">students</span>: [...state.students, newStudent] };
+    
+    <span class="kw">case</span> ACTIONS.UPDATE_STUDENT:
+      <span class="kw">return</span> {
+        ...state,
+        <span class="prop">students</span>: state.students.<span class="fn">map</span>(s =>
+          s.id === action.payload.id ? { ...s, ...action.payload } : s
+        )
+      };
+    
+    <span class="kw">case</span> ACTIONS.DELETE_STUDENT:
+      <span class="kw">return</span> {
+        ...state,
+        <span class="prop">students</span>: state.students.<span class="fn">filter</span>(s => s.id !== action.payload),
+        <span class="prop">selectedId</span>: state.selectedId === action.payload ? <span class="kw">null</span> : state.selectedId
+      };
+    
+    <span class="kw">case</span> ACTIONS.SELECT_STUDENT:
+      <span class="kw">return</span> { ...state, <span class="prop">selectedId</span>: action.payload };
+    
+    <span class="kw">case</span> ACTIONS.SET_FILTER:
+      <span class="kw">return</span> { ...state, <span class="prop">filter</span>: action.payload };
+    
+    <span class="kw">default</span>:
+      <span class="kw">return</span> state;
+  }
+}
+
+<span class="cmt">// Context</span>
+<span class="kw">const</span> StudentContext = <span class="fn">createContext</span>();
+
+<span class="cmt">// Provider</span>
+<span class="kw">export function</span> <span class="fn">StudentProvider</span>({ children }) {
+  <span class="kw">const</span> [state, dispatch] = <span class="fn">useReducer</span>(studentReducer, initialState);
+
+  <span class="cmt">// Load from localStorage on mount</span>
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">const</span> saved = localStorage.<span class="fn">getItem</span>(<span class="str">'students'</span>);
+    <span class="kw">if</span> (saved) {
+      <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.LOAD_STUDENTS, <span class="prop">payload</span>: JSON.<span class="fn">parse</span>(saved) });
+    }
+  }, []);
+
+  <span class="cmt">// Save to localStorage on change</span>
+  <span class="fn">useEffect</span>(() => {
+    localStorage.<span class="fn">setItem</span>(<span class="str">'students'</span>, JSON.<span class="fn">stringify</span>(state.students));
+  }, [state.students]);
+
+  <span class="cmt">// Action creators</span>
+  <span class="kw">const</span> actions = {
+    <span class="fn">addStudent</span>: (student) => <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.ADD_STUDENT, <span class="prop">payload</span>: student }),
+    <span class="fn">updateStudent</span>: (student) => <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.UPDATE_STUDENT, <span class="prop">payload</span>: student }),
+    <span class="fn">deleteStudent</span>: (id) => <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.DELETE_STUDENT, <span class="prop">payload</span>: id }),
+    <span class="fn">selectStudent</span>: (id) => <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.SELECT_STUDENT, <span class="prop">payload</span>: id }),
+    <span class="fn">setFilter</span>: (filter) => <span class="fn">dispatch</span>({ <span class="prop">type</span>: ACTIONS.SET_FILTER, <span class="prop">payload</span>: filter })
+  };
+
+  <span class="cmt">// Derived state</span>
+  <span class="kw">const</span> filteredStudents = state.students.<span class="fn">filter</span>(s =>
+    state.filter === <span class="str">'all'</span> || s.grade === state.filter
+  );
+  
+  <span class="kw">const</span> selectedStudent = state.students.<span class="fn">find</span>(s => s.id === state.selectedId);
+  
+  <span class="kw">const</span> stats = {
+    <span class="prop">total</span>: state.students.length,
+    <span class="prop">gradeA</span>: state.students.<span class="fn">filter</span>(s => s.grade === <span class="str">'A'</span>).length,
+    <span class="prop">gradeB</span>: state.students.<span class="fn">filter</span>(s => s.grade === <span class="str">'B'</span>).length,
+    <span class="prop">gradeC</span>: state.students.<span class="fn">filter</span>(s => s.grade === <span class="str">'C'</span>).length
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;StudentContext.Provider</span> <span class="attr">value</span>={{
+      ...state,
+      ...actions,
+      filteredStudents,
+      selectedStudent,
+      stats
+    }}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/StudentContext.Provider&gt;</span>
+  );
+}
+
+<span class="cmt">// Custom hook</span>
+<span class="kw">export const</span> useStudents = () => {
+  <span class="kw">const</span> context = <span class="fn">useContext</span>(StudentContext);
+  <span class="kw">if</span> (!context) <span class="kw">throw new</span> Error(<span class="str">'useStudents must be within StudentProvider'</span>);
+  <span class="kw">return</span> context;
+};</pre></div>
+        </div>
+
+        <h3>📋 Using the Context</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; App.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { StudentProvider, useStudents } <span class="kw">from</span> <span class="str">'./contexts/StudentContext'</span>;
+<span class="kw">import</span> StudentForm <span class="kw">from</span> <span class="str">'./components/StudentForm'</span>;
+<span class="kw">import</span> StudentList <span class="kw">from</span> <span class="str">'./components/StudentList'</span>;
+<span class="kw">import</span> FilterBar <span class="kw">from</span> <span class="str">'./components/FilterBar'</span>;
+
+<span class="kw">function</span> <span class="fn">Dashboard</span>() {
+  <span class="kw">const</span> { stats } = <span class="fn">useStudents</span>();
+  
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"stats"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div&gt;</span>Total: {stats.total}<span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div&gt;</span>Grade A: {stats.gradeA}<span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div&gt;</span>Grade B: {stats.gradeB}<span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div&gt;</span>Grade C: {stats.gradeC}<span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;StudentProvider&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"app"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>Student Management<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;Dashboard</span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;StudentForm</span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;FilterBar</span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;StudentList</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/StudentProvider&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> App;</pre></div>
+        </div>
+
+        <h3>🎯 Summary: When to Use What</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Technique</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>useState</strong></td>
+              <td>Simple, local component state (form inputs, toggles)</td>
+            </tr>
+            <tr>
+              <td><strong>useReducer</strong></td>
+              <td>Complex state logic, multiple related values</td>
+            </tr>
+            <tr>
+              <td><strong>Lifting State</strong></td>
+              <td>2-3 components need same state</td>
+            </tr>
+            <tr>
+              <td><strong>Context</strong></td>
+              <td>Global state, deeply nested components (auth, theme)</td>
+            </tr>
+            <tr>
+              <td><strong>localStorage</strong></td>
+              <td>Persist state across sessions (preferences, drafts)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 Best Practices</div>
+          <div class="tip-content">
+            1. <strong>Start local</strong> - Use useState first, lift/globalize only when needed<br>
+            2. <strong>Single source of truth</strong> - Don't duplicate state<br>
+            3. <strong>Immutable updates</strong> - Always create new objects/arrays<br>
+            4. <strong>Derived state</strong> - Calculate from existing state, don't store<br>
+            5. <strong>Split contexts</strong> - Separate by domain (UserContext, CartContext)<br>
+            6. <strong>Persist wisely</strong> - Only save what needs to survive refresh
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(97,218,251,0.05)); border-radius: 16px; border: 1px solid var(--border);">
+      <h3 style="color: var(--state); margin-bottom: 0.5rem;">🎉 You've Mastered State Management!</h3>
+      <p style="color: var(--muted);">From server sessions to React hooks and global state!</p>
+      <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+        <span class="badge badge-warning">Server-Side</span>
+        <span class="badge badge-secondary">Client-Side</span>
+        <span class="badge badge-primary">useState</span>
+        <span class="badge badge-accent">useReducer</span>
+        <span class="badge badge-danger">Context API</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>

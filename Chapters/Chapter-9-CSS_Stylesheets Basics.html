@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS & Stylesheets Complete Guide - HTML/JS & React</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --css: #264de4; --html: #e34c26; --js: #f7df1e; --react: #61dafb;
+      --bootstrap: #7952b3; --tailwind: #38bdf8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(38,77,228,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(121,82,179,0.1) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--css), var(--bootstrap)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-css { background: var(--css); color: white; }
+    .badge-html { background: var(--html); color: white; }
+    .badge-bootstrap { background: var(--bootstrap); color: white; }
+    .badge-react { background: #20232a; color: var(--react); }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; }
+    .icon-css { background: linear-gradient(135deg, var(--css), #1e3a8a); color: white; }
+    .icon-box { background: linear-gradient(135deg, var(--warning), #d97706); color: white; }
+    .icon-flex { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    .icon-grid { background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; }
+    .icon-responsive { background: linear-gradient(135deg, var(--primary), #0891b2); color: white; }
+    .icon-bootstrap { background: linear-gradient(135deg, var(--bootstrap), #5a3d89); color: white; }
+    .icon-animation { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
+    .icon-advanced { background: linear-gradient(135deg, #818cf8, #4f46e5); color: white; }
+    .icon-react { background: linear-gradient(135deg, var(--react), #0891b2); color: #000; }
+    .icon-project { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-badge { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .prop { color: #e5c07b; } .css-sel { color: #e06c75; } .css-prop { color: #56b6c2; } .css-val { color: #d19a66; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-css { border-color: var(--css); background: linear-gradient(135deg, rgba(38,77,228,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+    .card-bootstrap { border-color: var(--bootstrap); background: linear-gradient(135deg, rgba(121,82,179,0.08), transparent); }
+    .card-react { border-color: var(--react); background: linear-gradient(135deg, rgba(97,218,251,0.08), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--css); box-shadow: 0 0 20px rgba(38,77,228,0.2); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    .highlight-box { background: linear-gradient(135deg, rgba(38,77,228,0.1), rgba(121,82,179,0.05)); border: 1px solid rgba(38,77,228,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    
+    .demo-container { background: var(--surface2); border-radius: 16px; padding: 1.5rem; margin: 1.5rem 0; }
+    .demo-result { background: #1a1a2e; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-top: 1rem; }
+    .demo-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; }
+    
+    .part-divider { background: linear-gradient(90deg, transparent, var(--border), transparent); height: 1px; margin: 3rem 0; position: relative; }
+    .part-divider::after { content: attr(data-part); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: var(--bg); padding: 0 1.5rem; color: var(--muted); font-size: 0.9rem; font-weight: 600; }
+    
+    .part-header { text-align: center; padding: 2rem; margin: 2rem 0; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 16px; border: 1px solid var(--border); }
+    .part-header h2 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .part-header p { color: var(--muted); }
+    
+    h2 { color: var(--css); margin-bottom: 1rem; }
+    h3 { color: var(--primary); margin: 1.5rem 0 1rem; }
+    
+    .property-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .property-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+    .property-card code { color: var(--primary); font-size: 0.9rem; }
+    .property-card p { color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem; }
+    
+    .visual-demo { background: var(--surface2); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+    .visual-demo-title { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+    
+    .breakpoint-bar { display: flex; align-items: center; height: 40px; background: var(--surface); border-radius: 8px; overflow: hidden; margin: 1rem 0; }
+    .breakpoint-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-css">🎨 CSS3</span>
+        <span class="hero-badge badge-html">📄 HTML5</span>
+        <span class="hero-badge badge-bootstrap">🅱️ Bootstrap</span>
+        <span class="hero-badge badge-react">⚛️ React</span>
+      </div>
+      <h1>CSS & Stylesheets Complete Guide</h1>
+      <p>Master CSS, Responsiveness, Bootstrap & Advanced Concepts</p>
+    </div>
+
+    <!-- PART 1 HEADER -->
+    <div class="part-header" style="border-color: var(--html);">
+      <h2 style="color: var(--html);">📄 PART 1: HTML & JavaScript Scope</h2>
+      <p>Traditional Web Development without Frameworks</p>
+    </div>
+
+    <!-- Section 1: CSS Fundamentals -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-css">🎨</div>
+        <div class="section-title">1.1 CSS Fundamentals - Selectors, Properties & Values</div>
+        <span class="section-badge badge-html" style="background: rgba(227,76,38,0.2); color: var(--html);">HTML/CSS</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Understanding CSS: The Language of Web Styling</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>CSS (Cascading Style Sheets)</strong> controls the visual presentation of HTML elements.
+          It separates content (HTML) from presentation (CSS).
+        </p>
+
+        <h3>📝 Three Ways to Add CSS</h3>
+        <div class="grid-3">
+          <div class="card card-warning">
+            <h4 style="color: var(--warning);">1. Inline CSS</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="tag">&lt;p</span> <span class="attr">style</span>=<span class="val">"color: red;"</span><span class="tag">&gt;</span>
+  Red text
+<span class="tag">&lt;/p&gt;</span></pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem;">❌ Avoid - Hard to maintain</p>
+          </div>
+          <div class="card card-secondary">
+            <h4 style="color: var(--secondary);">2. Internal CSS</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;style&gt;</span>
+    <span class="css-sel">p</span> { <span class="css-prop">color</span>: <span class="css-val">red</span>; }
+  <span class="tag">&lt;/style&gt;</span>
+<span class="tag">&lt;/head&gt;</span></pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem;">⚠️ OK for single page</p>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">3. External CSS ✅</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span>
+        <span class="attr">href</span>=<span class="val">"styles.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span></pre></div>
+            </div>
+            <p style="color: var(--muted); font-size: 0.85rem;">✅ Best practice!</p>
+          </div>
+        </div>
+
+        <h3>🎯 CSS Selectors</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; selectors.css</div>
+          <div class="code-body"><pre><span class="cmt">/* ========== BASIC SELECTORS ========== */</span>
+
+<span class="cmt">/* Element Selector - selects ALL p tags */</span>
+<span class="css-sel">p</span> {
+  <span class="css-prop">color</span>: <span class="css-val">#333</span>;
+}
+
+<span class="cmt">/* Class Selector - selects elements with class="card" */</span>
+<span class="css-sel">.card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">white</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">20px</span>;
+}
+
+<span class="cmt">/* ID Selector - selects element with id="header" (unique!) */</span>
+<span class="css-sel">#header</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#1a1a2e</span>;
+}
+
+<span class="cmt">/* ========== COMBINATORS ========== */</span>
+
+<span class="cmt">/* Descendant - any p inside .card */</span>
+<span class="css-sel">.card p</span> {
+  <span class="css-prop">margin</span>: <span class="css-val">0</span>;
+}
+
+<span class="cmt">/* Child - direct children only */</span>
+<span class="css-sel">.card > p</span> {
+  <span class="css-prop">font-weight</span>: <span class="css-val">bold</span>;
+}
+
+<span class="cmt">/* Adjacent Sibling - p immediately after h2 */</span>
+<span class="css-sel">h2 + p</span> {
+  <span class="css-prop">margin-top</span>: <span class="css-val">0</span>;
+}
+
+<span class="cmt">/* ========== PSEUDO-CLASSES ========== */</span>
+
+<span class="cmt">/* Mouse hover */</span>
+<span class="css-sel">.button:hover</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#0066cc</span>;
+}
+
+<span class="cmt">/* Keyboard focus */</span>
+<span class="css-sel">input:focus</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">outline</span>: <span class="css-val">none</span>;
+}
+
+<span class="cmt">/* First/Last child */</span>
+<span class="css-sel">li:first-child</span> { <span class="css-prop">font-weight</span>: <span class="css-val">bold</span>; }
+<span class="css-sel">li:last-child</span> { <span class="css-prop">border-bottom</span>: <span class="css-val">none</span>; }
+
+<span class="cmt">/* Nth child - every other row */</span>
+<span class="css-sel">tr:nth-child(even)</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#f5f5f5</span>;
+}
+
+<span class="cmt">/* ========== PSEUDO-ELEMENTS ========== */</span>
+
+<span class="cmt">/* Before/After - add content */</span>
+<span class="css-sel">.required::before</span> {
+  <span class="css-prop">content</span>: <span class="css-val">"* "</span>;
+  <span class="css-prop">color</span>: <span class="css-val">red</span>;
+}
+
+<span class="css-sel">.link::after</span> {
+  <span class="css-prop">content</span>: <span class="css-val">" →"</span>;
+}
+
+<span class="cmt">/* ========== ATTRIBUTE SELECTORS ========== */</span>
+
+<span class="cmt">/* Has attribute */</span>
+<span class="css-sel">[disabled]</span> {
+  <span class="css-prop">opacity</span>: <span class="css-val">0.5</span>;
+}
+
+<span class="cmt">/* Attribute value */</span>
+<span class="css-sel">input[type="email"]</span> {
+  <span class="css-prop">background</span>: <span class="css-val">url('email-icon.png')</span>;
+}
+
+<span class="cmt">/* Starts with */</span>
+<span class="css-sel">a[href^="https"]</span> {
+  <span class="css-prop">color</span>: <span class="css-val">green</span>;
+}</pre></div>
+        </div>
+
+        <h3>⚖️ Specificity (Which Style Wins?)</h3>
+        <div class="highlight-box">
+          <h4 style="color: var(--css); margin-bottom: 0.75rem;">Specificity Hierarchy (Lowest → Highest)</h4>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            <span class="badge" style="background: #4ade80; color: #000;">Element (1)</span>
+            <span style="color: var(--muted);">→</span>
+            <span class="badge" style="background: #facc15; color: #000;">Class (10)</span>
+            <span style="color: var(--muted);">→</span>
+            <span class="badge" style="background: #f97316; color: #000;">ID (100)</span>
+            <span style="color: var(--muted);">→</span>
+            <span class="badge" style="background: #ef4444; color: #fff;">Inline (1000)</span>
+            <span style="color: var(--muted);">→</span>
+            <span class="badge" style="background: #000; color: #fff;">!important</span>
+          </div>
+          <div class="code-block">
+            <div class="code-body"><pre><span class="cmt">/* Specificity examples */</span>
+<span class="css-sel">p</span> { <span class="css-prop">color</span>: <span class="css-val">black</span>; }           <span class="cmt">/* 0,0,0,1 = 1 */</span>
+<span class="css-sel">.text</span> { <span class="css-prop">color</span>: <span class="css-val">blue</span>; }        <span class="cmt">/* 0,0,1,0 = 10 */</span>
+<span class="css-sel">#main</span> { <span class="css-prop">color</span>: <span class="css-val">red</span>; }         <span class="cmt">/* 0,1,0,0 = 100 */</span>
+<span class="css-sel">.card .title</span> { <span class="css-prop">color</span>: <span class="css-val">green</span>; } <span class="cmt">/* 0,0,2,0 = 20 */</span>
+<span class="css-sel">#header .nav a</span> { }             <span class="cmt">/* 0,1,1,1 = 111 */</span></pre></div>
+          </div>
+        </div>
+
+        <div class="danger">
+          <div class="danger-title">⚠️ Avoid !important</div>
+          <div class="danger-content">
+            Using <code>!important</code> breaks the natural cascade and makes debugging very difficult.
+            Use proper specificity instead!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Box Model -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-box">📦</div>
+        <div class="section-title">1.2 The Box Model - Understanding Element Sizing</div>
+        <span class="section-badge badge-html" style="background: rgba(227,76,38,0.2); color: var(--html);">HTML/CSS</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Every Element is a Box</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          The <strong>CSS Box Model</strong> describes how every HTML element is rendered as a rectangular box
+          with content, padding, border, and margin.
+        </p>
+
+        <div class="visual-demo">
+          <div class="visual-demo-title">Box Model Visualization</div>
+          <div style="display: flex; justify-content: center;">
+            <div style="background: rgba(239,68,68,0.3); padding: 20px; border-radius: 8px; text-align: center;">
+              <div style="color: var(--danger); font-size: 0.8rem; margin-bottom: 10px;">MARGIN</div>
+              <div style="background: rgba(251,191,36,0.3); padding: 20px; border-radius: 6px;">
+                <div style="color: var(--warning); font-size: 0.8rem; margin-bottom: 10px;">BORDER</div>
+                <div style="background: rgba(52,211,153,0.3); padding: 20px; border-radius: 4px;">
+                  <div style="color: var(--accent); font-size: 0.8rem; margin-bottom: 10px;">PADDING</div>
+                  <div style="background: rgba(34,211,238,0.3); padding: 30px 50px; border-radius: 4px;">
+                    <div style="color: var(--primary); font-weight: 600;">CONTENT</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; box-model.css</div>
+          <div class="code-body"><pre><span class="css-sel">.box</span> {
+  <span class="cmt">/* CONTENT - the actual content area */</span>
+  <span class="css-prop">width</span>: <span class="css-val">300px</span>;
+  <span class="css-prop">height</span>: <span class="css-val">200px</span>;
+
+  <span class="cmt">/* PADDING - space inside the border */</span>
+  <span class="css-prop">padding</span>: <span class="css-val">20px</span>;              <span class="cmt">/* all sides */</span>
+  <span class="css-prop">padding</span>: <span class="css-val">10px 20px</span>;         <span class="cmt">/* vertical | horizontal */</span>
+  <span class="css-prop">padding</span>: <span class="css-val">10px 20px 15px 25px</span>; <span class="cmt">/* top | right | bottom | left */</span>
+  <span class="css-prop">padding-top</span>: <span class="css-val">10px</span>;          <span class="cmt">/* individual sides */</span>
+
+  <span class="cmt">/* BORDER - the edge of the box */</span>
+  <span class="css-prop">border</span>: <span class="css-val">2px solid #333</span>;     <span class="cmt">/* width | style | color */</span>
+  <span class="css-prop">border-radius</span>: <span class="css-val">12px</span>;        <span class="cmt">/* rounded corners */</span>
+  <span class="css-prop">border-top</span>: <span class="css-val">3px dashed red</span>; <span class="cmt">/* individual sides */</span>
+
+  <span class="cmt">/* MARGIN - space outside the border */</span>
+  <span class="css-prop">margin</span>: <span class="css-val">20px</span>;               <span class="cmt">/* same syntax as padding */</span>
+  <span class="css-prop">margin</span>: <span class="css-val">0 auto</span>;            <span class="cmt">/* center horizontally! */</span>
+}</pre></div>
+        </div>
+
+        <h3>📐 Box-Sizing: The Game Changer</h3>
+        <div class="grid-2">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger);">❌ content-box (Default)</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">
+              Width/height = content only. Padding & border are ADDED.
+            </p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="css-sel">.box</span> {
+  <span class="css-prop">width</span>: <span class="css-val">200px</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">20px</span>;
+  <span class="css-prop">border</span>: <span class="css-val">10px solid</span>;
+}
+<span class="cmt">/* Actual width: 200 + 40 + 20 = 260px! */</span></pre></div>
+            </div>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">✅ border-box (Recommended)</h4>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem;">
+              Width/height = total box. Padding & border are INCLUDED.
+            </p>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="css-sel">.box</span> {
+  <span class="css-prop">box-sizing</span>: <span class="css-val">border-box</span>;
+  <span class="css-prop">width</span>: <span class="css-val">200px</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">20px</span>;
+  <span class="css-prop">border</span>: <span class="css-val">10px solid</span>;
+}
+<span class="cmt">/* Actual width: 200px (as expected!) */</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Always Use border-box</div>
+          <div class="tip-content">
+            Add this to every project:
+            <code style="display: block; margin-top: 0.5rem;">*, *::before, *::after { box-sizing: border-box; }</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Flexbox -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-flex">📏</div>
+        <div class="section-title">1.3 Flexbox - One-Dimensional Layouts</div>
+        <span class="section-badge badge-html" style="background: rgba(227,76,38,0.2); color: var(--html);">HTML/CSS</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Flexbox: The Layout Revolution</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Flexbox</strong> makes it easy to align and distribute space among items in a container,
+          even when their size is unknown or dynamic.
+        </p>
+
+        <h3>🎯 Enable Flexbox</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Enable Flexbox</div>
+          <div class="code-body"><pre><span class="css-sel">.container</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;  <span class="cmt">/* This is all you need to start! */</span>
+}</pre></div>
+        </div>
+
+        <h3>📦 Container Properties (Parent)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; flexbox-container.css</div>
+          <div class="code-body"><pre><span class="css-sel">.flex-container</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+
+  <span class="cmt">/* DIRECTION - main axis */</span>
+  <span class="css-prop">flex-direction</span>: <span class="css-val">row</span>;            <span class="cmt">/* default: left to right */</span>
+  <span class="css-prop">flex-direction</span>: <span class="css-val">row-reverse</span>;    <span class="cmt">/* right to left */</span>
+  <span class="css-prop">flex-direction</span>: <span class="css-val">column</span>;         <span class="cmt">/* top to bottom */</span>
+  <span class="css-prop">flex-direction</span>: <span class="css-val">column-reverse</span>; <span class="cmt">/* bottom to top */</span>
+
+  <span class="cmt">/* WRAPPING */</span>
+  <span class="css-prop">flex-wrap</span>: <span class="css-val">nowrap</span>;   <span class="cmt">/* default: squeeze everything */</span>
+  <span class="css-prop">flex-wrap</span>: <span class="css-val">wrap</span>;     <span class="cmt">/* wrap to next line */</span>
+
+  <span class="cmt">/* JUSTIFY-CONTENT - main axis alignment */</span>
+  <span class="css-prop">justify-content</span>: <span class="css-val">flex-start</span>;    <span class="cmt">/* pack at start */</span>
+  <span class="css-prop">justify-content</span>: <span class="css-val">flex-end</span>;      <span class="cmt">/* pack at end */</span>
+  <span class="css-prop">justify-content</span>: <span class="css-val">center</span>;        <span class="cmt">/* center items */</span>
+  <span class="css-prop">justify-content</span>: <span class="css-val">space-between</span>; <span class="cmt">/* equal space between */</span>
+  <span class="css-prop">justify-content</span>: <span class="css-val">space-around</span>;  <span class="cmt">/* equal space around */</span>
+  <span class="css-prop">justify-content</span>: <span class="css-val">space-evenly</span>;  <span class="cmt">/* truly equal spacing */</span>
+
+  <span class="cmt">/* ALIGN-ITEMS - cross axis alignment */</span>
+  <span class="css-prop">align-items</span>: <span class="css-val">stretch</span>;    <span class="cmt">/* default: fill height */</span>
+  <span class="css-prop">align-items</span>: <span class="css-val">flex-start</span>; <span class="cmt">/* align to top */</span>
+  <span class="css-prop">align-items</span>: <span class="css-val">flex-end</span>;   <span class="cmt">/* align to bottom */</span>
+  <span class="css-prop">align-items</span>: <span class="css-val">center</span>;     <span class="cmt">/* center vertically */</span>
+
+  <span class="cmt">/* GAP - space between items */</span>
+  <span class="css-prop">gap</span>: <span class="css-val">20px</span>;      <span class="cmt">/* both row and column gap */</span>
+  <span class="css-prop">gap</span>: <span class="css-val">10px 20px</span>; <span class="cmt">/* row gap | column gap */</span>
+}</pre></div>
+        </div>
+
+        <h3>🧩 Item Properties (Children)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; flexbox-items.css</div>
+          <div class="code-body"><pre><span class="css-sel">.flex-item</span> {
+  <span class="cmt">/* FLEX GROW - how much to grow */</span>
+  <span class="css-prop">flex-grow</span>: <span class="css-val">0</span>;   <span class="cmt">/* default: don't grow */</span>
+  <span class="css-prop">flex-grow</span>: <span class="css-val">1</span>;   <span class="cmt">/* grow to fill space */</span>
+
+  <span class="cmt">/* FLEX SHRINK - how much to shrink */</span>
+  <span class="css-prop">flex-shrink</span>: <span class="css-val">1</span>; <span class="cmt">/* default: can shrink */</span>
+  <span class="css-prop">flex-shrink</span>: <span class="css-val">0</span>; <span class="cmt">/* don't shrink */</span>
+
+  <span class="cmt">/* FLEX BASIS - initial size */</span>
+  <span class="css-prop">flex-basis</span>: <span class="css-val">auto</span>;  <span class="cmt">/* default: use width/height */</span>
+  <span class="css-prop">flex-basis</span>: <span class="css-val">200px</span>; <span class="cmt">/* start at 200px */</span>
+
+  <span class="cmt">/* SHORTHAND - grow | shrink | basis */</span>
+  <span class="css-prop">flex</span>: <span class="css-val">1</span>;         <span class="cmt">/* flex: 1 1 0% - grow equally */</span>
+  <span class="css-prop">flex</span>: <span class="css-val">0 0 200px</span>; <span class="cmt">/* fixed 200px, no grow/shrink */</span>
+
+  <span class="cmt">/* ALIGN-SELF - override parent's align-items */</span>
+  <span class="css-prop">align-self</span>: <span class="css-val">flex-end</span>; <span class="cmt">/* align this item only */</span>
+
+  <span class="cmt">/* ORDER - change visual order */</span>
+  <span class="css-prop">order</span>: <span class="css-val">-1</span>; <span class="cmt">/* move to front */</span>
+  <span class="css-prop">order</span>: <span class="css-val">1</span>;  <span class="cmt">/* move to back */</span>
+}</pre></div>
+        </div>
+
+        <h3>🎨 Common Flexbox Patterns</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">Perfect Centering</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="css-sel">.center-everything</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">justify-content</span>: <span class="css-val">center</span>;
+  <span class="css-prop">align-items</span>: <span class="css-val">center</span>;
+  <span class="css-prop">min-height</span>: <span class="css-val">100vh</span>;
+}</pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--secondary); margin-bottom: 0.75rem;">Navigation Bar</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="css-sel">.navbar</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">justify-content</span>: <span class="css-val">space-between</span>;
+  <span class="css-prop">align-items</span>: <span class="css-val">center</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">1rem 2rem</span>;
+}</pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--warning); margin-bottom: 0.75rem;">Card Grid</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="css-sel">.card-grid</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">flex-wrap</span>: <span class="css-val">wrap</span>;
+  <span class="css-prop">gap</span>: <span class="css-val">20px</span>;
+}
+<span class="css-sel">.card-grid > *</span> {
+  <span class="css-prop">flex</span>: <span class="css-val">1 1 300px</span>;
+}</pre></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--primary); margin-bottom: 0.75rem;">Sticky Footer</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="css-sel">.page</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">flex-direction</span>: <span class="css-val">column</span>;
+  <span class="css-prop">min-height</span>: <span class="css-val">100vh</span>;
+}
+<span class="css-sel">.main</span> { <span class="css-prop">flex</span>: <span class="css-val">1</span>; }
+<span class="css-sel">.footer</span> { <span class="cmt">/* sticks to bottom */</span> }</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: CSS Grid -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-grid">🔲</div>
+        <div class="section-title">1.4 CSS Grid - Two-Dimensional Layouts</div>
+        <span class="section-badge badge-html" style="background: rgba(227,76,38,0.2); color: var(--html);">HTML/CSS</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>CSS Grid: Complete Layout Control</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>CSS Grid</strong> is a two-dimensional layout system for creating complex layouts with rows AND columns.
+          It's perfect for page layouts and complex component structures.
+        </p>
+
+        <h3>📐 Grid Container Properties</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; grid-container.css</div>
+          <div class="code-body"><pre><span class="css-sel">.grid-container</span> {
+  <span class="css-prop">display</span>: <span class="css-val">grid</span>;
+
+  <span class="cmt">/* DEFINE COLUMNS */</span>
+  <span class="css-prop">grid-template-columns</span>: <span class="css-val">200px 200px 200px</span>;     <span class="cmt">/* 3 fixed columns */</span>
+  <span class="css-prop">grid-template-columns</span>: <span class="css-val">1fr 1fr 1fr</span>;          <span class="cmt">/* 3 equal columns */</span>
+  <span class="css-prop">grid-template-columns</span>: <span class="css-val">repeat(3, 1fr)</span>;       <span class="cmt">/* same as above */</span>
+  <span class="css-prop">grid-template-columns</span>: <span class="css-val">1fr 2fr 1fr</span>;          <span class="cmt">/* middle is 2x */</span>
+  <span class="css-prop">grid-template-columns</span>: <span class="css-val">200px 1fr 200px</span>;      <span class="cmt">/* sidebar layout */</span>
+  <span class="css-prop">grid-template-columns</span>: <span class="css-val">repeat(auto-fit, minmax(250px, 1fr))</span>; <span class="cmt">/* responsive! */</span>
+
+  <span class="cmt">/* DEFINE ROWS */</span>
+  <span class="css-prop">grid-template-rows</span>: <span class="css-val">100px auto 100px</span>;  <span class="cmt">/* header, main, footer */</span>
+  <span class="css-prop">grid-auto-rows</span>: <span class="css-val">minmax(100px, auto)</span>; <span class="cmt">/* min 100px, grow as needed */</span>
+
+  <span class="cmt">/* GAP */</span>
+  <span class="css-prop">gap</span>: <span class="css-val">20px</span>;          <span class="cmt">/* both row and column */</span>
+  <span class="css-prop">row-gap</span>: <span class="css-val">10px</span>;      <span class="cmt">/* row gap only */</span>
+  <span class="css-prop">column-gap</span>: <span class="css-val">20px</span>;   <span class="cmt">/* column gap only */</span>
+
+  <span class="cmt">/* ALIGNMENT */</span>
+  <span class="css-prop">justify-items</span>: <span class="css-val">center</span>;  <span class="cmt">/* horizontal align items */</span>
+  <span class="css-prop">align-items</span>: <span class="css-val">center</span>;    <span class="cmt">/* vertical align items */</span>
+  <span class="css-prop">place-items</span>: <span class="css-val">center</span>;    <span class="cmt">/* shorthand for both */</span>
+}</pre></div>
+        </div>
+
+        <h3>🧩 Grid Item Properties</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; grid-items.css</div>
+          <div class="code-body"><pre><span class="css-sel">.grid-item</span> {
+  <span class="cmt">/* SPAN COLUMNS */</span>
+  <span class="css-prop">grid-column</span>: <span class="css-val">1 / 3</span>;      <span class="cmt">/* start at 1, end at 3 (spans 2) */</span>
+  <span class="css-prop">grid-column</span>: <span class="css-val">span 2</span>;     <span class="cmt">/* span 2 columns from current */</span>
+  <span class="css-prop">grid-column</span>: <span class="css-val">1 / -1</span>;     <span class="cmt">/* full width (first to last) */</span>
+
+  <span class="cmt">/* SPAN ROWS */</span>
+  <span class="css-prop">grid-row</span>: <span class="css-val">1 / 3</span>;         <span class="cmt">/* start at row 1, end at row 3 */</span>
+  <span class="css-prop">grid-row</span>: <span class="css-val">span 2</span>;        <span class="cmt">/* span 2 rows */</span>
+
+  <span class="cmt">/* SHORTHAND */</span>
+  <span class="css-prop">grid-area</span>: <span class="css-val">1 / 1 / 3 / 3</span>; <span class="cmt">/* row-start / col-start / row-end / col-end */</span>
+}</pre></div>
+        </div>
+
+        <h3>🏗️ Grid Template Areas (Powerful!)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; grid-template-areas.css</div>
+          <div class="code-body"><pre><span class="css-sel">.page-layout</span> {
+  <span class="css-prop">display</span>: <span class="css-val">grid</span>;
+  <span class="css-prop">grid-template-columns</span>: <span class="css-val">200px 1fr 200px</span>;
+  <span class="css-prop">grid-template-rows</span>: <span class="css-val">auto 1fr auto</span>;
+  <span class="css-prop">grid-template-areas</span>:
+    <span class="css-val">"header  header  header"</span>
+    <span class="css-val">"sidebar main    aside"</span>
+    <span class="css-val">"footer  footer  footer"</span>;
+  <span class="css-prop">min-height</span>: <span class="css-val">100vh</span>;
+  <span class="css-prop">gap</span>: <span class="css-val">20px</span>;
+}
+
+<span class="css-sel">.header</span>  { <span class="css-prop">grid-area</span>: <span class="css-val">header</span>;  }
+<span class="css-sel">.sidebar</span> { <span class="css-prop">grid-area</span>: <span class="css-val">sidebar</span>; }
+<span class="css-sel">.main</span>    { <span class="css-prop">grid-area</span>: <span class="css-val">main</span>;    }
+<span class="css-sel">.aside</span>   { <span class="css-prop">grid-area</span>: <span class="css-val">aside</span>;   }
+<span class="css-sel">.footer</span>  { <span class="css-prop">grid-area</span>: <span class="css-val">footer</span>;  }</pre></div>
+        </div>
+
+        <h3>⚖️ Flexbox vs Grid - When to Use Which?</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Use Flexbox When...</th>
+              <th>Use Grid When...</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>One-dimensional layout (row OR column)</td>
+              <td>Two-dimensional layout (rows AND columns)</td>
+            </tr>
+            <tr>
+              <td>Content should dictate layout</td>
+              <td>Layout should dictate content</td>
+            </tr>
+            <tr>
+              <td>Navigation bars, button groups</td>
+              <td>Page layouts, dashboards</td>
+            </tr>
+            <tr>
+              <td>Centering single items</td>
+              <td>Complex card grids</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tip">
+          <div class="tip-title">💡 Pro Tip: Combine Them!</div>
+          <div class="tip-content">
+            Use Grid for overall page layout, Flexbox for component internals.
+            They work great together!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Responsive Design -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-responsive">📱</div>
+        <div class="section-title">1.5 Responsive Design - Mobile-First Approach</div>
+        <span class="section-badge badge-html" style="background: rgba(227,76,38,0.2); color: var(--html);">HTML/CSS</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Making Websites Work on All Devices</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Responsive Design</strong> ensures your website looks great on phones, tablets, and desktops.
+          The <strong>Mobile-First</strong> approach means designing for small screens first, then adding complexity.
+        </p>
+
+        <h3>📐 The Viewport Meta Tag (Required!)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; index.html</div>
+          <div class="code-body"><pre><span class="tag">&lt;head&gt;</span>
+  <span class="cmt">&lt;!-- This tells mobile browsers to use actual device width --&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="val">"viewport"</span> <span class="attr">content</span>=<span class="val">"width=device-width, initial-scale=1.0"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span></pre></div>
+        </div>
+
+        <h3>📏 Media Queries</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; responsive.css</div>
+          <div class="code-body"><pre><span class="cmt">/* ========== MOBILE FIRST APPROACH ========== */</span>
+
+<span class="cmt">/* BASE STYLES - Mobile (default) */</span>
+<span class="css-sel">.container</span> {
+  <span class="css-prop">padding</span>: <span class="css-val">1rem</span>;
+}
+
+<span class="css-sel">.card-grid</span> {
+  <span class="css-prop">display</span>: <span class="css-val">grid</span>;
+  <span class="css-prop">grid-template-columns</span>: <span class="css-val">1fr</span>;  <span class="cmt">/* 1 column on mobile */</span>
+  <span class="css-prop">gap</span>: <span class="css-val">1rem</span>;
+}
+
+<span class="css-sel">.nav-links</span> {
+  <span class="css-prop">display</span>: <span class="css-val">none</span>;  <span class="cmt">/* Hidden on mobile (show hamburger instead) */</span>
+}
+
+<span class="cmt">/* TABLET - 768px and up */</span>
+<span class="css-sel">@media (min-width: 768px)</span> {
+  <span class="css-sel">.container</span> {
+    <span class="css-prop">padding</span>: <span class="css-val">2rem</span>;
+  }
+
+  <span class="css-sel">.card-grid</span> {
+    <span class="css-prop">grid-template-columns</span>: <span class="css-val">repeat(2, 1fr)</span>;  <span class="cmt">/* 2 columns */</span>
+  }
+
+  <span class="css-sel">.nav-links</span> {
+    <span class="css-prop">display</span>: <span class="css-val">flex</span>;  <span class="cmt">/* Show nav on tablet+ */</span>
+  }
+
+  <span class="css-sel">.hamburger</span> {
+    <span class="css-prop">display</span>: <span class="css-val">none</span>;  <span class="cmt">/* Hide hamburger on tablet+ */</span>
+  }
+}
+
+<span class="cmt">/* DESKTOP - 1024px and up */</span>
+<span class="css-sel">@media (min-width: 1024px)</span> {
+  <span class="css-sel">.container</span> {
+    <span class="css-prop">max-width</span>: <span class="css-val">1200px</span>;
+    <span class="css-prop">margin</span>: <span class="css-val">0 auto</span>;
+  }
+
+  <span class="css-sel">.card-grid</span> {
+    <span class="css-prop">grid-template-columns</span>: <span class="css-val">repeat(3, 1fr)</span>;  <span class="cmt">/* 3 columns */</span>
+    <span class="css-prop">gap</span>: <span class="css-val">2rem</span>;
+  }
+}
+
+<span class="cmt">/* LARGE DESKTOP - 1440px and up */</span>
+<span class="css-sel">@media (min-width: 1440px)</span> {
+  <span class="css-sel">.card-grid</span> {
+    <span class="css-prop">grid-template-columns</span>: <span class="css-val">repeat(4, 1fr)</span>;  <span class="cmt">/* 4 columns */</span>
+  }
+}</pre></div>
+        </div>
+
+        <h3>📱 Common Breakpoints</h3>
+        <div class="visual-demo">
+          <div class="visual-demo-title">Standard Breakpoints</div>
+          <div class="breakpoint-bar">
+            <div class="breakpoint-segment" style="flex: 1; background: #ef4444; color: white;">📱 Mobile<br>&lt;768px</div>
+            <div class="breakpoint-segment" style="flex: 1; background: #f59e0b; color: #000;">📱 Tablet<br>768-1023px</div>
+            <div class="breakpoint-segment" style="flex: 1.5; background: #22c55e; color: #000;">💻 Desktop<br>1024-1439px</div>
+            <div class="breakpoint-segment" style="flex: 1; background: #3b82f6; color: white;">🖥️ Large<br>1440px+</div>
+          </div>
+        </div>
+
+        <h3>📐 Responsive Units</h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4 style="color: var(--accent);">Relative Units</h4>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1rem;">
+              <li><code>%</code> - Relative to parent</li>
+              <li><code>em</code> - Relative to font-size</li>
+              <li><code>rem</code> - Relative to root font-size</li>
+              <li><code>vw/vh</code> - Viewport width/height</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color: var(--warning);">Fixed Units</h4>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1rem;">
+              <li><code>px</code> - Pixels (avoid for layout)</li>
+              <li><code>pt</code> - Points (print only)</li>
+            </ul>
+          </div>
+          <div class="card card-highlight">
+            <h4 style="color: var(--primary);">Best Practice</h4>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1rem;">
+              <li>Use <code>rem</code> for typography</li>
+              <li>Use <code>%</code> or <code>fr</code> for widths</li>
+              <li>Use <code>vh/vw</code> for full-screen</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>🎨 Responsive Images</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; responsive-images.css</div>
+          <div class="code-body"><pre><span class="cmt">/* Make images responsive by default */</span>
+<span class="css-sel">img</span> {
+  <span class="css-prop">max-width</span>: <span class="css-val">100%</span>;  <span class="cmt">/* Never exceed container */</span>
+  <span class="css-prop">height</span>: <span class="css-val">auto</span>;      <span class="cmt">/* Maintain aspect ratio */</span>
+  <span class="css-prop">display</span>: <span class="css-val">block</span>;    <span class="cmt">/* Remove bottom gap */</span>
+}
+
+<span class="cmt">/* Cover a container while maintaining aspect ratio */</span>
+<span class="css-sel">.hero-image</span> {
+  <span class="css-prop">width</span>: <span class="css-val">100%</span>;
+  <span class="css-prop">height</span>: <span class="css-val">50vh</span>;
+  <span class="css-prop">object-fit</span>: <span class="css-val">cover</span>;  <span class="cmt">/* Crop to fit */</span>
+  <span class="css-prop">object-position</span>: <span class="css-val">center</span>;
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Mobile-First = min-width</div>
+          <div class="tip-content">
+            Always use <code>min-width</code> in media queries for mobile-first. 
+            Start with mobile styles, then ADD complexity for larger screens.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Bootstrap -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-bootstrap">🅱️</div>
+        <div class="section-title">1.6 Bootstrap - CSS Framework Deep Dive</div>
+        <span class="section-badge badge-html" style="background: rgba(227,76,38,0.2); color: var(--html);">HTML/CSS</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Bootstrap: The Most Popular CSS Framework</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Bootstrap</strong> provides pre-built CSS classes and JavaScript components for rapid development.
+          It includes a responsive grid system, components, and utilities.
+        </p>
+
+        <h3>📦 Installation</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; CDN Installation (Quick)</div>
+          <div class="code-body"><pre><span class="tag">&lt;head&gt;</span>
+  <span class="cmt">&lt;!-- Bootstrap CSS --&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">href</span>=<span class="val">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"</span>
+        <span class="attr">rel</span>=<span class="val">"stylesheet"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="cmt">&lt;!-- Your content --&gt;</span>
+  
+  <span class="cmt">&lt;!-- Bootstrap JS (at end of body) --&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;/body&gt;</span></pre></div>
+        </div>
+
+        <h3>📐 Bootstrap Grid System</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Bootstrap Grid</div>
+          <div class="code-body"><pre><span class="cmt">&lt;!-- Container: Centers content with max-width --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"container"</span><span class="tag">&gt;</span>
+
+  <span class="cmt">&lt;!-- Row: Creates horizontal group --&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"row"</span><span class="tag">&gt;</span>
+  
+    <span class="cmt">&lt;!-- Columns: 12-column system --&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"col-12 col-md-6 col-lg-4"</span><span class="tag">&gt;</span>
+      <span class="cmt">&lt;!-- Mobile: full width (12/12)
+           Tablet: half width (6/12)
+           Desktop: third width (4/12) --&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+    
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"col-12 col-md-6 col-lg-4"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"col-12 col-md-12 col-lg-4"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+    
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- Equal-width auto columns --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"row"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"col"</span><span class="tag">&gt;</span>Auto width<span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"col"</span><span class="tag">&gt;</span>Auto width<span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"col"</span><span class="tag">&gt;</span>Auto width<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre></div>
+        </div>
+
+        <h3>🔤 Bootstrap Breakpoint Prefixes</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Prefix</th>
+              <th>Breakpoint</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>(none)</code></td>
+              <td>&lt;576px (Extra small)</td>
+              <td><code>col-12</code></td>
+            </tr>
+            <tr>
+              <td><code>sm</code></td>
+              <td>≥576px (Small)</td>
+              <td><code>col-sm-6</code></td>
+            </tr>
+            <tr>
+              <td><code>md</code></td>
+              <td>≥768px (Medium)</td>
+              <td><code>col-md-4</code></td>
+            </tr>
+            <tr>
+              <td><code>lg</code></td>
+              <td>≥992px (Large)</td>
+              <td><code>col-lg-3</code></td>
+            </tr>
+            <tr>
+              <td><code>xl</code></td>
+              <td>≥1200px (Extra large)</td>
+              <td><code>col-xl-2</code></td>
+            </tr>
+            <tr>
+              <td><code>xxl</code></td>
+              <td>≥1400px (Extra extra large)</td>
+              <td><code>col-xxl-1</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>🎨 Bootstrap Components</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Bootstrap Components</div>
+          <div class="code-body"><pre><span class="cmt">&lt;!-- BUTTONS --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"btn btn-primary"</span><span class="tag">&gt;</span>Primary<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"btn btn-secondary"</span><span class="tag">&gt;</span>Secondary<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"btn btn-success"</span><span class="tag">&gt;</span>Success<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"btn btn-danger"</span><span class="tag">&gt;</span>Danger<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"btn btn-outline-primary"</span><span class="tag">&gt;</span>Outline<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">&lt;!-- CARDS --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"card"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"..."</span> <span class="attr">class</span>=<span class="val">"card-img-top"</span> <span class="attr">alt</span>=<span class="val">"..."</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"card-body"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h5</span> <span class="attr">class</span>=<span class="val">"card-title"</span><span class="tag">&gt;</span>Card Title<span class="tag">&lt;/h5&gt;</span>
+    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"card-text"</span><span class="tag">&gt;</span>Card content here<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"#"</span> <span class="attr">class</span>=<span class="val">"btn btn-primary"</span><span class="tag">&gt;</span>Go somewhere<span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- NAVBAR --&gt;</span>
+<span class="tag">&lt;nav</span> <span class="attr">class</span>=<span class="val">"navbar navbar-expand-lg navbar-dark bg-dark"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"container"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="val">"navbar-brand"</span> <span class="attr">href</span>=<span class="val">"#"</span><span class="tag">&gt;</span>Brand<span class="tag">&lt;/a&gt;</span>
+    <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"navbar-toggler"</span> <span class="attr">data-bs-toggle</span>=<span class="val">"collapse"</span> 
+            <span class="attr">data-bs-target</span>=<span class="val">"#navbarNav"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;span</span> <span class="attr">class</span>=<span class="val">"navbar-toggler-icon"</span><span class="tag">&gt;&lt;/span&gt;</span>
+    <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"collapse navbar-collapse"</span> <span class="attr">id</span>=<span class="val">"navbarNav"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;ul</span> <span class="attr">class</span>=<span class="val">"navbar-nav"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;li</span> <span class="attr">class</span>=<span class="val">"nav-item"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="val">"nav-link active"</span> <span class="attr">href</span>=<span class="val">"#"</span><span class="tag">&gt;</span>Home<span class="tag">&lt;/a&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+        <span class="tag">&lt;li</span> <span class="attr">class</span>=<span class="val">"nav-item"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="val">"nav-link"</span> <span class="attr">href</span>=<span class="val">"#"</span><span class="tag">&gt;</span>About<span class="tag">&lt;/a&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/nav&gt;</span>
+
+<span class="cmt">&lt;!-- ALERTS --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"alert alert-success"</span> <span class="attr">role</span>=<span class="val">"alert"</span><span class="tag">&gt;</span>
+  Success message!
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- MODAL (trigger + modal) --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"btn btn-primary"</span> <span class="attr">data-bs-toggle</span>=<span class="val">"modal"</span> <span class="attr">data-bs-target</span>=<span class="val">"#myModal"</span><span class="tag">&gt;</span>
+  Open Modal
+<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"modal fade"</span> <span class="attr">id</span>=<span class="val">"myModal"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"modal-dialog"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"modal-content"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"modal-header"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h5</span> <span class="attr">class</span>=<span class="val">"modal-title"</span><span class="tag">&gt;</span>Modal Title<span class="tag">&lt;/h5&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"btn-close"</span> <span class="attr">data-bs-dismiss</span>=<span class="val">"modal"</span><span class="tag">&gt;&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"modal-body"</span><span class="tag">&gt;</span>Modal content<span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"modal-footer"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"btn btn-secondary"</span> <span class="attr">data-bs-dismiss</span>=<span class="val">"modal"</span><span class="tag">&gt;</span>Close<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre></div>
+        </div>
+
+        <h3>🛠️ Bootstrap Utility Classes</h3>
+        <div class="grid-2">
+          <div class="card card-bootstrap">
+            <h4 style="color: var(--bootstrap); margin-bottom: 0.75rem;">Spacing</h4>
+            <code style="font-size: 0.85rem; color: var(--muted); line-height: 1.8;">
+              m-3 (margin: 1rem)<br>
+              p-4 (padding: 1.5rem)<br>
+              mt-2 (margin-top)<br>
+              px-3 (padding left/right)<br>
+              my-auto (margin y auto)
+            </code>
+          </div>
+          <div class="card card-bootstrap">
+            <h4 style="color: var(--bootstrap); margin-bottom: 0.75rem;">Display & Flex</h4>
+            <code style="font-size: 0.85rem; color: var(--muted); line-height: 1.8;">
+              d-flex (display: flex)<br>
+              d-none d-md-block<br>
+              justify-content-center<br>
+              align-items-center<br>
+              flex-column
+            </code>
+          </div>
+          <div class="card card-bootstrap">
+            <h4 style="color: var(--bootstrap); margin-bottom: 0.75rem;">Text</h4>
+            <code style="font-size: 0.85rem; color: var(--muted); line-height: 1.8;">
+              text-center<br>
+              text-primary<br>
+              fw-bold (font-weight)<br>
+              fs-4 (font-size)<br>
+              text-uppercase
+            </code>
+          </div>
+          <div class="card card-bootstrap">
+            <h4 style="color: var(--bootstrap); margin-bottom: 0.75rem;">Background & Border</h4>
+            <code style="font-size: 0.85rem; color: var(--muted); line-height: 1.8;">
+              bg-primary<br>
+              bg-dark text-white<br>
+              border border-primary<br>
+              rounded rounded-3<br>
+              shadow shadow-lg
+            </code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Animations -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-animation">✨</div>
+        <div class="section-title">1.7 CSS Animations & Transitions</div>
+        <span class="section-badge badge-html" style="background: rgba(227,76,38,0.2); color: var(--html);">HTML/CSS</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Bringing Your UI to Life</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Transitions</strong> animate property changes. <strong>Animations</strong> create complex multi-step movements with keyframes.
+        </p>
+
+        <h3>🔄 Transitions (Simple)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; transitions.css</div>
+          <div class="code-body"><pre><span class="css-sel">.button</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">transform</span>: <span class="css-val">scale(1)</span>;
+  
+  <span class="cmt">/* Transition: property | duration | timing | delay */</span>
+  <span class="css-prop">transition</span>: <span class="css-val">all 0.3s ease</span>;
+  
+  <span class="cmt">/* Or specify individual properties */</span>
+  <span class="css-prop">transition</span>: <span class="css-val">background 0.3s ease, transform 0.2s ease</span>;
+}
+
+<span class="css-sel">.button:hover</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#06b6d4</span>;
+  <span class="css-prop">transform</span>: <span class="css-val">scale(1.05) translateY(-2px)</span>;
+}
+
+<span class="cmt">/* Timing functions */</span>
+<span class="css-sel">.ease</span>     { <span class="css-prop">transition-timing-function</span>: <span class="css-val">ease</span>; }      <span class="cmt">/* default */</span>
+<span class="css-sel">.linear</span>   { <span class="css-prop">transition-timing-function</span>: <span class="css-val">linear</span>; }
+<span class="css-sel">.ease-in</span>  { <span class="css-prop">transition-timing-function</span>: <span class="css-val">ease-in</span>; }  <span class="cmt">/* slow start */</span>
+<span class="css-sel">.ease-out</span> { <span class="css-prop">transition-timing-function</span>: <span class="css-val">ease-out</span>; } <span class="cmt">/* slow end */</span>
+<span class="css-sel">.bounce</span>   { <span class="css-prop">transition-timing-function</span>: <span class="css-val">cubic-bezier(0.68, -0.55, 0.265, 1.55)</span>; }</pre></div>
+        </div>
+
+        <h3>🎬 Keyframe Animations (Complex)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; animations.css</div>
+          <div class="code-body"><pre><span class="cmt">/* Define the animation */</span>
+<span class="css-sel">@keyframes fadeIn</span> {
+  <span class="css-sel">from</span> {
+    <span class="css-prop">opacity</span>: <span class="css-val">0</span>;
+    <span class="css-prop">transform</span>: <span class="css-val">translateY(20px)</span>;
+  }
+  <span class="css-sel">to</span> {
+    <span class="css-prop">opacity</span>: <span class="css-val">1</span>;
+    <span class="css-prop">transform</span>: <span class="css-val">translateY(0)</span>;
+  }
+}
+
+<span class="css-sel">@keyframes pulse</span> {
+  <span class="css-sel">0%</span>, <span class="css-sel">100%</span> {
+    <span class="css-prop">transform</span>: <span class="css-val">scale(1)</span>;
+  }
+  <span class="css-sel">50%</span> {
+    <span class="css-prop">transform</span>: <span class="css-val">scale(1.1)</span>;
+  }
+}
+
+<span class="css-sel">@keyframes spin</span> {
+  <span class="css-sel">from</span> { <span class="css-prop">transform</span>: <span class="css-val">rotate(0deg)</span>; }
+  <span class="css-sel">to</span>   { <span class="css-prop">transform</span>: <span class="css-val">rotate(360deg)</span>; }
+}
+
+<span class="cmt">/* Apply the animation */</span>
+<span class="css-sel">.fade-in</span> {
+  <span class="css-prop">animation</span>: <span class="css-val">fadeIn 0.5s ease forwards</span>;
+}
+
+<span class="css-sel">.pulsing</span> {
+  <span class="css-prop">animation</span>: <span class="css-val">pulse 2s ease-in-out infinite</span>;
+}
+
+<span class="css-sel">.spinner</span> {
+  <span class="css-prop">animation</span>: <span class="css-val">spin 1s linear infinite</span>;
+}
+
+<span class="cmt">/* Animation properties breakdown */</span>
+<span class="css-sel">.animated</span> {
+  <span class="css-prop">animation-name</span>: <span class="css-val">fadeIn</span>;
+  <span class="css-prop">animation-duration</span>: <span class="css-val">0.5s</span>;
+  <span class="css-prop">animation-timing-function</span>: <span class="css-val">ease</span>;
+  <span class="css-prop">animation-delay</span>: <span class="css-val">0s</span>;
+  <span class="css-prop">animation-iteration-count</span>: <span class="css-val">1</span>;       <span class="cmt">/* or 'infinite' */</span>
+  <span class="css-prop">animation-direction</span>: <span class="css-val">normal</span>;        <span class="cmt">/* or 'reverse', 'alternate' */</span>
+  <span class="css-prop">animation-fill-mode</span>: <span class="css-val">forwards</span>;      <span class="cmt">/* keep end state */</span>
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 Performance Tip</div>
+          <div class="tip-content">
+            Only animate <code>transform</code> and <code>opacity</code> for smooth 60fps animations.
+            Avoid animating <code>width</code>, <code>height</code>, <code>margin</code>, <code>padding</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Advanced CSS -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon icon-advanced">🚀</div>
+        <div class="section-title">1.8 Advanced CSS - Variables, Functions & More</div>
+        <span class="section-badge badge-html" style="background: rgba(227,76,38,0.2); color: var(--html);">HTML/CSS</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Modern CSS Features</h2>
+
+        <h3>🎨 CSS Custom Properties (Variables)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; css-variables.css</div>
+          <div class="code-body"><pre><span class="cmt">/* Define variables in :root for global access */</span>
+<span class="css-sel">:root</span> {
+  <span class="cmt">/* Colors */</span>
+  <span class="css-prop">--primary</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">--secondary</span>: <span class="css-val">#a78bfa</span>;
+  <span class="css-prop">--bg-dark</span>: <span class="css-val">#0a0f1c</span>;
+  <span class="css-prop">--text</span>: <span class="css-val">#f1f5f9</span>;
+  
+  <span class="cmt">/* Spacing */</span>
+  <span class="css-prop">--spacing-sm</span>: <span class="css-val">8px</span>;
+  <span class="css-prop">--spacing-md</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">--spacing-lg</span>: <span class="css-val">24px</span>;
+  
+  <span class="cmt">/* Typography */</span>
+  <span class="css-prop">--font-size-base</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">--font-family</span>: <span class="css-val">'Outfit', sans-serif</span>;
+  
+  <span class="cmt">/* Borders */</span>
+  <span class="css-prop">--radius</span>: <span class="css-val">12px</span>;
+  <span class="css-prop">--border-color</span>: <span class="css-val">#2d3a52</span>;
+}
+
+<span class="cmt">/* Use variables with var() */</span>
+<span class="css-sel">.card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">var(--bg-dark)</span>;
+  <span class="css-prop">color</span>: <span class="css-val">var(--text)</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">var(--spacing-md)</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">var(--radius)</span>;
+  <span class="css-prop">border</span>: <span class="css-val">1px solid var(--border-color)</span>;
+}
+
+<span class="css-sel">.button</span> {
+  <span class="css-prop">background</span>: <span class="css-val">var(--primary)</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">var(--spacing-sm) var(--spacing-md)</span>;
+}
+
+<span class="cmt">/* Override variables locally */</span>
+<span class="css-sel">.dark-theme</span> {
+  <span class="css-prop">--bg-dark</span>: <span class="css-val">#000000</span>;
+  <span class="css-prop">--text</span>: <span class="css-val">#ffffff</span>;
+}
+
+<span class="cmt">/* Fallback value */</span>
+<span class="css-sel">.element</span> {
+  <span class="css-prop">color</span>: <span class="css-val">var(--undefined-color, #333)</span>; <span class="cmt">/* fallback to #333 */</span>
+}</pre></div>
+        </div>
+
+        <h3>📐 CSS Functions</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; css-functions.css</div>
+          <div class="code-body"><pre><span class="cmt">/* calc() - Mathematical calculations */</span>
+<span class="css-sel">.sidebar</span> {
+  <span class="css-prop">width</span>: <span class="css-val">calc(100% - 250px)</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">calc(var(--spacing-md) * 2)</span>;
+}
+
+<span class="cmt">/* min(), max(), clamp() - Responsive values */</span>
+<span class="css-sel">.container</span> {
+  <span class="css-prop">width</span>: <span class="css-val">min(100%, 1200px)</span>;           <span class="cmt">/* max-width behavior */</span>
+  <span class="css-prop">padding</span>: <span class="css-val">max(20px, 5vw)</span>;             <span class="cmt">/* at least 20px */</span>
+  <span class="css-prop">font-size</span>: <span class="css-val">clamp(1rem, 2vw, 1.5rem)</span>; <span class="cmt">/* min | preferred | max */</span>
+}
+
+<span class="cmt">/* Color functions */</span>
+<span class="css-sel">.overlay</span> {
+  <span class="css-prop">background</span>: <span class="css-val">rgba(0, 0, 0, 0.5)</span>;          <span class="cmt">/* 50% transparent black */</span>
+  <span class="css-prop">background</span>: <span class="css-val">hsla(200, 80%, 50%, 0.8)</span>;   <span class="cmt">/* HSL with alpha */</span>
+}
+
+<span class="cmt">/* Gradients */</span>
+<span class="css-sel">.gradient</span> {
+  <span class="css-prop">background</span>: <span class="css-val">linear-gradient(135deg, #22d3ee, #a78bfa)</span>;
+  <span class="css-prop">background</span>: <span class="css-val">radial-gradient(circle at center, #fff, #000)</span>;
+}</pre></div>
+        </div>
+
+        <h3>🎯 Modern CSS Selectors</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; modern-selectors.css</div>
+          <div class="code-body"><pre><span class="cmt">/* :is() - Match any of these selectors */</span>
+<span class="css-sel">:is(h1, h2, h3, h4)</span> {
+  <span class="css-prop">color</span>: <span class="css-val">var(--primary)</span>;
+}
+
+<span class="cmt">/* :where() - Same as :is() but zero specificity */</span>
+<span class="css-sel">:where(.card, .panel, .box)</span> {
+  <span class="css-prop">border-radius</span>: <span class="css-val">12px</span>;
+}
+
+<span class="cmt">/* :has() - Parent selector (game changer!) */</span>
+<span class="css-sel">.card:has(img)</span> {
+  <span class="css-prop">padding-top</span>: <span class="css-val">0</span>;  <span class="cmt">/* Cards with images */</span>
+}
+
+<span class="css-sel">form:has(:invalid)</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">red</span>;  <span class="cmt">/* Form has invalid input */</span>
+}
+
+<span class="cmt">/* :not() - Exclude elements */</span>
+<span class="css-sel">.list-item:not(:last-child)</span> {
+  <span class="css-prop">border-bottom</span>: <span class="css-val">1px solid #ccc</span>;
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART 2 HEADER -->
+    <div class="part-header" style="border-color: var(--react);">
+      <h2 style="color: var(--react);">⚛️ PART 2: React Scope</h2>
+      <p>Applying CSS Concepts in React Applications</p>
+    </div>
+
+    <!-- Section 9: CSS in React -->
+    <div class="section" id="s9">
+      <div class="section-header" onclick="toggleSection('s9')">
+        <div class="section-icon icon-react">⚛️</div>
+        <div class="section-title">2.1 CSS in React - All Approaches</div>
+        <span class="section-badge badge-react" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Styling React Components</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          React offers multiple ways to apply CSS. Each approach has trade-offs between simplicity, scoping, and features.
+        </p>
+
+        <h3>📋 Quick Comparison</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Scoped?</th>
+              <th>Full CSS?</th>
+              <th>Dynamic?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Inline Styles</td>
+              <td>✅</td>
+              <td>❌ No hover/media</td>
+              <td>✅ Easy</td>
+            </tr>
+            <tr>
+              <td>CSS Files</td>
+              <td>❌ Global</td>
+              <td>✅</td>
+              <td>⚠️ className toggle</td>
+            </tr>
+            <tr>
+              <td>CSS Modules ⭐</td>
+              <td>✅</td>
+              <td>✅</td>
+              <td>⚠️ className toggle</td>
+            </tr>
+            <tr>
+              <td>Styled Components</td>
+              <td>✅</td>
+              <td>✅</td>
+              <td>✅ Props-based</td>
+            </tr>
+            <tr>
+              <td>Tailwind CSS</td>
+              <td>✅</td>
+              <td>✅</td>
+              <td>⚠️ className toggle</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>1️⃣ Inline Styles in React</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; InlineStyles.jsx</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">Card</span>({ isActive }) {
+  <span class="cmt">// Style object - camelCase properties!</span>
+  <span class="kw">const</span> cardStyle = {
+    <span class="prop">backgroundColor</span>: isActive ? <span class="str">'#22d3ee'</span> : <span class="str">'#1a1a2e'</span>,
+    <span class="prop">padding</span>: <span class="num">16</span>,          <span class="cmt">// Numbers default to 'px'</span>
+    <span class="prop">borderRadius</span>: <span class="num">12</span>,
+    <span class="prop">border</span>: <span class="str">'1px solid #333'</span>,
+    <span class="prop">transition</span>: <span class="str">'all 0.3s ease'</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">style</span>={cardStyle}<span class="tag">&gt;</span>
+      <span class="tag">&lt;h3</span> <span class="attr">style</span>={{ <span class="prop">color</span>: <span class="str">'#f1f5f9'</span>, <span class="prop">margin</span>: <span class="num">0</span> }}<span class="tag">&gt;</span>
+        Card Title
+      <span class="tag">&lt;/h3&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>2️⃣ CSS Files (Global)</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Card.css</div>
+            <div class="code-body"><pre><span class="css-sel">.card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#1a1a2e</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">12px</span>;
+}
+
+<span class="css-sel">.card:hover</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+}
+
+<span class="css-sel">.card.active</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#22d3ee</span>;
+}</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Card.jsx</div>
+            <div class="code-body"><pre><span class="kw">import</span> <span class="str">'./Card.css'</span>;
+
+<span class="kw">function</span> <span class="fn">Card</span>({ isActive }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="str">`card </span>${isActive ? <span class="str">'active'</span> : <span class="str">''</span>}<span class="str">`</span>}<span class="tag">&gt;</span>
+      Card Content
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+          </div>
+        </div>
+
+        <h3>3️⃣ CSS Modules (Recommended!) ⭐</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Card.module.css</div>
+            <div class="code-body"><pre><span class="cmt">/* Classes are automatically scoped! */</span>
+<span class="css-sel">.card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#1a1a2e</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">12px</span>;
+}
+
+<span class="css-sel">.card:hover</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+}
+
+<span class="css-sel">.active</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#22d3ee</span>;
+}</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Card.jsx</div>
+            <div class="code-body"><pre><span class="kw">import</span> styles <span class="kw">from</span> <span class="str">'./Card.module.css'</span>;
+<span class="kw">import</span> clsx <span class="kw">from</span> <span class="str">'clsx'</span>;
+
+<span class="kw">function</span> <span class="fn">Card</span>({ isActive }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="fn">clsx</span>(
+      styles.card,
+      { [styles.active]: isActive }
+    )}<span class="tag">&gt;</span>
+      Card Content
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 10: Responsive React -->
+    <div class="section" id="s10">
+      <div class="section-header" onclick="toggleSection('s10')">
+        <div class="section-icon icon-responsive">📱</div>
+        <div class="section-title">2.2 Responsive Design in React</div>
+        <span class="section-badge badge-react" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Making React Components Responsive</h2>
+
+        <h3>📏 Method 1: CSS Media Queries (CSS Modules)</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentGrid.module.css</div>
+            <div class="code-body"><pre><span class="css-sel">.grid</span> {
+  <span class="css-prop">display</span>: <span class="css-val">grid</span>;
+  <span class="css-prop">gap</span>: <span class="css-val">1rem</span>;
+  <span class="css-prop">grid-template-columns</span>: <span class="css-val">1fr</span>;
+}
+
+<span class="css-sel">@media (min-width: 768px)</span> {
+  <span class="css-sel">.grid</span> {
+    <span class="css-prop">grid-template-columns</span>: <span class="css-val">repeat(2, 1fr)</span>;
+  }
+}
+
+<span class="css-sel">@media (min-width: 1024px)</span> {
+  <span class="css-sel">.grid</span> {
+    <span class="css-prop">grid-template-columns</span>: <span class="css-val">repeat(3, 1fr)</span>;
+    <span class="css-prop">gap</span>: <span class="css-val">1.5rem</span>;
+  }
+}
+
+<span class="css-sel">.hideOnMobile</span> {
+  <span class="css-prop">display</span>: <span class="css-val">none</span>;
+}
+
+<span class="css-sel">@media (min-width: 768px)</span> {
+  <span class="css-sel">.hideOnMobile</span> {
+    <span class="css-prop">display</span>: <span class="css-val">block</span>;
+  }
+}</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentGrid.jsx</div>
+            <div class="code-body"><pre><span class="kw">import</span> styles <span class="kw">from</span> <span class="str">'./StudentGrid.module.css'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentGrid</span>({ students }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.grid}<span class="tag">&gt;</span>
+      {students.<span class="fn">map</span>(student => (
+        <span class="tag">&lt;StudentCard</span> 
+          <span class="attr">key</span>={student.id}
+          <span class="attr">student</span>={student} 
+        <span class="tag">/&gt;</span>
+      ))}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+          </div>
+        </div>
+
+        <h3>📏 Method 2: Custom useMediaQuery Hook</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; useMediaQuery.js</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">useMediaQuery</span>(query) {
+  <span class="kw">const</span> [matches, setMatches] = <span class="fn">useState</span>(
+    () => window.<span class="fn">matchMedia</span>(query).matches
+  );
+
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">const</span> mediaQuery = window.<span class="fn">matchMedia</span>(query);
+    
+    <span class="kw">const</span> handleChange = (e) => {
+      <span class="fn">setMatches</span>(e.matches);
+    };
+
+    mediaQuery.<span class="fn">addEventListener</span>(<span class="str">'change'</span>, handleChange);
+    
+    <span class="kw">return</span> () => {
+      mediaQuery.<span class="fn">removeEventListener</span>(<span class="str">'change'</span>, handleChange);
+    };
+  }, [query]);
+
+  <span class="kw">return</span> matches;
+}
+
+<span class="kw">export default</span> useMediaQuery;</pre></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Using useMediaQuery</div>
+          <div class="code-body"><pre><span class="kw">import</span> useMediaQuery <span class="kw">from</span> <span class="str">'./useMediaQuery'</span>;
+
+<span class="kw">function</span> <span class="fn">Navigation</span>() {
+  <span class="kw">const</span> isMobile = <span class="fn">useMediaQuery</span>(<span class="str">'(max-width: 767px)'</span>);
+  <span class="kw">const</span> isTablet = <span class="fn">useMediaQuery</span>(<span class="str">'(min-width: 768px) and (max-width: 1023px)'</span>);
+  <span class="kw">const</span> isDesktop = <span class="fn">useMediaQuery</span>(<span class="str">'(min-width: 1024px)'</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;nav&gt;</span>
+      {isMobile ? (
+        <span class="tag">&lt;HamburgerMenu</span> <span class="tag">/&gt;</span>
+      ) : (
+        <span class="tag">&lt;DesktopNav</span> <span class="attr">compact</span>={isTablet} <span class="tag">/&gt;</span>
+      )}
+    <span class="tag">&lt;/nav&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📏 Method 3: Container Queries (New!)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; container-queries.css</div>
+          <div class="code-body"><pre><span class="cmt">/* Define a container */</span>
+<span class="css-sel">.card-container</span> {
+  <span class="css-prop">container-type</span>: <span class="css-val">inline-size</span>;
+  <span class="css-prop">container-name</span>: <span class="css-val">card</span>;
+}
+
+<span class="cmt">/* Style based on container size (not viewport!) */</span>
+<span class="css-sel">@container card (min-width: 400px)</span> {
+  <span class="css-sel">.card-content</span> {
+    <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+    <span class="css-prop">gap</span>: <span class="css-val">1rem</span>;
+  }
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 11: Bootstrap in React -->
+    <div class="section" id="s11">
+      <div class="section-header" onclick="toggleSection('s11')">
+        <div class="section-icon icon-bootstrap">🅱️</div>
+        <div class="section-title">2.3 Bootstrap in React (React-Bootstrap)</div>
+        <span class="section-badge badge-react" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Using Bootstrap with React</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>React-Bootstrap</strong> provides Bootstrap components as React components.
+          No jQuery needed - fully integrated with React!
+        </p>
+
+        <h3>📦 Installation</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Terminal</div>
+          <div class="code-body"><pre><span class="cmt"># Install React-Bootstrap</span>
+npm install react-bootstrap bootstrap
+
+<span class="cmt"># Import Bootstrap CSS in your index.js or App.js</span>
+<span class="kw">import</span> <span class="str">'bootstrap/dist/css/bootstrap.min.css'</span>;</pre></div>
+        </div>
+
+        <h3>🎯 Using React-Bootstrap Components</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentManagement.jsx</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { 
+  Container, Row, Col, 
+  Card, Button, Badge,
+  Form, Modal, Alert,
+  Navbar, Nav
+} <span class="kw">from</span> <span class="str">'react-bootstrap'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentManagement</span>() {
+  <span class="kw">const</span> [showModal, setShowModal] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [students, setStudents] = <span class="fn">useState</span>([]);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="cmt">{/* NAVBAR */}</span>
+      <span class="tag">&lt;Navbar</span> <span class="attr">bg</span>=<span class="str">"dark"</span> <span class="attr">variant</span>=<span class="str">"dark"</span> <span class="attr">expand</span>=<span class="str">"lg"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;Container&gt;</span>
+          <span class="tag">&lt;Navbar.Brand&gt;</span>Student Manager<span class="tag">&lt;/Navbar.Brand&gt;</span>
+          <span class="tag">&lt;Navbar.Toggle</span> <span class="tag">/&gt;</span>
+          <span class="tag">&lt;Navbar.Collapse&gt;</span>
+            <span class="tag">&lt;Nav</span> <span class="attr">className</span>=<span class="str">"me-auto"</span><span class="tag">&gt;</span>
+              <span class="tag">&lt;Nav.Link</span> <span class="attr">href</span>=<span class="str">"#home"</span><span class="tag">&gt;</span>Home<span class="tag">&lt;/Nav.Link&gt;</span>
+              <span class="tag">&lt;Nav.Link</span> <span class="attr">href</span>=<span class="str">"#students"</span><span class="tag">&gt;</span>Students<span class="tag">&lt;/Nav.Link&gt;</span>
+            <span class="tag">&lt;/Nav&gt;</span>
+          <span class="tag">&lt;/Navbar.Collapse&gt;</span>
+        <span class="tag">&lt;/Container&gt;</span>
+      <span class="tag">&lt;/Navbar&gt;</span>
+
+      <span class="tag">&lt;Container</span> <span class="attr">className</span>=<span class="str">"py-4"</span><span class="tag">&gt;</span>
+        <span class="cmt">{/* ALERT */}</span>
+        <span class="tag">&lt;Alert</span> <span class="attr">variant</span>=<span class="str">"info"</span><span class="tag">&gt;</span>
+          Welcome to Student Management System!
+        <span class="tag">&lt;/Alert&gt;</span>
+
+        <span class="cmt">{/* ADD BUTTON */}</span>
+        <span class="tag">&lt;Button</span> 
+          <span class="attr">variant</span>=<span class="str">"primary"</span> 
+          <span class="attr">className</span>=<span class="str">"mb-4"</span>
+          <span class="attr">onClick</span>={() => <span class="fn">setShowModal</span>(<span class="kw">true</span>)}
+        <span class="tag">&gt;</span>
+          Add Student
+        <span class="tag">&lt;/Button&gt;</span>
+
+        <span class="cmt">{/* RESPONSIVE GRID */}</span>
+        <span class="tag">&lt;Row</span> <span class="attr">xs</span>={<span class="num">1</span>} <span class="attr">md</span>={<span class="num">2</span>} <span class="attr">lg</span>={<span class="num">3</span>} <span class="attr">className</span>=<span class="str">"g-4"</span><span class="tag">&gt;</span>
+          {students.<span class="fn">map</span>(student => (
+            <span class="tag">&lt;Col</span> <span class="attr">key</span>={student.id}<span class="tag">&gt;</span>
+              <span class="tag">&lt;Card&gt;</span>
+                <span class="tag">&lt;Card.Body&gt;</span>
+                  <span class="tag">&lt;Card.Title&gt;</span>
+                    {student.name}
+                    <span class="tag">&lt;Badge</span> <span class="attr">bg</span>=<span class="str">"success"</span> <span class="attr">className</span>=<span class="str">"ms-2"</span><span class="tag">&gt;</span>
+                      {student.grade}
+                    <span class="tag">&lt;/Badge&gt;</span>
+                  <span class="tag">&lt;/Card.Title&gt;</span>
+                  <span class="tag">&lt;Card.Text&gt;</span>Age: {student.age}<span class="tag">&lt;/Card.Text&gt;</span>
+                  <span class="tag">&lt;Button</span> <span class="attr">variant</span>=<span class="str">"outline-primary"</span> <span class="attr">size</span>=<span class="str">"sm"</span><span class="tag">&gt;</span>
+                    View Details
+                  <span class="tag">&lt;/Button&gt;</span>
+                <span class="tag">&lt;/Card.Body&gt;</span>
+              <span class="tag">&lt;/Card&gt;</span>
+            <span class="tag">&lt;/Col&gt;</span>
+          ))}
+        <span class="tag">&lt;/Row&gt;</span>
+
+        <span class="cmt">{/* MODAL */}</span>
+        <span class="tag">&lt;Modal</span> <span class="attr">show</span>={showModal} <span class="attr">onHide</span>={() => <span class="fn">setShowModal</span>(<span class="kw">false</span>)}<span class="tag">&gt;</span>
+          <span class="tag">&lt;Modal.Header</span> <span class="attr">closeButton</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;Modal.Title&gt;</span>Add New Student<span class="tag">&lt;/Modal.Title&gt;</span>
+          <span class="tag">&lt;/Modal.Header&gt;</span>
+          <span class="tag">&lt;Modal.Body&gt;</span>
+            <span class="tag">&lt;Form&gt;</span>
+              <span class="tag">&lt;Form.Group</span> <span class="attr">className</span>=<span class="str">"mb-3"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;Form.Label&gt;</span>Name<span class="tag">&lt;/Form.Label&gt;</span>
+                <span class="tag">&lt;Form.Control</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">placeholder</span>=<span class="str">"Enter name"</span> <span class="tag">/&gt;</span>
+              <span class="tag">&lt;/Form.Group&gt;</span>
+              <span class="tag">&lt;Form.Group</span> <span class="attr">className</span>=<span class="str">"mb-3"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;Form.Label&gt;</span>Grade<span class="tag">&lt;/Form.Label&gt;</span>
+                <span class="tag">&lt;Form.Select&gt;</span>
+                  <span class="tag">&lt;option&gt;</span>A<span class="tag">&lt;/option&gt;</span>
+                  <span class="tag">&lt;option&gt;</span>B<span class="tag">&lt;/option&gt;</span>
+                  <span class="tag">&lt;option&gt;</span>C<span class="tag">&lt;/option&gt;</span>
+                <span class="tag">&lt;/Form.Select&gt;</span>
+              <span class="tag">&lt;/Form.Group&gt;</span>
+            <span class="tag">&lt;/Form&gt;</span>
+          <span class="tag">&lt;/Modal.Body&gt;</span>
+          <span class="tag">&lt;Modal.Footer&gt;</span>
+            <span class="tag">&lt;Button</span> <span class="attr">variant</span>=<span class="str">"secondary"</span> <span class="attr">onClick</span>={() => <span class="fn">setShowModal</span>(<span class="kw">false</span>)}<span class="tag">&gt;</span>
+              Cancel
+            <span class="tag">&lt;/Button&gt;</span>
+            <span class="tag">&lt;Button</span> <span class="attr">variant</span>=<span class="str">"primary"</span><span class="tag">&gt;</span>Save<span class="tag">&lt;/Button&gt;</span>
+          <span class="tag">&lt;/Modal.Footer&gt;</span>
+        <span class="tag">&lt;/Modal&gt;</span>
+      <span class="tag">&lt;/Container&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 React-Bootstrap vs Plain Bootstrap</div>
+          <div class="tip-content">
+            <strong>Plain Bootstrap:</strong> <code>&lt;button class="btn btn-primary"&gt;</code><br>
+            <strong>React-Bootstrap:</strong> <code>&lt;Button variant="primary"&gt;</code><br><br>
+            React-Bootstrap components are true React components with proper props!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 12: Tailwind in React -->
+    <div class="section" id="s12">
+      <div class="section-header" onclick="toggleSection('s12')">
+        <div class="section-icon" style="background: linear-gradient(135deg, var(--tailwind), #0284c7); color: #000;">💨</div>
+        <div class="section-title">2.4 Tailwind CSS in React</div>
+        <span class="section-badge badge-react" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Utility-First Styling in React</h2>
+
+        <h3>📦 Installation</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Terminal</div>
+          <div class="code-body"><pre>npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p</pre></div>
+        </div>
+
+        <h3>🎯 Using Tailwind in React Components</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx with Tailwind</div>
+          <div class="code-body"><pre><span class="kw">import</span> clsx <span class="kw">from</span> <span class="str">'clsx'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected, onSelect, onDelete }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="fn">clsx</span>(
+      <span class="cmt">// Base styles</span>
+      <span class="str">`bg-slate-800 p-4 rounded-xl border transition-all duration-200`</span>,
+      <span class="cmt">// Conditional styles</span>
+      isSelected 
+        ? <span class="str">'border-cyan-400 bg-cyan-400/10 scale-[1.02]'</span>
+        : <span class="str">'border-slate-600 hover:border-cyan-400 hover:-translate-y-1'</span>
+    )}<span class="tag">&gt;</span>
+      <span class="cmt">{/* Header */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"flex justify-between items-center mb-2"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h3</span> <span class="attr">className</span>=<span class="str">"text-lg font-semibold text-slate-100"</span><span class="tag">&gt;</span>
+          {student.name}
+        <span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>={<span class="fn">clsx</span>(
+          <span class="str">'px-3 py-1 rounded-full text-sm font-semibold text-white'</span>,
+          {
+            <span class="str">'bg-green-500'</span>: student.grade === <span class="str">'A'</span>,
+            <span class="str">'bg-blue-500'</span>: student.grade === <span class="str">'B'</span>,
+            <span class="str">'bg-amber-500'</span>: student.grade === <span class="str">'C'</span>,
+          }
+        )}<span class="tag">&gt;</span>
+          {student.grade}
+        <span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="cmt">{/* Details */}</span>
+      <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"text-slate-400 text-sm mb-4"</span><span class="tag">&gt;</span>
+        Age: {student.age}
+      <span class="tag">&lt;/p&gt;</span>
+
+      <span class="cmt">{/* Actions */}</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"flex gap-2"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span>
+          <span class="attr">onClick</span>={onSelect}
+          <span class="attr">className</span>={<span class="fn">clsx</span>(
+            <span class="str">'px-4 py-2 rounded-lg font-semibold transition-all'</span>,
+            <span class="str">'hover:-translate-y-0.5'</span>,
+            isSelected
+              ? <span class="str">'bg-transparent border border-slate-600 text-slate-100'</span>
+              : <span class="str">'bg-cyan-400 text-slate-900'</span>
+          )}
+        <span class="tag">&gt;</span>
+          {isSelected ? <span class="str">'Deselect'</span> : <span class="str">'Select'</span>}
+        <span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button</span>
+          <span class="attr">onClick</span>={onDelete}
+          <span class="attr">className</span>=<span class="str">"px-4 py-2 bg-red-500 text-white rounded-lg 
+                     font-semibold hover:-translate-y-0.5 transition-transform"</span>
+        <span class="tag">&gt;</span>
+          Delete
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🔧 Responsive with Tailwind</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Responsive Grid</div>
+          <div class="code-body"><pre><span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"
+  grid 
+  grid-cols-1      {/* Mobile: 1 column */}
+  sm:grid-cols-2   {/* ≥640px: 2 columns */}
+  lg:grid-cols-3   {/* ≥1024px: 3 columns */}
+  xl:grid-cols-4   {/* ≥1280px: 4 columns */}
+  gap-4
+  sm:gap-6         {/* Larger gap on tablet+ */}
+"</span><span class="tag">&gt;</span>
+  {students.<span class="fn">map</span>(s => <span class="tag">&lt;StudentCard</span> <span class="attr">key</span>={s.id} <span class="attr">student</span>={s} <span class="tag">/&gt;</span>)}
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">{/* Hide on mobile, show on desktop */}</span>
+<span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"hidden md:block"</span><span class="tag">&gt;</span>
+  Desktop only content
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">{/* Show on mobile, hide on desktop */}</span>
+<span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"block md:hidden"</span><span class="tag">&gt;</span>
+  Mobile only content
+<span class="tag">&lt;/div&gt;</span></pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 13: Best Practices -->
+    <div class="section" id="s13">
+      <div class="section-header" onclick="toggleSection('s13')">
+        <div class="section-icon icon-project">✨</div>
+        <div class="section-title">2.5 Best Practices Summary</div>
+        <span class="section-badge badge-react" style="background: rgba(97,218,251,0.2); color: var(--react);">React</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Making the Right Choice</h2>
+
+        <h3>🎯 Recommended Stack</h3>
+        <div class="highlight-box">
+          <h4 style="color: var(--primary); margin-bottom: 0.75rem;">For Most React Projects:</h4>
+          <ul style="color: var(--muted); padding-left: 1.25rem;">
+            <li><strong>CSS Modules</strong> - Component styles (scoped, full CSS)</li>
+            <li><strong>Inline Styles</strong> - Dynamic values from props/state</li>
+            <li><strong>Global CSS</strong> - Variables, resets, typography</li>
+            <li><strong>clsx</strong> - Conditional class management</li>
+          </ul>
+        </div>
+
+        <h3>📋 Decision Guide</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th>Best Choice</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Quick prototyping, utility-first</td>
+              <td><strong>Tailwind CSS</strong></td>
+            </tr>
+            <tr>
+              <td>Need Bootstrap components</td>
+              <td><strong>React-Bootstrap</strong></td>
+            </tr>
+            <tr>
+              <td>Component library, design system</td>
+              <td><strong>CSS Modules</strong> or <strong>Styled Components</strong></td>
+            </tr>
+            <tr>
+              <td>Dynamic theming, complex states</td>
+              <td><strong>Styled Components</strong></td>
+            </tr>
+            <tr>
+              <td>Simple projects, small team</td>
+              <td><strong>CSS Modules</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>✅ Golden Rules</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ DO</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Use CSS variables for theming</li>
+              <li>Design mobile-first</li>
+              <li>Co-locate styles with components</li>
+              <li>Use semantic class names</li>
+              <li>Test on real devices</li>
+            </ul>
+          </div>
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ DON'T</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Mix too many styling methods</li>
+              <li>Use !important</li>
+              <li>Hardcode pixel values everywhere</li>
+              <li>Forget about accessibility</li>
+              <li>Ignore browser support</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(38,77,228,0.1), rgba(121,82,179,0.05)); border-radius: 16px; border: 1px solid var(--border);">
+      <h3 style="color: var(--css); margin-bottom: 0.5rem;">🎉 You've Mastered CSS & Stylesheets!</h3>
+      <p style="color: var(--muted);">From Box Model to Bootstrap, Responsive Design to React Styling!</p>
+      <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+        <span class="badge badge-warning">Box Model</span>
+        <span class="badge badge-accent">Flexbox</span>
+        <span class="badge badge-secondary">Grid</span>
+        <span class="badge badge-primary">Responsive</span>
+        <span class="badge" style="background: rgba(121,82,179,0.2); color: var(--bootstrap);">Bootstrap</span>
+        <span class="badge badge-danger">Animations</span>
+        <span class="badge" style="background: rgba(97,218,251,0.2); color: var(--react);">React Styling</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>
