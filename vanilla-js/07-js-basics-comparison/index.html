@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript vs TypeScript Basics</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 JavaScript vs TypeScript Basics
+    From: Chapter 5 - JavaScript vs TypeScript in React
+    
+    Demonstrates the key syntax differences between JS and TS:
+    - Variables and type annotations
+    - Functions with parameter and return types
+    - Objects and interfaces
+    - Arrays with type constraints
+  -->
+  
+  <div class="container">
+    <header>
+      <div class="badges">
+        <span class="badge badge-js">JavaScript</span>
+        <span class="badge badge-ts">TypeScript</span>
+      </div>
+      <h1>JS vs TS: Syntax Comparison</h1>
+      <p>Understanding the key differences</p>
+    </header>
+    
+    <main>
+      <!-- Variables -->
+      <section class="comparison-section">
+        <h2>1️⃣ Variables & Types</h2>
+        
+        <div class="comparison-grid">
+          <div class="code-panel js">
+            <div class="panel-header">
+              <span class="lang-badge js">JavaScript</span>
+              variables.js
+            </div>
+            <pre class="code-content"><code><span class="comment">// No type annotations needed</span>
+<span class="keyword">let</span> name = <span class="string">"John"</span>
+<span class="keyword">let</span> age = <span class="number">25</span>
+<span class="keyword">let</span> isActive = <span class="keyword">true</span>
+<span class="keyword">let</span> items = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+
+<span class="comment">// This works but causes bugs!</span>
+name = <span class="number">42</span>       <span class="comment">// No error 😱</span>
+age = <span class="string">"hello"</span>   <span class="comment">// No error 😱</span></code></pre>
+          </div>
+          
+          <div class="vs-divider">VS</div>
+          
+          <div class="code-panel ts">
+            <div class="panel-header">
+              <span class="lang-badge ts">TypeScript</span>
+              variables.ts
+            </div>
+            <pre class="code-content"><code><span class="comment">// Explicit type annotations</span>
+<span class="keyword">let</span> name: <span class="type">string</span> = <span class="string">"John"</span>
+<span class="keyword">let</span> age: <span class="type">number</span> = <span class="number">25</span>
+<span class="keyword">let</span> isActive: <span class="type">boolean</span> = <span class="keyword">true</span>
+<span class="keyword">let</span> items: <span class="type">number[]</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+
+<span class="comment">// TypeScript catches errors!</span>
+name = <span class="error">42</span>       <span class="comment">// ❌ Error!</span>
+age = <span class="error">"hello"</span>   <span class="comment">// ❌ Error!</span></code></pre>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Functions -->
+      <section class="comparison-section">
+        <h2>2️⃣ Functions</h2>
+        
+        <div class="comparison-grid">
+          <div class="code-panel js">
+            <div class="panel-header">
+              <span class="lang-badge js">JavaScript</span>
+              functions.js
+            </div>
+            <pre class="code-content"><code><span class="comment">// No parameter validation</span>
+<span class="keyword">function</span> <span class="function">calculateTotal</span>(price, quantity) {
+  <span class="keyword">return</span> price * quantity
+}
+
+<span class="comment">// These cause bugs!</span>
+<span class="function">calculateTotal</span>(<span class="string">"10"</span>, <span class="number">5</span>)  <span class="comment">// "1010101010" 😱</span>
+<span class="function">calculateTotal</span>()          <span class="comment">// NaN 😱</span>
+
+<span class="comment">// Arrow function</span>
+<span class="keyword">const</span> <span class="function">greet</span> = (name) => {
+  <span class="keyword">return</span> <span class="string">`Hello, ${name}!`</span>
+}</code></pre>
+          </div>
+          
+          <div class="vs-divider">VS</div>
+          
+          <div class="code-panel ts">
+            <div class="panel-header">
+              <span class="lang-badge ts">TypeScript</span>
+              functions.ts
+            </div>
+            <pre class="code-content"><code><span class="comment">// Typed parameters and return</span>
+<span class="keyword">function</span> <span class="function">calculateTotal</span>(
+  price: <span class="type">number</span>, 
+  quantity: <span class="type">number</span>
+): <span class="type">number</span> {
+  <span class="keyword">return</span> price * quantity
+}
+
+<span class="comment">// TypeScript catches these!</span>
+<span class="function">calculateTotal</span>(<span class="error">"10"</span>, <span class="number">5</span>)  <span class="comment">// ❌ Error!</span>
+<span class="function">calculateTotal</span>()          <span class="comment">// ❌ Error!</span>
+
+<span class="comment">// Typed arrow function</span>
+<span class="keyword">const</span> <span class="function">greet</span> = (name: <span class="type">string</span>): <span class="type">string</span> => {
+  <span class="keyword">return</span> <span class="string">`Hello, ${name}!`</span>
+}</code></pre>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Objects & Interfaces -->
+      <section class="comparison-section">
+        <h2>3️⃣ Objects & Interfaces</h2>
+        
+        <div class="comparison-grid">
+          <div class="code-panel js">
+            <div class="panel-header">
+              <span class="lang-badge js">JavaScript</span>
+              objects.js
+            </div>
+            <pre class="code-content"><code><span class="comment">// Plain object</span>
+<span class="keyword">const</span> user = {
+  name: <span class="string">"John"</span>,
+  age: <span class="number">25</span>,
+  email: <span class="string">"john@example.com"</span>
+}
+
+<span class="comment">// No structure enforcement</span>
+user.nam = <span class="string">"Jane"</span>  <span class="comment">// Typo creates new prop! 😱</span>
+user.age = <span class="string">"old"</span>   <span class="comment">// Wrong type, no error 😱</span>
+
+<span class="comment">// Missing property?</span>
+console.<span class="function">log</span>(user.address)  <span class="comment">// undefined</span></code></pre>
+          </div>
+          
+          <div class="vs-divider">VS</div>
+          
+          <div class="code-panel ts">
+            <div class="panel-header">
+              <span class="lang-badge ts">TypeScript</span>
+              objects.ts
+            </div>
+            <pre class="code-content"><code><span class="comment">// Interface defines structure</span>
+<span class="keyword">interface</span> <span class="type">User</span> {
+  name: <span class="type">string</span>
+  age: <span class="type">number</span>
+  email: <span class="type">string</span>
+  address?: <span class="type">string</span>  <span class="comment">// Optional</span>
+}
+
+<span class="keyword">const</span> user: <span class="type">User</span> = {
+  name: <span class="string">"John"</span>,
+  age: <span class="number">25</span>,
+  email: <span class="string">"john@example.com"</span>
+}
+
+user.<span class="error">nam</span> = <span class="string">"Jane"</span>  <span class="comment">// ❌ Error: 'nam' doesn't exist</span>
+user.age = <span class="error">"old"</span>   <span class="comment">// ❌ Error: Type mismatch</span></code></pre>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Arrays -->
+      <section class="comparison-section">
+        <h2>4️⃣ Arrays</h2>
+        
+        <div class="comparison-grid">
+          <div class="code-panel js">
+            <div class="panel-header">
+              <span class="lang-badge js">JavaScript</span>
+              arrays.js
+            </div>
+            <pre class="code-content"><code><span class="comment">// Arrays can mix types</span>
+<span class="keyword">const</span> numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+numbers.<span class="function">push</span>(<span class="string">"four"</span>)  <span class="comment">// No error! 😱</span>
+
+<span class="comment">// Mixed array allowed</span>
+<span class="keyword">const</span> mixed = [<span class="number">1</span>, <span class="string">"two"</span>, <span class="keyword">true</span>]
+
+<span class="comment">// No autocomplete for items</span>
+<span class="keyword">const</span> users = [
+  { name: <span class="string">"John"</span>, age: <span class="number">25</span> },
+  { name: <span class="string">"Jane"</span>, age: <span class="number">30</span> }
+]
+users[<span class="number">0</span>].nam  <span class="comment">// undefined (typo)</span></code></pre>
+          </div>
+          
+          <div class="vs-divider">VS</div>
+          
+          <div class="code-panel ts">
+            <div class="panel-header">
+              <span class="lang-badge ts">TypeScript</span>
+              arrays.ts
+            </div>
+            <pre class="code-content"><code><span class="comment">// Typed arrays</span>
+<span class="keyword">const</span> numbers: <span class="type">number[]</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+numbers.<span class="function">push</span>(<span class="error">"four"</span>)  <span class="comment">// ❌ Error!</span>
+
+<span class="comment">// Union type for mixed</span>
+<span class="keyword">const</span> mixed: (<span class="type">number</span> | <span class="type">string</span>)[] = [<span class="number">1</span>, <span class="string">"two"</span>]
+
+<span class="comment">// Full autocomplete!</span>
+<span class="keyword">interface</span> <span class="type">User</span> { name: <span class="type">string</span>; age: <span class="type">number</span> }
+
+<span class="keyword">const</span> users: <span class="type">User[]</span> = [
+  { name: <span class="string">"John"</span>, age: <span class="number">25</span> },
+  { name: <span class="string">"Jane"</span>, age: <span class="number">30</span> }
+]
+users[<span class="number">0</span>].<span class="error">nam</span>  <span class="comment">// ❌ Error!</span></code></pre>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Summary -->
+      <section class="summary-section">
+        <h2>📊 Key Takeaways</h2>
+        <div class="summary-grid">
+          <div class="summary-card js">
+            <h3>🟨 JavaScript</h3>
+            <ul>
+              <li>Dynamic typing (runtime)</li>
+              <li>Flexible, less verbose</li>
+              <li>Errors found when code runs</li>
+              <li>Faster prototyping</li>
+              <li>Lower learning curve</li>
+            </ul>
+          </div>
+          <div class="summary-card ts">
+            <h3>🟦 TypeScript</h3>
+            <ul>
+              <li>Static typing (compile-time)</li>
+              <li>Structured, explicit</li>
+              <li>Errors caught before running</li>
+              <li>Better IDE support</li>
+              <li>Self-documenting code</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

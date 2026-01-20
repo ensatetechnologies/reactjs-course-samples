@@ -1,0 +1,21 @@
+{
+  "name": "task-manager-spread",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "React Task Manager demonstrating spread operator for immutable state updates",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.4.0"
+  },
+  "keywords": ["react", "spread-operator", "immutable-state", "task-manager"]
+}

@@ -4,31 +4,33 @@ A comprehensive collection of sample applications demonstrating the journey from
 
 ## 📚 Course Chapters
 
-Each chapter has its own branch with specific sample applications:
+| Chapter | Topics Covered | Apps |
+|---------|----------------|------|
+| **Chapter 2** | HTML, JavaScript to React | 8 apps |
+| **Chapter 3** | DOM Complete Guide | 6 apps |
+| **Chapter 3.1** | DOM Reflow & Performance | 5 apps |
+| **Chapter 5** | JavaScript vs TypeScript | 5 apps |
+| **Spread Operator** | Arrays, Objects, React State | 3 apps |
 
-| Branch | Chapter | Topics Covered |
-|--------|---------|----------------|
-| [`chapter-2-html-js-to-react`](../../tree/chapter-2-html-js-to-react) | HTML, JavaScript to React | Basic HTML, JS fundamentals, DOM manipulation, Counter & Todo apps |
-| [`chapter-3-dom-complete-guide`](../../tree/chapter-3-dom-complete-guide) | DOM Complete Guide | Selection methods, manipulation, events, traversal |
-| [`chapter-3.1-dom-reflow`](../../tree/chapter-3.1-dom-reflow) | DOM Reflow | Performance, DocumentFragment, Virtual DOM |
+**Total: 27 Sample Applications**
 
 ## 🎯 Quick Start
-
-### Clone and Explore
 
 ```bash
 # Clone the repository
 git clone https://github.com/ensatetechnologies/reactjs-course-samples.git
 cd reactjs-course-samples
 
-# Switch to a chapter branch
-git checkout chapter-2-html-js-to-react  # or any other chapter
-
 # For Vanilla JS samples - just open in browser
 start vanilla-js/01-basic-html-structure/index.html
 
-# For React apps
-cd react-apps/06-counter-react
+# For React apps (JavaScript)
+cd react-apps/09-todo-javascript
+npm install
+npm run dev
+
+# For React apps (TypeScript)
+cd react-apps/10-todo-typescript
 npm install
 npm run dev
 ```
@@ -37,38 +39,52 @@ npm run dev
 
 ```
 reactjs-course-samples/
-├── master (this branch)
-│   └── README.md (overview)
+├── vanilla-js/
+│   │
+│   │   # Chapter 2: HTML & JS Basics
+│   ├── 01-basic-html-structure/
+│   ├── 02-javascript-basics/
+│   ├── 03-connecting-js-html/
+│   ├── 04-counter-vanilla/
+│   ├── 05-todo-vanilla/
+│   │
+│   │   # Chapter 3: DOM Complete Guide
+│   ├── 01-dom-selection/
+│   ├── 02-dom-manipulation/
+│   ├── 03-element-creation/
+│   ├── 04-todo-dom/
+│   ├── 05-event-handling/
+│   ├── 06-dom-traversal/
+│   │
+│   │   # Chapter 3.1: DOM Reflow
+│   ├── 01-reflow-problem/
+│   ├── 02-document-fragment/
+│   ├── 03-read-write-pattern/
+│   ├── 04-performance-demo/
+│   │
+│   │   # Chapter 5: JS vs TS
+│   ├── 07-js-basics-comparison/
+│   │
+│   │   # Spread Operator Chapter
+│   ├── 13-spread-arrays/
+│   └── 14-spread-objects/
 │
-├── chapter-2-html-js-to-react/
-│   ├── vanilla-js/
-│   │   ├── 01-basic-html-structure/
-│   │   ├── 02-javascript-basics/
-│   │   ├── 03-connecting-js-html/
-│   │   ├── 04-counter-vanilla/
-│   │   └── 05-todo-vanilla/
-│   └── react-apps/
-│       ├── 06-counter-react/
-│       ├── 07-todo-react/
-│       └── 08-usercard-react/
-│
-├── chapter-3-dom-complete-guide/
-│   └── vanilla-js/
-│       ├── 01-dom-selection/
-│       ├── 02-dom-manipulation/
-│       ├── 03-element-creation/
-│       ├── 04-todo-dom/
-│       ├── 05-event-handling/
-│       └── 06-dom-traversal/
-│
-└── chapter-3.1-dom-reflow/
-    ├── vanilla-js/
-    │   ├── 01-reflow-problem/
-    │   ├── 02-document-fragment/
-    │   ├── 03-read-write-pattern/
-    │   └── 04-performance-demo/
-    └── react-apps/
-        └── 05-react-vdom-demo/
+└── react-apps/
+    │
+    │   # Chapter 2: React Intro
+    ├── 05-react-vdom-demo/
+    ├── 06-counter-react/
+    ├── 07-todo-react/
+    ├── 08-usercard-react/
+    │
+    │   # Chapter 5: JS vs TS Comparison
+    ├── 09-todo-javascript/      # Todo in JavaScript
+    ├── 10-todo-typescript/      # Todo in TypeScript
+    ├── 11-usercard-javascript/  # UserCard in JavaScript
+    ├── 12-usercard-typescript/  # UserCard in TypeScript
+    │
+    │   # Spread Operator Chapter
+    └── 15-task-manager-spread/  # Full Task Manager demo
 ```
 
 ## 🎓 Learning Path
@@ -97,11 +113,78 @@ Understand browser rendering performance:
 - **Read-Write Pattern** - Avoid forced layout
 - **Virtual DOM** - How React optimizes automatically
 
+### Chapter 5: JavaScript vs TypeScript
+Understand the differences between JS and TS in React:
+- **Syntax Comparison** - Variables, functions, objects, arrays
+- **Todo App (JS)** - Without type annotations
+- **Todo App (TS)** - With full type safety
+- **UserCard (JS)** - Component props without types
+- **UserCard (TS)** - Component props with interfaces
+
+### Spread Operator Chapter 🆕
+Master the three magical dots (...) for immutable operations:
+- **Array Spread** - Copy, merge, add elements, function arguments
+- **Object Spread** - Copy, update, merge, remove properties
+- **React State** - Immutable state updates with spread
+- **Task Manager** - Complete app using all spread patterns
+
+## 🟨🟦 JavaScript vs TypeScript
+
+| Aspect | JavaScript | TypeScript |
+|--------|------------|------------|
+| File Extension | `.jsx` | `.tsx` |
+| Type Checking | Runtime only | Compile time |
+| IDE Support | Basic | Full IntelliSense |
+| Learning Curve | Lower | Higher |
+| Best For | Prototypes, small projects | Production, teams |
+
+```javascript
+// JavaScript - No types
+const addTodo = (text) => {
+  setTodos([...todos, { id: Date.now(), text }])
+}
+```
+
+```typescript
+// TypeScript - Full type safety
+interface Todo { id: number; text: string }
+
+const addTodo = (text: string): void => {
+  setTodos([...todos, { id: Date.now(), text }])
+}
+```
+
+## ... Spread Operator Patterns
+
+| Operation | Pattern | Example |
+|-----------|---------|---------|
+| Copy Array | `[...arr]` | `const copy = [...original]` |
+| Add to Array | `[...arr, item]` | `setTodos([...todos, newTodo])` |
+| Merge Arrays | `[...a, ...b]` | `const all = [...arr1, ...arr2]` |
+| Copy Object | `{...obj}` | `const copy = {...user}` |
+| Update Object | `{...obj, key: val}` | `setUser({...user, name: 'New'})` |
+| Nested Update | `{...obj, nested: {...obj.nested}}` | `{...settings, prefs: {...prefs}}` |
+
+```javascript
+// React state update patterns
+// ADD
+setTasks([...tasks, newTask])
+
+// REMOVE
+setTasks(tasks.filter(t => t.id !== id))
+
+// UPDATE
+setTasks(tasks.map(t => 
+  t.id === id ? {...t, completed: !t.completed} : t
+))
+```
+
 ## 🛠️ Technologies Used
 
 - **HTML5** - Semantic markup
 - **CSS3** - Modern styling with CSS variables
 - **Vanilla JavaScript** - ES6+ features
+- **TypeScript** - Static type checking
 - **React 18** - Functional components, hooks
 - **Vite** - Fast development server
 
@@ -112,6 +195,7 @@ Understand browser rendering performance:
 3. **Compare with React** - See the difference
 4. **Deep dive into DOM (Ch 3)** - Understand what React abstracts
 5. **Learn about Reflows (Ch 3.1)** - Appreciate Virtual DOM
+6. **Compare JS vs TS (Ch 5)** - Choose the right tool
 
 ## 🎨 Sample App Features
 

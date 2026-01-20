@@ -1,0 +1,203 @@
+:root {
+  --js: #f7df1e;
+  --ts: #3178c6;
+  --primary: #22d3ee;
+  --accent: #34d399;
+  --danger: #ef4444;
+  --bg: #0a0f1c;
+  --surface: #111827;
+  --surface2: #1a2234;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #2d3a52;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+header {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border);
+}
+
+.badges { margin-bottom: 1rem; }
+
+.badge {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 25px;
+  font-weight: 600;
+  margin: 0 0.25rem;
+}
+
+.badge-js { background: var(--js); color: #000; }
+.badge-ts { background: var(--ts); color: #fff; }
+
+header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, var(--js), var(--ts));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+header p { color: var(--muted); }
+
+/* Comparison sections */
+.comparison-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.comparison-section h2 {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .comparison-grid { grid-template-columns: 1fr; }
+  .vs-divider { text-align: center; padding: 1rem 0; }
+}
+
+.vs-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--danger);
+  font-size: 1.5rem;
+  padding-top: 3rem;
+}
+
+/* Code panels */
+.code-panel {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.code-panel.js { border: 2px solid var(--js); }
+.code-panel.ts { border: 2px solid var(--ts); }
+
+.panel-header {
+  padding: 0.6rem 1rem;
+  font-family: 'Consolas', monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.code-panel.js .panel-header { background: rgba(247, 223, 30, 0.15); }
+.code-panel.ts .panel-header { background: rgba(49, 120, 198, 0.15); }
+
+.lang-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.lang-badge.js { background: var(--js); color: #000; }
+.lang-badge.ts { background: var(--ts); color: #fff; }
+
+.code-content {
+  background: #0d1321;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.code-content code {
+  font-family: 'Consolas', monospace;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  white-space: pre;
+}
+
+/* Syntax highlighting */
+.keyword { color: #c678dd; }
+.string { color: #98c379; }
+.number { color: #d19a66; }
+.function { color: #61afef; }
+.comment { color: #5c6370; font-style: italic; }
+.type { color: #e5c07b; }
+.error { color: #ef4444; text-decoration: wavy underline; }
+
+/* Summary section */
+.summary-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.summary-section h2 {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .summary-grid { grid-template-columns: 1fr; }
+}
+
+.summary-card {
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.summary-card.js {
+  border: 2px solid var(--js);
+  background: rgba(247, 223, 30, 0.08);
+}
+
+.summary-card.ts {
+  border: 2px solid var(--ts);
+  background: rgba(49, 120, 198, 0.08);
+}
+
+.summary-card h3 {
+  margin-bottom: 1rem;
+}
+
+.summary-card.js h3 { color: var(--js); }
+.summary-card.ts h3 { color: var(--ts); }
+
+.summary-card ul {
+  padding-left: 1.25rem;
+  color: var(--muted);
+}
+
+.summary-card li {
+  margin-bottom: 0.5rem;
+}
