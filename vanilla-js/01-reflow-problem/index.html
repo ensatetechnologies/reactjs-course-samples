@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Reflow Problem</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 The Reflow Problem Demo
+    From: Chapter 3.1 - DOM Reflow
+    
+    Demonstrates why multiple DOM updates cause performance issues:
+    - Each DOM change triggers a reflow
+    - Reflow = browser recalculating element positions/sizes
+    - Multiple reflows = slow performance
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>🔄 The Reflow Problem</h1>
+      <p>Why multiple DOM updates are expensive</p>
+    </header>
+    
+    <main>
+      <!-- Browser Pipeline -->
+      <section class="pipeline-section">
+        <h2>🌊 Browser Rendering Pipeline</h2>
+        <div class="pipeline">
+          <div class="pipeline-step">
+            <div class="step-icon">📝</div>
+            <div class="step-title">JavaScript</div>
+            <div class="step-desc">Code runs</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-icon">🎨</div>
+            <div class="step-title">Style</div>
+            <div class="step-desc">CSS applied</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step highlight">
+            <div class="step-icon">📐</div>
+            <div class="step-title">Layout</div>
+            <div class="step-desc">⚠️ REFLOW</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-icon">🖌️</div>
+            <div class="step-title">Paint</div>
+            <div class="step-desc">Draw pixels</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-icon">📺</div>
+            <div class="step-title">Composite</div>
+            <div class="step-desc">Display</div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Problem Demo -->
+      <section class="demo-section">
+        <h2>❌ The Problem: Multiple Reflows</h2>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="badge bad">❌ BAD</span>
+            inefficient.js
+          </div>
+          <pre><code>// Each style change triggers a separate reflow!
+element.style.width = '100px'   // 🔄 Reflow 1
+element.style.height = '200px'  // 🔄 Reflow 2  
+element.style.margin = '10px'   // 🔄 Reflow 3
+element.style.padding = '5px'   // 🔄 Reflow 4
+
+// 4 separate reflows = SLOW! 🐌</code></pre>
+        </div>
+        
+        <button onclick="runBadDemo()">▶️ Run Bad Example (Watch the Box)</button>
+        
+        <div id="demo-box" class="demo-box">
+          Watch me change!
+        </div>
+        <div class="result-info" id="bad-result"></div>
+      </section>
+      
+      <!-- What Triggers Reflows -->
+      <section class="triggers-section">
+        <h2>⚡ What Triggers Reflows?</h2>
+        <div class="triggers-grid">
+          <div class="trigger-card bad">
+            <h3>🔄 Causes Reflow</h3>
+            <ul>
+              <li>Adding/removing elements</li>
+              <li>Changing width/height</li>
+              <li>Changing position/margin</li>
+              <li>Changing font size</li>
+              <li>Reading layout properties*</li>
+            </ul>
+          </div>
+          <div class="trigger-card good">
+            <h3>✅ No Reflow (Cheaper)</h3>
+            <ul>
+              <li>Changing color/background</li>
+              <li>Changing opacity</li>
+              <li>CSS transforms (translate, scale)</li>
+              <li>Changing visibility</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="warning-box">
+          <h4>⚠️ *Layout Properties That Force Reflow</h4>
+          <p>Reading these forces immediate layout calculation:</p>
+          <code>offsetWidth, offsetHeight, clientWidth, clientHeight, scrollWidth, getBoundingClientRect()</code>
+        </div>
+      </section>
+      
+      <button onclick="resetDemo()" class="reset-btn">🔄 Reset Demo</button>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

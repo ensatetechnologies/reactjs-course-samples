@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM Selection Methods</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 DOM Selection Methods Demo
+    From: Chapter 3 - DOM Complete Guide
+    
+    Demonstrates different ways to select DOM elements:
+    - getElementById()
+    - getElementsByClassName()
+    - querySelector()
+    - querySelectorAll()
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>🎯 DOM Selection Methods</h1>
+      <p>Different ways to select elements from the DOM</p>
+    </header>
+    
+    <main>
+      <!-- Demo Elements -->
+      <section class="demo-section">
+        <h2>Demo Elements</h2>
+        
+        <div id="unique-element" class="demo-box">
+          <span class="badge">id="unique-element"</span>
+          <p>I have a unique ID</p>
+        </div>
+        
+        <div class="demo-item demo-box">
+          <span class="badge">class="demo-item"</span>
+          <p>I'm a demo item #1</p>
+        </div>
+        
+        <div class="demo-item demo-box">
+          <span class="badge">class="demo-item"</span>
+          <p>I'm a demo item #2</p>
+        </div>
+        
+        <div class="demo-item special demo-box">
+          <span class="badge">class="demo-item special"</span>
+          <p>I'm special!</p>
+        </div>
+      </section>
+      
+      <!-- Selection Methods -->
+      <section class="methods-section">
+        <h2>Selection Methods</h2>
+        
+        <div class="method-card">
+          <h3>getElementById()</h3>
+          <p>Selects ONE element by its ID (fastest method)</p>
+          <button onclick="selectById()">Try It</button>
+          <div class="code-snippet">
+            <code>document.getElementById('unique-element')</code>
+          </div>
+        </div>
+        
+        <div class="method-card">
+          <h3>getElementsByClassName()</h3>
+          <p>Selects ALL elements with a class (returns HTMLCollection)</p>
+          <button onclick="selectByClass()">Try It</button>
+          <div class="code-snippet">
+            <code>document.getElementsByClassName('demo-item')</code>
+          </div>
+        </div>
+        
+        <div class="method-card">
+          <h3>querySelector()</h3>
+          <p>Selects FIRST element matching CSS selector</p>
+          <button onclick="selectQueryOne()">Try It</button>
+          <div class="code-snippet">
+            <code>document.querySelector('.demo-item')</code>
+          </div>
+        </div>
+        
+        <div class="method-card">
+          <h3>querySelectorAll()</h3>
+          <p>Selects ALL elements matching CSS selector (returns NodeList)</p>
+          <button onclick="selectQueryAll()">Try It</button>
+          <div class="code-snippet">
+            <code>document.querySelectorAll('.demo-item')</code>
+          </div>
+        </div>
+        
+        <div class="method-card">
+          <h3>Complex Selector</h3>
+          <p>Use any CSS selector with querySelector</p>
+          <button onclick="selectComplex()">Try It</button>
+          <div class="code-snippet">
+            <code>document.querySelector('.demo-item.special')</code>
+          </div>
+        </div>
+        
+        <button class="reset-btn" onclick="resetAll()">Reset All</button>
+      </section>
+      
+      <!-- Console Output -->
+      <section class="console-section">
+        <h2>📋 Console Output</h2>
+        <div class="console-output" id="console-output">
+          <p class="console-line muted">Click a button to see the result...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

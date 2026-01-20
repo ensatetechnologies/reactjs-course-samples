@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM Events</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 DOM Events Demo
+    From: Chapter 3 - DOM Complete Guide
+    
+    Demonstrates:
+    - addEventListener
+    - Event types (click, mouse, keyboard, form)
+    - Event object properties
+    - Event bubbling and capturing
+    - preventDefault and stopPropagation
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>🎯 DOM Events</h1>
+      <p>Making pages interactive with event listeners</p>
+    </header>
+    
+    <main>
+      <!-- Mouse Events -->
+      <section class="event-section">
+        <h2>🖱️ Mouse Events</h2>
+        <div id="mouse-box" class="event-box">
+          <p>Hover, click, or double-click me!</p>
+          <div class="event-info" id="mouse-info">Event info appears here</div>
+        </div>
+      </section>
+      
+      <!-- Keyboard Events -->
+      <section class="event-section">
+        <h2>⌨️ Keyboard Events</h2>
+        <input type="text" id="key-input" placeholder="Type something..." class="key-input">
+        <div class="event-info" id="key-info">Key info appears here</div>
+      </section>
+      
+      <!-- Form Events -->
+      <section class="event-section">
+        <h2>📝 Form Events</h2>
+        <form id="demo-form" class="demo-form">
+          <input type="text" id="form-input" placeholder="Enter your name" required>
+          <button type="submit">Submit</button>
+        </form>
+        <div class="event-info" id="form-info">Form events appear here</div>
+      </section>
+      
+      <!-- Event Bubbling -->
+      <section class="event-section">
+        <h2>🫧 Event Bubbling</h2>
+        <p class="description">Click the inner boxes to see how events bubble up!</p>
+        <div id="outer" class="bubble-box outer">
+          Outer (grandparent)
+          <div id="middle" class="bubble-box middle">
+            Middle (parent)
+            <div id="inner" class="bubble-box inner">
+              Inner (target)
+            </div>
+          </div>
+        </div>
+        <div class="button-group">
+          <button onclick="toggleStopPropagation()">
+            stopPropagation: <span id="stop-status">OFF</span>
+          </button>
+          <button onclick="clearBubbleLog()">Clear Log</button>
+        </div>
+        <div class="event-log" id="bubble-log"></div>
+      </section>
+      
+      <!-- Event Reference -->
+      <section class="reference-section">
+        <h2>📚 Common Events</h2>
+        <div class="events-grid">
+          <div class="event-card">
+            <strong>Mouse</strong>
+            <code>click, dblclick, mouseenter, mouseleave, mousemove</code>
+          </div>
+          <div class="event-card">
+            <strong>Keyboard</strong>
+            <code>keydown, keyup, keypress</code>
+          </div>
+          <div class="event-card">
+            <strong>Form</strong>
+            <code>submit, change, input, focus, blur</code>
+          </div>
+          <div class="event-card">
+            <strong>Window</strong>
+            <code>load, resize, scroll, unload</code>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

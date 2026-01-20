@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creating & Removing Elements</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 Creating & Removing Elements Demo
+    From: Chapter 3 - DOM Complete Guide
+    
+    Demonstrates:
+    - createElement()
+    - appendChild(), append(), prepend()
+    - insertBefore(), before(), after()
+    - remove(), removeChild()
+    - replaceWith()
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>➕ Creating & Removing Elements</h1>
+      <p>Dynamically add and remove DOM elements</p>
+    </header>
+    
+    <main>
+      <!-- Element List -->
+      <section class="list-section">
+        <h2>Element Container</h2>
+        <div id="element-container" class="element-container">
+          <div class="item" data-id="1">
+            <span>Item 1</span>
+            <button onclick="removeItem(this)" class="remove-btn">×</button>
+          </div>
+          <div class="item" data-id="2">
+            <span>Item 2</span>
+            <button onclick="removeItem(this)" class="remove-btn">×</button>
+          </div>
+          <div class="item" data-id="3">
+            <span>Item 3</span>
+            <button onclick="removeItem(this)" class="remove-btn">×</button>
+          </div>
+        </div>
+        <p id="empty-msg" class="empty-msg hidden">Container is empty!</p>
+      </section>
+      
+      <!-- Controls -->
+      <section class="controls-section">
+        <h2>➕ Creating Elements</h2>
+        
+        <div class="control-group">
+          <input type="text" id="new-item-text" placeholder="Enter item text...">
+          
+          <div class="button-group">
+            <button onclick="addItemEnd()">Append (End)</button>
+            <button onclick="addItemStart()">Prepend (Start)</button>
+            <button onclick="addItemAt()">Insert at Position 2</button>
+          </div>
+          
+          <div class="code-snippet">
+            <code>
+const div = document.createElement('div')
+div.textContent = 'New Item'
+container.appendChild(div)
+            </code>
+          </div>
+        </div>
+        
+        <h2>➖ Removing Elements</h2>
+        
+        <div class="control-group">
+          <div class="button-group">
+            <button onclick="removeFirst()">Remove First</button>
+            <button onclick="removeLast()">Remove Last</button>
+            <button onclick="clearAll()">Clear All</button>
+          </div>
+          
+          <div class="code-snippet">
+            <code>element.remove() // Modern way</code>
+          </div>
+        </div>
+        
+        <h2>🔄 Replacing Elements</h2>
+        
+        <div class="control-group">
+          <input type="text" id="replace-text" placeholder="New text for first item...">
+          <button onclick="replaceFirst()">Replace First Item</button>
+          
+          <div class="code-snippet">
+            <code>oldElement.replaceWith(newElement)</code>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Methods Reference -->
+      <section class="reference-section">
+        <h2>📚 Methods Reference</h2>
+        <div class="methods-grid">
+          <div class="method-card">
+            <strong>createElement()</strong>
+            <p>Create a new element in memory</p>
+          </div>
+          <div class="method-card">
+            <strong>appendChild()</strong>
+            <p>Add child at end of parent</p>
+          </div>
+          <div class="method-card">
+            <strong>append()</strong>
+            <p>Add multiple nodes/strings at end</p>
+          </div>
+          <div class="method-card">
+            <strong>prepend()</strong>
+            <p>Add at beginning of parent</p>
+          </div>
+          <div class="method-card">
+            <strong>before()</strong>
+            <p>Insert before an element</p>
+          </div>
+          <div class="method-card">
+            <strong>after()</strong>
+            <p>Insert after an element</p>
+          </div>
+          <div class="method-card">
+            <strong>remove()</strong>
+            <p>Remove element from DOM</p>
+          </div>
+          <div class="method-card">
+            <strong>replaceWith()</strong>
+            <p>Replace element with another</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Console -->
+      <section class="console-section">
+        <h2>📋 Console Output</h2>
+        <div class="console-output" id="console-output">
+          <p class="console-line muted">Actions will be logged here...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

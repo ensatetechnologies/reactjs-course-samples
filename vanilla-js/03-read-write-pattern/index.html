@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Read-Write Pattern</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 Read-Write Pattern Demo
+    From: Chapter 3.1 - DOM Reflow
+    
+    Demonstrates the worst-case scenario:
+    - Interleaved reads and writes force synchronous layout
+    - "Read once, write many" pattern as solution
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>📖 Read-Write Pattern</h1>
+      <p>Avoid forced synchronous layout</p>
+    </header>
+    
+    <main>
+      <!-- Problem Explanation -->
+      <section class="problem-section">
+        <h2>😱 The Worst Case: Read-Write Loop</h2>
+        <p class="description">
+          When you read a layout property, the browser must calculate the current layout.
+          If you then write, then read again... each read forces a <strong>synchronous layout</strong>!
+        </p>
+        
+        <div class="comparison-grid">
+          <div class="code-panel bad">
+            <div class="panel-header">
+              <span class="badge bad">❌ TERRIBLE</span>
+              Read-Write Loop
+            </div>
+            <pre><code>// Forces reflow on EVERY iteration!
+elements.forEach(el => {
+  // READ forces layout calculation
+  el.style.width = box.offsetWidth + 'px'
+  
+  // Another READ forces ANOTHER layout!
+  el.style.height = box.offsetHeight + 'px'
+})
+
+// 100 elements = 200 forced reflows! 💀</code></pre>
+          </div>
+          
+          <div class="code-panel good">
+            <div class="panel-header">
+              <span class="badge good">✅ BETTER</span>
+              Read Once, Write Many
+            </div>
+            <pre><code>// Read ONCE outside the loop
+const width = box.offsetWidth
+const height = box.offsetHeight
+
+// Write many times (browser batches these)
+elements.forEach(el => {
+  el.style.width = width + 'px'
+  el.style.height = height + 'px'
+})
+
+// Browser batches writes = ~1 reflow! ✨</code></pre>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Demo -->
+      <section class="demo-section">
+        <h2>🎮 Interactive Demo</h2>
+        <p class="description">Watch the boxes resize using both methods (50 boxes):</p>
+        
+        <div id="boxes-container" class="boxes-container"></div>
+        
+        <div class="demo-controls">
+          <button class="btn-bad" onclick="runBadPattern()">
+            ❌ Bad: Read-Write Loop
+          </button>
+          <button class="btn-good" onclick="runGoodPattern()">
+            ✅ Good: Read Once
+          </button>
+          <button onclick="resetBoxes()">🔄 Reset</button>
+        </div>
+        
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-value" id="time-display">0</div>
+            <div class="stat-label">Time (ms)</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="reads-display">0</div>
+            <div class="stat-label">Layout Reads</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="pattern-display">-</div>
+            <div class="stat-label">Pattern</div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Best Practices -->
+      <section class="practices-section">
+        <h2>✨ Best Practices</h2>
+        <div class="practices-grid">
+          <div class="practice-card good">
+            <h4>✅ Do This</h4>
+            <ul>
+              <li>Batch all reads together</li>
+              <li>Batch all writes together</li>
+              <li>Cache layout values in variables</li>
+              <li>Read before the loop, write inside</li>
+            </ul>
+          </div>
+          <div class="practice-card bad">
+            <h4>❌ Avoid This</h4>
+            <ul>
+              <li>Reading layout in a loop</li>
+              <li>Interleaving reads and writes</li>
+              <li>Using offsetWidth/Height inside loops</li>
+              <li>Calling getBoundingClientRect() repeatedly</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

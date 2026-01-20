@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocumentFragment Solution</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 DocumentFragment Solution Demo
+    From: Chapter 3.1 - DOM Reflow
+    
+    Demonstrates how to batch DOM updates:
+    - Build elements in memory (DocumentFragment)
+    - Apply all at once = single reflow
+    - Massive performance improvement!
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>📦 DocumentFragment</h1>
+      <p>The solution: Build in memory, apply once</p>
+    </header>
+    
+    <main>
+      <!-- Comparison -->
+      <section class="comparison-section">
+        <h2>Bad vs Good Approach</h2>
+        
+        <div class="comparison-grid">
+          <div class="code-panel bad">
+            <div class="panel-header">
+              <span class="badge bad">❌ BAD</span>
+              Multiple Reflows
+            </div>
+            <pre><code>// Each appendChild = reflow!
+items.forEach(item => {
+  const li = document.createElement('li')
+  li.textContent = item
+  list.appendChild(li) // 🔄 Reflow!
+})
+
+// 100 items = 100 reflows! 💀</code></pre>
+          </div>
+          
+          <div class="code-panel good">
+            <div class="panel-header">
+              <span class="badge good">✅ GOOD</span>
+              Single Reflow
+            </div>
+            <pre><code>// Build in memory first
+const fragment = document.createDocumentFragment()
+
+items.forEach(item => {
+  const li = document.createElement('li')
+  li.textContent = item
+  fragment.appendChild(li) // No reflow!
+})
+
+// Single DOM update
+list.appendChild(fragment) // 🔄 1 reflow! ✨</code></pre>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Demo -->
+      <section class="demo-section">
+        <h2>🎮 Interactive Demo</h2>
+        <p class="description">Add 100 items using both methods and compare:</p>
+        
+        <div class="demo-controls">
+          <button class="btn-bad" onclick="addItemsBad()">
+            ❌ Bad: Multiple Reflows (100 items)
+          </button>
+          <button class="btn-good" onclick="addItemsGood()">
+            ✅ Good: DocumentFragment (100 items)
+          </button>
+          <button onclick="clearList()">🗑️ Clear</button>
+        </div>
+        
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-value" id="time-display">0</div>
+            <div class="stat-label">Time (ms)</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="reflow-display">0</div>
+            <div class="stat-label">Est. Reflows</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="items-display">0</div>
+            <div class="stat-label">Items Added</div>
+          </div>
+        </div>
+        
+        <div class="list-container">
+          <ul id="item-list" class="item-list"></ul>
+        </div>
+      </section>
+      
+      <!-- How It Works -->
+      <section class="how-section">
+        <h2>💡 How DocumentFragment Works</h2>
+        <div class="how-steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Create Fragment</h4>
+              <code>const fragment = document.createDocumentFragment()</code>
+              <p>Creates an empty container in memory</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Build in Memory</h4>
+              <code>fragment.appendChild(element)</code>
+              <p>Adding to fragment doesn't touch the DOM</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Apply Once</h4>
+              <code>container.appendChild(fragment)</code>
+              <p>Single DOM update = single reflow!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

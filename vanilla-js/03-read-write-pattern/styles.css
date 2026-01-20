@@ -1,0 +1,201 @@
+:root {
+  --primary: #22d3ee;
+  --accent: #34d399;
+  --danger: #ef4444;
+  --warning: #fbbf24;
+  --bg: #0a0f1c;
+  --surface: #111827;
+  --surface2: #1a2234;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #2d3a52;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+header { text-align: center; margin-bottom: 2rem; }
+header h1 { color: var(--warning); font-size: 2.5rem; margin-bottom: 0.5rem; }
+header p { color: var(--muted); }
+
+section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 { color: var(--primary); margin-bottom: 1rem; font-size: 1.25rem; }
+.description { color: var(--muted); margin-bottom: 1rem; }
+
+/* Comparison grid */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 700px) {
+  .comparison-grid { grid-template-columns: 1fr; }
+}
+
+.code-panel {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.code-panel.bad { border: 2px solid var(--danger); }
+.code-panel.good { border: 2px solid var(--accent); }
+
+.panel-header {
+  padding: 0.5rem 1rem;
+  font-family: 'Consolas', monospace;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.code-panel.bad .panel-header { background: rgba(239, 68, 68, 0.2); }
+.code-panel.good .panel-header { background: rgba(52, 211, 153, 0.2); }
+
+.badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.bad { background: var(--danger); color: white; }
+.badge.good { background: var(--accent); color: var(--bg); }
+
+.code-panel pre {
+  background: #0d1321;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.code-panel code {
+  font-family: 'Consolas', monospace;
+  font-size: 0.85rem;
+  color: #98c379;
+  line-height: 1.5;
+}
+
+/* Boxes container */
+.boxes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 1rem;
+  background: var(--surface2);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  min-height: 100px;
+}
+
+.demo-box {
+  width: 30px;
+  height: 30px;
+  background: var(--primary);
+  border-radius: 4px;
+  transition: none;
+}
+
+/* Demo controls */
+.demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform 0.2s;
+}
+
+button:hover { transform: translateY(-2px); }
+
+.btn-bad { background: var(--danger); color: white; }
+.btn-good { background: var(--accent); color: var(--bg); }
+button:not(.btn-bad):not(.btn-good) {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* Stats */
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  padding: 1.5rem;
+  background: var(--surface2);
+  border-radius: 10px;
+}
+
+.stat { text-align: center; }
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'Consolas', monospace;
+  color: var(--muted);
+}
+
+.stat-value.bad { color: var(--danger); }
+.stat-value.good { color: var(--accent); }
+
+.stat-label { color: var(--muted); font-size: 0.9rem; }
+
+/* Practices */
+.practices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .practices-grid { grid-template-columns: 1fr; }
+}
+
+.practice-card {
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.practice-card.good {
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid var(--accent);
+}
+
+.practice-card.bad {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--danger);
+}
+
+.practice-card h4 { margin-bottom: 0.75rem; }
+.practice-card.good h4 { color: var(--accent); }
+.practice-card.bad h4 { color: var(--danger); }
+
+.practice-card ul {
+  padding-left: 1.25rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.practice-card li { margin-bottom: 0.25rem; }

@@ -1,0 +1,217 @@
+:root {
+  --primary: #22d3ee;
+  --secondary: #a78bfa;
+  --accent: #34d399;
+  --warning: #fbbf24;
+  --danger: #ef4444;
+  --bg: #0a0f1c;
+  --surface: #111827;
+  --surface2: #1a2234;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #2d3a52;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+header { text-align: center; margin-bottom: 2rem; }
+header h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 0.5rem; }
+header p { color: var(--muted); }
+
+.event-section, .reference-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 { color: var(--primary); margin-bottom: 1rem; font-size: 1.25rem; }
+
+.description { color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem; }
+
+/* Event boxes */
+.event-box {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 1rem;
+}
+
+.event-box:hover {
+  border-color: var(--primary);
+}
+
+.event-box.active {
+  border-color: var(--accent);
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.event-info {
+  background: #0d1321;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-family: 'Consolas', monospace;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Keyboard input */
+.key-input {
+  width: 100%;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  color: var(--text);
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.key-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Form */
+.demo-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.demo-form input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.demo-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.demo-form button {
+  background: var(--primary);
+  color: var(--bg);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Bubble boxes */
+.bubble-box {
+  padding: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.bubble-box.outer {
+  background: rgba(167, 139, 250, 0.2);
+  border: 2px solid var(--secondary);
+  padding: 1.5rem;
+}
+
+.bubble-box.middle {
+  background: rgba(251, 191, 36, 0.2);
+  border: 2px solid var(--warning);
+  margin-top: 1rem;
+}
+
+.bubble-box.inner {
+  background: rgba(34, 211, 238, 0.2);
+  border: 2px solid var(--primary);
+  margin-top: 1rem;
+}
+
+.bubble-box.highlight {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px currentColor;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+button {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:hover {
+  border-color: var(--primary);
+}
+
+.event-log {
+  background: #0d1321;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: 'Consolas', monospace;
+  font-size: 0.85rem;
+  min-height: 80px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.log-entry {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.log-entry.outer { color: var(--secondary); }
+.log-entry.middle { color: var(--warning); }
+.log-entry.inner { color: var(--primary); }
+
+/* Events grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.event-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.event-card strong {
+  color: var(--secondary);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.event-card code {
+  font-family: 'Consolas', monospace;
+  color: var(--muted);
+  font-size: 0.8rem;
+}

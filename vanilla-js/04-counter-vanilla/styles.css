@@ -1,0 +1,230 @@
+/* 
+  📚 Counter Demo Styles - Vanilla JavaScript
+  From: Chapter 2 - HTML & JavaScript to React
+*/
+
+:root {
+  --primary: #22d3ee;
+  --secondary: #a78bfa;
+  --danger: #ef4444;
+  --bg: #0a0f1c;
+  --surface: #111827;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+header h1 {
+  color: var(--primary);
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  color: var(--muted);
+}
+
+/* Counter Card */
+.counter-card {
+  background: var(--surface);
+  border: 1px solid #2d3a52;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.counter-card h2 {
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+/* Counter Value */
+.counter-value {
+  font-size: 6rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 1.5rem 0;
+  font-family: 'Consolas', 'Courier New', monospace;
+  transition: all 0.2s;
+}
+
+.counter-value.positive {
+  color: #22c55e;
+}
+
+.counter-value.negative {
+  color: var(--danger);
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--bg);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid #2d3a52;
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+/* Step Control */
+.step-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #2d3a52;
+  flex-wrap: wrap;
+}
+
+.step-control label {
+  color: var(--muted);
+}
+
+.step-control input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #2d3a52;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  text-align: center;
+  font-size: 1rem;
+}
+
+.step-control input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.step-control button {
+  padding: 0.5rem 1rem;
+  background: var(--secondary);
+  color: var(--bg);
+}
+
+/* Code Explanation */
+.code-explanation {
+  background: var(--surface);
+  border: 1px solid #2d3a52;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.code-explanation h3 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.code-explanation pre {
+  background: #0d1321;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.code-explanation code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #98c379;
+  line-height: 1.6;
+}
+
+/* History Section */
+.history-section {
+  background: var(--surface);
+  border: 1px solid #2d3a52;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.history-section h3 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.history-log {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.history-item {
+  padding: 0.5rem;
+  border-bottom: 1px solid #2d3a52;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-item.increase {
+  color: #22c55e;
+}
+
+.history-item.decrease {
+  color: var(--danger);
+}
+
+.history-item.reset {
+  color: var(--secondary);
+}

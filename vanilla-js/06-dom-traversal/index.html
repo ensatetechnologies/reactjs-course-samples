@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM Traversal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 DOM Traversal Demo
+    From: Chapter 3 - DOM Complete Guide
+    
+    Demonstrates navigating between elements:
+    - parentElement
+    - children, firstElementChild, lastElementChild
+    - nextElementSibling, previousElementSibling
+    - closest()
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>🧭 DOM Traversal</h1>
+      <p>Navigate between related elements</p>
+    </header>
+    
+    <main>
+      <!-- DOM Tree -->
+      <section class="tree-section">
+        <h2>🌳 Sample DOM Tree</h2>
+        <p class="description">Click any element to select it, then use the buttons below to traverse.</p>
+        
+        <div id="grandparent" class="tree-node grandparent">
+          <span class="node-label">Grandparent</span>
+          
+          <div id="parent-1" class="tree-node parent">
+            <span class="node-label">Parent 1</span>
+            
+            <div id="child-1" class="tree-node child">
+              <span class="node-label">Child 1</span>
+            </div>
+            <div id="child-2" class="tree-node child selected">
+              <span class="node-label">Child 2 (selected)</span>
+            </div>
+            <div id="child-3" class="tree-node child">
+              <span class="node-label">Child 3</span>
+            </div>
+          </div>
+          
+          <div id="parent-2" class="tree-node parent">
+            <span class="node-label">Parent 2</span>
+            
+            <div id="child-4" class="tree-node child">
+              <span class="node-label">Child 4</span>
+            </div>
+            <div id="child-5" class="tree-node child">
+              <span class="node-label">Child 5</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Controls -->
+      <section class="controls-section">
+        <h2>🎮 Traversal Controls</h2>
+        
+        <div class="control-group">
+          <h3>Parent Navigation</h3>
+          <div class="button-group">
+            <button onclick="goToParent()">parentElement</button>
+            <button onclick="goToClosest('.grandparent')">closest('.grandparent')</button>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <h3>Sibling Navigation</h3>
+          <div class="button-group">
+            <button onclick="goToPrevSibling()">previousElementSibling</button>
+            <button onclick="goToNextSibling()">nextElementSibling</button>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <h3>Child Navigation</h3>
+          <div class="button-group">
+            <button onclick="goToFirstChild()">firstElementChild</button>
+            <button onclick="goToLastChild()">lastElementChild</button>
+            <button onclick="selectAllChildren()">children (highlight all)</button>
+          </div>
+        </div>
+        
+        <button onclick="resetSelection()" class="reset-btn">Reset Selection</button>
+      </section>
+      
+      <!-- Info -->
+      <section class="info-section">
+        <h2>📋 Current Selection</h2>
+        <div class="info-box" id="selection-info">
+          <p><strong>Element:</strong> <span id="current-element">child-2</span></p>
+          <p><strong>Parent:</strong> <span id="current-parent">parent-1</span></p>
+          <p><strong>Children:</strong> <span id="current-children">0</span></p>
+          <p><strong>Siblings:</strong> <span id="current-siblings">2</span></p>
+        </div>
+      </section>
+      
+      <!-- Reference -->
+      <section class="reference-section">
+        <h2>📚 Properties Reference</h2>
+        <div class="ref-grid">
+          <div class="ref-item">
+            <code>parentElement</code>
+            <p>Direct parent element</p>
+          </div>
+          <div class="ref-item">
+            <code>children</code>
+            <p>All child elements (HTMLCollection)</p>
+          </div>
+          <div class="ref-item">
+            <code>firstElementChild</code>
+            <p>First child element</p>
+          </div>
+          <div class="ref-item">
+            <code>lastElementChild</code>
+            <p>Last child element</p>
+          </div>
+          <div class="ref-item">
+            <code>nextElementSibling</code>
+            <p>Next sibling element</p>
+          </div>
+          <div class="ref-item">
+            <code>previousElementSibling</code>
+            <p>Previous sibling element</p>
+          </div>
+          <div class="ref-item">
+            <code>closest(selector)</code>
+            <p>Nearest ancestor matching selector</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

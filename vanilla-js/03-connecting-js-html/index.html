@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connecting JavaScript to HTML</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 Connecting JavaScript to HTML Demo
+    From: Chapter 2 - HTML & JavaScript to React
+    
+    This demonstrates how JavaScript interacts with HTML:
+    - Selecting DOM elements
+    - Adding event listeners
+    - Changing content and styles
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>🔗 Connecting JS to HTML</h1>
+      <p>See how JavaScript interacts with the DOM</p>
+    </header>
+    
+    <main>
+      <!-- Demo 1: Selecting and modifying elements -->
+      <section class="demo-section">
+        <h2>📌 Selecting Elements</h2>
+        <h3 id="title">Hello</h3>
+        <p id="description">This text can be changed by JavaScript</p>
+        <button id="change-btn">Change Content</button>
+      </section>
+      
+      <!-- Demo 2: Event listeners -->
+      <section class="demo-section">
+        <h2>🎯 Event Listeners</h2>
+        <div class="event-box" id="event-box">
+          Hover over me or click me!
+        </div>
+        <p id="event-output">Event info will appear here</p>
+      </section>
+      
+      <!-- Demo 3: Dynamic styling -->
+      <section class="demo-section">
+        <h2>🎨 Dynamic Styling</h2>
+        <div class="style-box" id="style-box">
+          Click buttons to change my style
+        </div>
+        <div class="button-group">
+          <button onclick="changeColor('red')">Red</button>
+          <button onclick="changeColor('green')">Green</button>
+          <button onclick="changeColor('blue')">Blue</button>
+          <button onclick="toggleSize()">Toggle Size</button>
+          <button onclick="resetStyle()">Reset</button>
+        </div>
+      </section>
+      
+      <!-- Demo 4: Input handling -->
+      <section class="demo-section">
+        <h2>⌨️ Input Handling</h2>
+        <input type="text" id="text-input" placeholder="Type something...">
+        <p>You typed: <span id="input-mirror">nothing yet</span></p>
+        <p>Character count: <span id="char-count">0</span></p>
+      </section>
+    </main>
+  </div>
+  
+  <!-- External JavaScript file (recommended method) -->
+  <script src="script.js"></script>
+</body>
+</html>

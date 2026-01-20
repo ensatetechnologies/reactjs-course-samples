@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List - Vanilla JavaScript (Pain Points Demo)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 Todo List - Vanilla JavaScript (Pain Points Demo)
+    From: Chapter 2 - HTML & JavaScript to React
+    
+    This demonstrates the PAIN POINTS of vanilla JavaScript:
+    1. Manual DOM manipulation for every action
+    2. Keeping state and DOM in sync
+    3. Complex element creation
+    4. Event listener management
+    
+    Compare this ~100+ lines with React's ~30 lines!
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>📝 Vanilla JS Todo List</h1>
+      <p>Demonstrating the pain points of manual DOM manipulation</p>
+      <div class="warning-banner">
+        ⚠️ This code is intentionally verbose to show WHY we need React!
+      </div>
+    </header>
+    
+    <main>
+      <div class="todo-card">
+        <!-- Input Section -->
+        <div class="input-section">
+          <input 
+            type="text" 
+            id="todo-input" 
+            placeholder="What needs to be done?"
+            onkeypress="if(event.key === 'Enter') addTodo()"
+          >
+          <button onclick="addTodo()" class="btn-primary">Add Task</button>
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="stats-section">
+          <span>Total: <strong id="total-count">0</strong></span>
+          <span>Completed: <strong id="completed-count">0</strong></span>
+          <span>Pending: <strong id="pending-count">0</strong></span>
+        </div>
+        
+        <!-- Filter Buttons -->
+        <div class="filter-section">
+          <button class="filter-btn active" onclick="filterTodos('all')">All</button>
+          <button class="filter-btn" onclick="filterTodos('pending')">Pending</button>
+          <button class="filter-btn" onclick="filterTodos('completed')">Completed</button>
+          <button class="btn-danger" onclick="clearCompleted()">Clear Completed</button>
+        </div>
+        
+        <!-- Todo List -->
+        <ul id="todo-list" class="todo-list">
+          <!-- Todos will be dynamically inserted here -->
+        </ul>
+        
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state">
+          <p>🎉 No todos yet! Add one above.</p>
+        </div>
+      </div>
+      
+      <!-- Code Comparison -->
+      <div class="code-comparison">
+        <h3>😰 Pain Points Demonstrated</h3>
+        <div class="pain-points">
+          <div class="pain-point">
+            <strong>1. Manual Element Creation</strong>
+            <p>Every todo requires creating multiple DOM elements manually</p>
+          </div>
+          <div class="pain-point">
+            <strong>2. Manual Event Binding</strong>
+            <p>Must attach event listeners to each new element</p>
+          </div>
+          <div class="pain-point">
+            <strong>3. Manual Counter Updates</strong>
+            <p>Must update all counters after every action</p>
+          </div>
+          <div class="pain-point">
+            <strong>4. State-DOM Sync</strong>
+            <p>Easy to forget updating DOM after state changes</p>
+          </div>
+        </div>
+        <p class="code-note">
+          📊 This vanilla JS version: <strong>~150 lines</strong><br>
+          ⚛️ React version: <strong>~30 lines</strong> (see react-apps/07-todo-react)
+        </p>
+      </div>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

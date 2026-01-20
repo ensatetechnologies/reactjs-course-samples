@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Comparison</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 Performance Comparison Demo
+    From: Chapter 3.1 - DOM Reflow
+    
+    Side-by-side comparison of:
+    - Multiple reflows (bad)
+    - Batched updates with DocumentFragment (good)
+    With 500 items to show real performance difference
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>📊 Performance Comparison</h1>
+      <p>See the real difference with 500 items</p>
+    </header>
+    
+    <main>
+      <!-- Results Summary -->
+      <section class="summary-section">
+        <div class="summary-grid">
+          <div class="summary-card bad" id="bad-card">
+            <h3>❌ Multiple Reflows</h3>
+            <div class="summary-value" id="bad-time">-</div>
+            <div class="summary-label">milliseconds</div>
+            <div class="summary-reflows" id="bad-reflows">~500 reflows</div>
+          </div>
+          <div class="summary-card" id="comparison-card">
+            <h3>⚡ Difference</h3>
+            <div class="summary-value" id="speed-diff">-</div>
+            <div class="summary-label">times faster</div>
+          </div>
+          <div class="summary-card good" id="good-card">
+            <h3>✅ DocumentFragment</h3>
+            <div class="summary-value" id="good-time">-</div>
+            <div class="summary-label">milliseconds</div>
+            <div class="summary-reflows" id="good-reflows">1 reflow</div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Controls -->
+      <section class="controls-section">
+        <h2>🎮 Run the Test</h2>
+        <div class="demo-controls">
+          <button class="btn-primary" onclick="runBothTests()">
+            🚀 Run Both Methods (500 items)
+          </button>
+          <button onclick="clearResults()">🗑️ Clear</button>
+        </div>
+        
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-text" id="progress-text"></div>
+      </section>
+      
+      <!-- Output Lists -->
+      <section class="output-section">
+        <div class="output-grid">
+          <div class="output-panel">
+            <h3>❌ Bad Method Output</h3>
+            <div class="output-list" id="bad-list"></div>
+          </div>
+          <div class="output-panel">
+            <h3>✅ Good Method Output</h3>
+            <div class="output-list" id="good-list"></div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Explanation -->
+      <section class="explanation-section">
+        <h2>💡 Why Such a Big Difference?</h2>
+        <div class="explanation-content">
+          <div class="flow-diagram">
+            <div class="flow-row bad">
+              <span class="flow-label">Bad:</span>
+              <div class="flow-item">Item 1</div>
+              <span>→🔄→</span>
+              <div class="flow-item">Item 2</div>
+              <span>→🔄→</span>
+              <div class="flow-item">...</div>
+              <span>→🔄→</span>
+              <div class="flow-item">Item 500</div>
+              <span class="flow-result">= 500 reflows!</span>
+            </div>
+            <div class="flow-row good">
+              <span class="flow-label">Good:</span>
+              <div class="flow-item">Build all in memory</div>
+              <span>→</span>
+              <div class="flow-item">Append once</div>
+              <span class="flow-result">= 1 reflow!</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

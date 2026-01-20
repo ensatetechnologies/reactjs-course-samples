@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List - DOM Methods</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 Todo List using DOM Methods
+    From: Chapter 3 - DOM Complete Guide
+    
+    A practical application combining:
+    - Element selection
+    - Element creation
+    - Event handling
+    - DOM manipulation
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>📋 Todo List (DOM)</h1>
+      <p>Practical DOM manipulation example</p>
+    </header>
+    
+    <main>
+      <div class="todo-app">
+        <!-- Input -->
+        <div class="input-section">
+          <input 
+            type="text" 
+            id="todo-input" 
+            placeholder="What needs to be done?"
+            onkeypress="if(event.key === 'Enter') addTodo()"
+          >
+          <button onclick="addTodo()">Add</button>
+        </div>
+        
+        <!-- Todo List -->
+        <ul id="todo-list" class="todo-list"></ul>
+        
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state">
+          <p>🎉 No todos! Add one above.</p>
+        </div>
+        
+        <!-- Footer -->
+        <div class="todo-footer">
+          <span><span id="todo-count">0</span> items</span>
+          <button onclick="clearCompleted()" class="clear-btn">Clear completed</button>
+        </div>
+      </div>
+      
+      <!-- Code Example -->
+      <section class="code-section">
+        <h2>💻 Code Breakdown</h2>
+        <div class="code-snippet">
+          <code>// Creating a todo item with DOM methods
+function addTodo() {
+  const text = input.value;
+  
+  // 1. Create elements
+  const li = document.createElement('li');
+  const checkbox = document.createElement('input');
+  const span = document.createElement('span');
+  const deleteBtn = document.createElement('button');
+  
+  // 2. Set properties
+  checkbox.type = 'checkbox';
+  span.textContent = text;
+  deleteBtn.textContent = '×';
+  
+  // 3. Add event listeners
+  checkbox.addEventListener('change', toggleTodo);
+  deleteBtn.addEventListener('click', deleteTodo);
+  
+  // 4. Assemble and append
+  li.append(checkbox, span, deleteBtn);
+  list.appendChild(li);
+}</code>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

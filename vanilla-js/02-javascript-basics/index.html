@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Basics Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 JavaScript Basics Demo
+    From: Chapter 2 - HTML & JavaScript to React
+    
+    This demonstrates fundamental JavaScript concepts:
+    - Variables (let, const)
+    - Data types
+    - Functions
+    - Conditionals
+    - Loops
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>🟨 JavaScript Basics</h1>
+      <p>Open browser console (F12) to see the outputs!</p>
+    </header>
+    
+    <main>
+      <section class="demo-section">
+        <h2>📦 Variables Demo</h2>
+        <div class="output" id="variables-output"></div>
+        <button onclick="runVariablesDemo()">Run Demo</button>
+      </section>
+      
+      <section class="demo-section">
+        <h2>📊 Data Types Demo</h2>
+        <div class="output" id="datatypes-output"></div>
+        <button onclick="runDataTypesDemo()">Run Demo</button>
+      </section>
+      
+      <section class="demo-section">
+        <h2>⚡ Functions Demo</h2>
+        <div class="output" id="functions-output"></div>
+        <input type="text" id="name-input" placeholder="Enter your name">
+        <button onclick="runFunctionsDemo()">Greet Me!</button>
+      </section>
+      
+      <section class="demo-section">
+        <h2>🔀 Conditionals Demo</h2>
+        <div class="output" id="conditionals-output"></div>
+        <input type="number" id="age-input" placeholder="Enter your age">
+        <button onclick="runConditionalsDemo()">Check Age</button>
+      </section>
+      
+      <section class="demo-section">
+        <h2>🔄 Loops Demo</h2>
+        <div class="output" id="loops-output"></div>
+        <button onclick="runLoopsDemo()">Run Loops</button>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+/* 
+  📚 Counter React App Component Styles
+  From: Chapter 2 - HTML & JavaScript to React
+*/
+
+.app {
+  width: 100%;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+header h1 {
+  color: #61dafb;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  color: #94a3b8;
+  margin-bottom: 1rem;
+}
+
+.success-banner {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid #22c55e;
+  color: #22c55e;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+/* Counter Card */
+.counter-card {
+  background: #111827;
+  border: 1px solid #2d3a52;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.counter-card h2 {
+  color: #f1f5f9;
+  margin-bottom: 1rem;
+}
+
+/* Counter Value */
+.counter-value {
+  font-size: 6rem;
+  font-weight: 700;
+  color: #61dafb;
+  margin: 1.5rem 0;
+  font-family: 'Consolas', 'Courier New', monospace;
+  transition: all 0.2s;
+}
+
+.counter-value.positive {
+  color: #22c55e;
+}
+
+.counter-value.negative {
+  color: #ef4444;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: #61dafb;
+  color: #0a0f1c;
+}
+
+.btn-secondary {
+  background: #111827;
+  color: #f1f5f9;
+  border: 1px solid #2d3a52;
+}
+
+.btn-secondary:hover {
+  border-color: #61dafb;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+/* Step Control */
+.step-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #2d3a52;
+  flex-wrap: wrap;
+}
+
+.step-control label {
+  color: #94a3b8;
+}
+
+.step-control input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #2d3a52;
+  border-radius: 8px;
+  background: #0a0f1c;
+  color: #f1f5f9;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.step-control input:focus {
+  outline: none;
+  border-color: #61dafb;
+}
+
+.step-control button {
+  padding: 0.5rem 1rem;
+  background: #a78bfa;
+  color: #0a0f1c;
+}
+
+/* Code Explanation */
+.code-explanation {
+  background: #111827;
+  border: 1px solid #2d3a52;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.code-explanation h3 {
+  color: #22c55e;
+  margin-bottom: 1rem;
+}
+
+.code-explanation pre {
+  background: #0d1321;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.code-explanation code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #98c379;
+  line-height: 1.6;
+}
+
+/* History Section */
+.history-section {
+  background: #111827;
+  border: 1px solid #2d3a52;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.history-section h3 {
+  color: #61dafb;
+  margin-bottom: 1rem;
+}
+
+.history-log {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.history-item {
+  padding: 0.5rem;
+  border-bottom: 1px solid #2d3a52;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-item.increase {
+  color: #22c55e;
+}
+
+.history-item.decrease {
+  color: #ef4444;
+}
+
+.history-item.reset {
+  color: #a78bfa;
+}

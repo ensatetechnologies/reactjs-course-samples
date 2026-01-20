@@ -1,0 +1,209 @@
+:root {
+  --primary: #22d3ee;
+  --accent: #34d399;
+  --danger: #ef4444;
+  --bg: #0a0f1c;
+  --surface: #111827;
+  --surface2: #1a2234;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #2d3a52;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+
+header { text-align: center; margin-bottom: 2rem; }
+header h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 0.5rem; }
+header p { color: var(--muted); }
+
+section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 { color: var(--primary); margin-bottom: 1rem; font-size: 1.25rem; }
+h3 { font-size: 1rem; margin-bottom: 0.75rem; }
+
+/* Summary Grid */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .summary-grid { grid-template-columns: 1fr; }
+}
+
+.summary-card {
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.summary-card.bad {
+  border: 2px solid var(--danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.summary-card.bad h3 { color: var(--danger); }
+
+.summary-card.good {
+  border: 2px solid var(--accent);
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.summary-card.good h3 { color: var(--accent); }
+
+.summary-value {
+  font-size: 3rem;
+  font-weight: 700;
+  font-family: 'Consolas', monospace;
+  color: var(--text);
+  margin: 0.5rem 0;
+}
+
+.summary-card.bad .summary-value { color: var(--danger); }
+.summary-card.good .summary-value { color: var(--accent); }
+
+.summary-label { color: var(--muted); font-size: 0.9rem; }
+.summary-reflows { color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem; }
+
+/* Controls */
+.demo-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform 0.2s;
+}
+
+button:hover { transform: translateY(-2px); }
+
+.btn-primary { background: var(--primary); color: var(--bg); }
+button:not(.btn-primary) {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* Progress bar */
+.progress-bar {
+  height: 8px;
+  background: var(--surface2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transition: width 0.3s;
+}
+
+.progress-text {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  min-height: 1.5rem;
+}
+
+/* Output */
+.output-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .output-grid { grid-template-columns: 1fr; }
+}
+
+.output-panel {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.output-panel h3 { color: var(--muted); font-size: 0.9rem; }
+
+.output-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 0.5rem;
+}
+
+.output-item {
+  background: var(--surface);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Explanation */
+.flow-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.flow-row.bad { background: rgba(239, 68, 68, 0.1); }
+.flow-row.good { background: rgba(52, 211, 153, 0.1); }
+
+.flow-label {
+  font-weight: 600;
+  width: 50px;
+}
+
+.flow-row.bad .flow-label { color: var(--danger); }
+.flow-row.good .flow-label { color: var(--accent); }
+
+.flow-item {
+  background: var(--surface);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.flow-result {
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.flow-row.bad .flow-result { color: var(--danger); }
+.flow-row.good .flow-result { color: var(--accent); }

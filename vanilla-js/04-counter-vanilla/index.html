@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Counter - Vanilla JavaScript</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 Counter Demo - Vanilla JavaScript
+    From: Chapter 2 - HTML & JavaScript to React
+    
+    This demonstrates manual DOM manipulation:
+    - State management with variables
+    - Manual DOM updates on every state change
+    
+    Key Learning: Notice how we must MANUALLY update the DOM
+    every time our data (count) changes. This becomes tedious!
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>⚡ Vanilla JS Counter</h1>
+      <p>Demonstrating manual DOM manipulation</p>
+    </header>
+    
+    <main>
+      <div class="counter-card">
+        <h2>Simple Counter</h2>
+        
+        <!-- The counter display -->
+        <div class="counter-value" id="counter-value">0</div>
+        
+        <!-- Control buttons -->
+        <div class="button-group">
+          <button class="btn-danger" onclick="updateCounter(-1)">- Decrease</button>
+          <button class="btn-secondary" onclick="resetCounter()">Reset</button>
+          <button class="btn-primary" onclick="updateCounter(1)">+ Increase</button>
+        </div>
+        
+        <!-- Step control -->
+        <div class="step-control">
+          <label>Step size:</label>
+          <input type="number" id="step-input" value="1" min="1" max="100">
+          <button onclick="updateCounterByStep(1)">Add Step</button>
+          <button onclick="updateCounterByStep(-1)">Subtract Step</button>
+        </div>
+      </div>
+      
+      <!-- Code explanation -->
+      <div class="code-explanation">
+        <h3>💡 How it works (Vanilla JS)</h3>
+        <pre><code>// State - just a variable
+let count = 0;
+
+// Update function
+function updateCounter(change) {
+  count += change;                          // 1. Update state
+  document.getElementById('counter-value')
+    .textContent = count;                   // 2. MANUALLY update DOM
+}
+
+// Every state change requires manual DOM update!
+// This is the "pain point" that React solves.</code></pre>
+      </div>
+      
+      <!-- History log -->
+      <div class="history-section">
+        <h3>📜 Action History</h3>
+        <div class="history-log" id="history-log">
+          <p class="history-item">Counter initialized at 0</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

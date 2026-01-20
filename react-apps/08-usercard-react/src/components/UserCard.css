@@ -1,0 +1,109 @@
+/* UserCard Component Styles */
+
+.user-card {
+  background: #111827;
+  border: 1px solid #2d3a52;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.user-card:hover {
+  border-color: #61dafb;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(97, 218, 251, 0.1);
+}
+
+/* Avatar */
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #2d3a52;
+  background: #1a2234;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* User Info */
+.user-info {
+  margin-bottom: 1rem;
+}
+
+.user-name {
+  color: #f1f5f9;
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.user-role {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+/* Skills */
+.user-skills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.skill-badge {
+  background: rgba(97, 218, 251, 0.1);
+  color: #61dafb;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Stats */
+.user-stats {
+  margin-bottom: 1rem;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.user-stats strong {
+  color: #f1f5f9;
+}
+
+/* Follow Button */
+.follow-btn {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  background: #61dafb;
+  color: #0a0f1c;
+}
+
+.follow-btn:hover {
+  transform: translateY(-2px);
+  background: #4dc4e8;
+}
+
+.follow-btn.following {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border: 1px solid #22c55e;
+}
+
+.follow-btn.following:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: #ef4444;
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM Manipulation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 
+    📚 DOM Manipulation Demo
+    From: Chapter 3 - DOM Complete Guide
+    
+    Demonstrates how to modify DOM elements:
+    - Changing text content
+    - Changing HTML content
+    - Modifying attributes
+    - Changing styles
+    - Working with classList
+  -->
+  
+  <div class="container">
+    <header>
+      <h1>🎨 DOM Manipulation</h1>
+      <p>Modifying elements after selection</p>
+    </header>
+    
+    <main>
+      <!-- Target Element -->
+      <section class="target-section">
+        <h2>Target Element</h2>
+        <div id="target-box" class="target-box">
+          <h3 id="target-title">Original Title</h3>
+          <p id="target-text">This is the original text content.</p>
+        </div>
+      </section>
+      
+      <!-- Content Manipulation -->
+      <section class="control-section">
+        <h2>📝 Content Manipulation</h2>
+        
+        <div class="control-group">
+          <h3>textContent</h3>
+          <p>Changes text only (safe, no HTML parsing)</p>
+          <input type="text" id="text-input" placeholder="Enter new text...">
+          <button onclick="changeTextContent()">Apply textContent</button>
+          <div class="code-snippet">
+            <code>element.textContent = 'New text'</code>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <h3>innerHTML</h3>
+          <p>Changes HTML content (can include tags)</p>
+          <input type="text" id="html-input" placeholder="Enter HTML (e.g., <strong>Bold</strong>)...">
+          <button onclick="changeInnerHTML()">Apply innerHTML</button>
+          <div class="code-snippet">
+            <code>element.innerHTML = '&lt;strong&gt;Bold&lt;/strong&gt;'</code>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Attribute Manipulation -->
+      <section class="control-section">
+        <h2>🏷️ Attribute Manipulation</h2>
+        
+        <div class="control-group">
+          <p>Get and set element attributes</p>
+          <div class="inline-controls">
+            <input type="text" id="attr-name" placeholder="Attribute name">
+            <input type="text" id="attr-value" placeholder="Attribute value">
+          </div>
+          <button onclick="setAttribute()">Set Attribute</button>
+          <button onclick="getAttribute()">Get Attribute</button>
+          <div class="code-snippet">
+            <code>element.setAttribute('data-id', '123')</code>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Style Manipulation -->
+      <section class="control-section">
+        <h2>🎨 Style Manipulation</h2>
+        
+        <div class="control-group">
+          <h3>Direct Style Changes</h3>
+          <div class="button-group">
+            <button onclick="changeStyle('backgroundColor', '#22d3ee')">Blue BG</button>
+            <button onclick="changeStyle('backgroundColor', '#a78bfa')">Purple BG</button>
+            <button onclick="changeStyle('backgroundColor', '#34d399')">Green BG</button>
+            <button onclick="changeStyle('padding', '2rem')">More Padding</button>
+            <button onclick="changeStyle('borderRadius', '20px')">Round Corners</button>
+          </div>
+          <div class="code-snippet">
+            <code>element.style.backgroundColor = '#22d3ee'</code>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <h3>classList Methods</h3>
+          <div class="button-group">
+            <button onclick="toggleClass('highlighted')">Toggle .highlighted</button>
+            <button onclick="addClass('shadow')">Add .shadow</button>
+            <button onclick="removeClass('shadow')">Remove .shadow</button>
+          </div>
+          <div class="code-snippet">
+            <code>element.classList.toggle('active')</code>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Reset -->
+      <button class="reset-btn" onclick="resetAll()">🔄 Reset All</button>
+      
+      <!-- Console -->
+      <section class="console-section">
+        <h2>📋 Console Output</h2>
+        <div class="console-output" id="console-output">
+          <p class="console-line muted">Actions will be logged here...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
