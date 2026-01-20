@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spread Operator with Objects - Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div class="dots">...</div>
+      <h1>Spread Operator with Objects</h1>
+      <p>Interactive demo showing object operations with the spread operator</p>
+    </header>
+
+    <!-- Section 1: Copy Object -->
+    <section class="demo-section">
+      <h2><span class="icon">📋</span> Copy Objects</h2>
+      <p class="description">Create a true copy of an object (not a reference)</p>
+      
+      <div class="demo-box">
+        <div class="object-display" id="copy-original">
+          <div class="object-title">Original Object</div>
+          <div class="object-content">
+            <div class="prop-row">
+              <span class="prop-key">name:</span>
+              <input type="text" id="copy-name" value="John" class="prop-value-input">
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">age:</span>
+              <input type="number" id="copy-age" value="25" class="prop-value-input">
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">city:</span>
+              <input type="text" id="copy-city" value="Mumbai" class="prop-value-input">
+            </div>
+          </div>
+        </div>
+        
+        <button onclick="demoCopyObject()" class="btn btn-primary">Copy with Spread</button>
+        
+        <div class="result-container" id="copy-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> original = { <span class="prop">name</span>: <span class="str">'John'</span>, <span class="prop">age</span>: <span class="num">25</span> };
+
+<span class="cmt">// ✅ Create a true copy with spread</span>
+<span class="kw">const</span> copy = { <span class="spread">...</span>original };
+
+<span class="cmt">// Modifying copy doesn't affect original!</span>
+copy.age = <span class="num">30</span>;
+console.<span class="fn">log</span>(original.age); <span class="cmt">// 25 ✅</span>
+console.<span class="fn">log</span>(copy.age);     <span class="cmt">// 30</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Update Properties -->
+    <section class="demo-section">
+      <h2><span class="icon">✏️</span> Update Properties</h2>
+      <p class="description">Create new object with updated properties (immutably)</p>
+      
+      <div class="demo-box">
+        <div class="object-display">
+          <div class="object-title">Person Object</div>
+          <div class="object-content">
+            <div class="prop-row">
+              <span class="prop-key">name:</span>
+              <span class="prop-value">"John"</span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">age:</span>
+              <span class="prop-value">25</span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">city:</span>
+              <span class="prop-value">"Mumbai"</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label>Property to Update:</label>
+            <select id="update-prop" class="prop-value-input">
+              <option value="name">name</option>
+              <option value="age">age</option>
+              <option value="city">city</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>New Value:</label>
+            <input type="text" id="update-value" value="Delhi" class="prop-value-input">
+          </div>
+        </div>
+        
+        <button onclick="demoUpdateProperty()" class="btn btn-primary">Update with Spread</button>
+        
+        <div class="result-container" id="update-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> person = { <span class="prop">name</span>: <span class="str">'John'</span>, <span class="prop">age</span>: <span class="num">25</span>, <span class="prop">city</span>: <span class="str">'Mumbai'</span> };
+
+<span class="cmt">// Update one property (creates new object)</span>
+<span class="kw">const</span> updated = { <span class="spread">...</span>person, <span class="prop">city</span>: <span class="str">'Delhi'</span> };
+<span class="cmt">// { name: 'John', age: 25, city: 'Delhi' }</span>
+
+<span class="cmt">// ⚠️ ORDER MATTERS!</span>
+<span class="cmt">// Properties AFTER spread override existing ones</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Merge Objects -->
+    <section class="demo-section">
+      <h2><span class="icon">🔗</span> Merge Objects</h2>
+      <p class="description">Combine multiple objects into one</p>
+      
+      <div class="demo-box">
+        <div class="objects-row">
+          <div class="object-display small">
+            <div class="object-title">Defaults</div>
+            <div class="object-content">
+              <div class="prop-row">
+                <span class="prop-key">theme:</span>
+                <span class="prop-value">"light"</span>
+              </div>
+              <div class="prop-row">
+                <span class="prop-key">fontSize:</span>
+                <span class="prop-value">16</span>
+              </div>
+              <div class="prop-row">
+                <span class="prop-key">lang:</span>
+                <span class="prop-value">"en"</span>
+              </div>
+            </div>
+          </div>
+          
+          <span class="merge-symbol">+</span>
+          
+          <div class="object-display small">
+            <div class="object-title">User Prefs</div>
+            <div class="object-content">
+              <div class="prop-row">
+                <span class="prop-key">theme:</span>
+                <input type="text" id="merge-theme" value="dark" class="prop-value-input small">
+              </div>
+              <div class="prop-row">
+                <span class="prop-key">fontSize:</span>
+                <input type="number" id="merge-fontSize" value="18" class="prop-value-input small">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button onclick="demoMergeObjects()" class="btn btn-primary">Merge with Spread</button>
+        
+        <div class="result-container" id="merge-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> defaults = { <span class="prop">theme</span>: <span class="str">'light'</span>, <span class="prop">fontSize</span>: <span class="num">16</span>, <span class="prop">lang</span>: <span class="str">'en'</span> };
+<span class="kw">const</span> userPrefs = { <span class="prop">theme</span>: <span class="str">'dark'</span>, <span class="prop">fontSize</span>: <span class="num">18</span> };
+
+<span class="cmt">// Merge: user preferences override defaults</span>
+<span class="kw">const</span> settings = { <span class="spread">...</span>defaults, <span class="spread">...</span>userPrefs };
+<span class="cmt">// { theme: 'dark', fontSize: 18, lang: 'en' }</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Add New Properties -->
+    <section class="demo-section">
+      <h2><span class="icon">➕</span> Add New Properties</h2>
+      <p class="description">Add new properties while keeping existing ones</p>
+      
+      <div class="demo-box">
+        <div class="object-display">
+          <div class="object-title">Base User Object</div>
+          <div class="object-content">
+            <div class="prop-row">
+              <span class="prop-key">name:</span>
+              <span class="prop-value">"John"</span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">age:</span>
+              <span class="prop-value">25</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label>New Property Name:</label>
+            <input type="text" id="add-prop-key" value="job" class="prop-value-input">
+          </div>
+          <div class="input-group">
+            <label>New Property Value:</label>
+            <input type="text" id="add-prop-value" value="Developer" class="prop-value-input">
+          </div>
+        </div>
+        
+        <button onclick="demoAddProperty()" class="btn btn-primary">Add Property</button>
+        
+        <div class="result-container" id="add-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> user = { <span class="prop">name</span>: <span class="str">'John'</span>, <span class="prop">age</span>: <span class="num">25</span> };
+
+<span class="cmt">// Add new property with spread</span>
+<span class="kw">const</span> withJob = { <span class="spread">...</span>user, <span class="prop">job</span>: <span class="str">'Developer'</span> };
+<span class="cmt">// { name: 'John', age: 25, job: 'Developer' }</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Remove Properties -->
+    <section class="demo-section">
+      <h2><span class="icon">🗑️</span> Remove Properties (with Destructuring)</h2>
+      <p class="description">Remove properties using destructuring with rest spread</p>
+      
+      <div class="demo-box">
+        <div class="object-display">
+          <div class="object-title">User with Sensitive Data</div>
+          <div class="object-content">
+            <div class="prop-row">
+              <span class="prop-key">id:</span>
+              <span class="prop-value">1</span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">name:</span>
+              <span class="prop-value">"John"</span>
+            </div>
+            <div class="prop-row danger">
+              <span class="prop-key">password:</span>
+              <span class="prop-value">"secret123"</span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">email:</span>
+              <span class="prop-value">"john@example.com"</span>
+            </div>
+          </div>
+        </div>
+        
+        <button onclick="demoRemoveProperty()" class="btn btn-primary">Remove Password</button>
+        
+        <div class="result-container" id="remove-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> user = {
+  <span class="prop">id</span>: <span class="num">1</span>,
+  <span class="prop">name</span>: <span class="str">'John'</span>,
+  <span class="prop">password</span>: <span class="str">'secret123'</span>,  <span class="cmt">// Remove this!</span>
+  <span class="prop">email</span>: <span class="str">'john@example.com'</span>
+};
+
+<span class="cmt">// Destructure to separate password, collect rest</span>
+<span class="kw">const</span> { <span class="prop">password</span>, <span class="spread">...</span>safeUser } = user;
+
+console.<span class="fn">log</span>(safeUser);
+<span class="cmt">// { id: 1, name: 'John', email: 'john@example.com' }</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Shallow Copy Warning -->
+    <section class="demo-section warning-section">
+      <h2><span class="icon">⚠️</span> Shallow Copy Warning</h2>
+      <p class="description">Spread only creates a shallow copy - nested objects are still referenced!</p>
+      
+      <div class="demo-box">
+        <div class="object-display">
+          <div class="object-title">Object with Nested Object</div>
+          <div class="object-content">
+            <div class="prop-row">
+              <span class="prop-key">name:</span>
+              <span class="prop-value">"John"</span>
+            </div>
+            <div class="prop-row nested">
+              <span class="prop-key">address:</span>
+              <span class="prop-value">{</span>
+              <div class="nested-content">
+                <div class="prop-row">
+                  <span class="prop-key">city:</span>
+                  <span class="prop-value">"Mumbai"</span>
+                </div>
+                <div class="prop-row">
+                  <span class="prop-key">zip:</span>
+                  <span class="prop-value">"400001"</span>
+                </div>
+              </div>
+              <span class="prop-value">}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="button-group">
+          <button onclick="demoShallowCopy('shallow')" class="btn btn-secondary">Shallow Copy (Problem)</button>
+          <button onclick="demoShallowCopy('deep')" class="btn btn-primary">Deep Copy (Solution)</button>
+        </div>
+        
+        <div class="result-container" id="shallow-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="cmt">// ❌ SHALLOW COPY - nested objects still referenced</span>
+<span class="kw">const</span> copy = { <span class="spread">...</span>original };
+copy.address.city = <span class="str">'Delhi'</span>;
+console.<span class="fn">log</span>(original.address.city); <span class="cmt">// 'Delhi' 😱</span>
+
+<span class="cmt">// ✅ DEEP COPY - spread nested objects too</span>
+<span class="kw">const</span> deepCopy = {
+  <span class="spread">...</span>original,
+  <span class="prop">address</span>: { <span class="spread">...</span>original.address }
+};
+deepCopy.address.city = <span class="str">'Delhi'</span>;
+console.<span class="fn">log</span>(original.address.city); <span class="cmt">// 'Mumbai' ✅</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Part of the <strong>ReactJS Course Sample Apps</strong></p>
+      <p class="muted">Chapter: Spread Operator - Object Operations</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spread Operator with Arrays - Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div class="dots">...</div>
+      <h1>Spread Operator with Arrays</h1>
+      <p>Interactive demo showing array operations with the spread operator</p>
+    </header>
+
+    <!-- Section 1: Copy Array -->
+    <section class="demo-section">
+      <h2><span class="icon">📋</span> Copy Arrays</h2>
+      <p class="description">Create a true copy of an array (not a reference)</p>
+      
+      <div class="demo-box">
+        <div class="input-group">
+          <label>Original Array:</label>
+          <input type="text" id="copy-input" value="1, 2, 3, 4, 5" placeholder="Enter comma-separated values">
+        </div>
+        <button onclick="demoCopyArray()" class="btn btn-primary">Copy with Spread</button>
+        
+        <div class="result-container" id="copy-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> original = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+<span class="kw">const</span> copy = [<span class="spread">...</span>original];
+
+<span class="cmt">// Modifying copy doesn't affect original!</span>
+copy.<span class="fn">push</span>(<span class="num">6</span>);
+console.<span class="fn">log</span>(original); <span class="cmt">// [1, 2, 3, 4, 5] ✅</span>
+console.<span class="fn">log</span>(copy);     <span class="cmt">// [1, 2, 3, 4, 5, 6]</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Merge Arrays -->
+    <section class="demo-section">
+      <h2><span class="icon">🔗</span> Merge Arrays</h2>
+      <p class="description">Combine multiple arrays into one</p>
+      
+      <div class="demo-box">
+        <div class="input-row">
+          <div class="input-group">
+            <label>Array 1:</label>
+            <input type="text" id="merge-arr1" value="🍎, 🍌" placeholder="Fruits">
+          </div>
+          <div class="input-group">
+            <label>Array 2:</label>
+            <input type="text" id="merge-arr2" value="🥕, 🥦" placeholder="Vegetables">
+          </div>
+        </div>
+        <button onclick="demoMergeArrays()" class="btn btn-primary">Merge with Spread</button>
+        
+        <div class="result-container" id="merge-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> fruits = [<span class="str">'🍎'</span>, <span class="str">'🍌'</span>];
+<span class="kw">const</span> veggies = [<span class="str">'🥕'</span>, <span class="str">'🥦'</span>];
+
+<span class="cmt">// Merge arrays</span>
+<span class="kw">const</span> food = [<span class="spread">...</span>fruits, <span class="spread">...</span>veggies];
+<span class="cmt">// ['🍎', '🍌', '🥕', '🥦']</span>
+
+<span class="cmt">// Add items in between</span>
+<span class="kw">const</span> mixed = [<span class="spread">...</span>fruits, <span class="str">'🍕'</span>, <span class="spread">...</span>veggies];
+<span class="cmt">// ['🍎', '🍌', '🍕', '🥕', '🥦']</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Add Elements -->
+    <section class="demo-section">
+      <h2><span class="icon">➕</span> Add Elements (Immutably)</h2>
+      <p class="description">Add elements to start, end, or middle without mutation</p>
+      
+      <div class="demo-box">
+        <div class="input-row">
+          <div class="input-group">
+            <label>Base Array:</label>
+            <input type="text" id="add-base" value="2, 3, 4" placeholder="Base array">
+          </div>
+          <div class="input-group">
+            <label>New Element:</label>
+            <input type="text" id="add-element" value="NEW" placeholder="Element to add">
+          </div>
+        </div>
+        
+        <div class="button-group">
+          <button onclick="demoAddElement('start')" class="btn btn-secondary">Add to Start</button>
+          <button onclick="demoAddElement('end')" class="btn btn-secondary">Add to End</button>
+          <button onclick="demoAddElement('middle')" class="btn btn-secondary">Add to Middle</button>
+        </div>
+        
+        <div class="result-container" id="add-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> numbers = [<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>];
+
+<span class="cmt">// Add to beginning</span>
+<span class="kw">const</span> withFirst = [<span class="num">1</span>, <span class="spread">...</span>numbers];     <span class="cmt">// [1, 2, 3, 4]</span>
+
+<span class="cmt">// Add to end</span>
+<span class="kw">const</span> withLast = [<span class="spread">...</span>numbers, <span class="num">5</span>];      <span class="cmt">// [2, 3, 4, 5]</span>
+
+<span class="cmt">// Add to middle (using slice)</span>
+<span class="kw">const</span> withMiddle = [
+  <span class="spread">...</span>numbers.<span class="fn">slice</span>(<span class="num">0</span>, <span class="num">1</span>),
+  <span class="str">'NEW'</span>,
+  <span class="spread">...</span>numbers.<span class="fn">slice</span>(<span class="num">1</span>)
+]; <span class="cmt">// [2, 'NEW', 3, 4]</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Function Arguments -->
+    <section class="demo-section">
+      <h2><span class="icon">🎯</span> Function Arguments</h2>
+      <p class="description">Spread array as individual function arguments</p>
+      
+      <div class="demo-box">
+        <div class="input-group">
+          <label>Numbers Array:</label>
+          <input type="text" id="func-input" value="5, 2, 8, 1, 9, 3" placeholder="Enter numbers">
+        </div>
+        <button onclick="demoFunctionArgs()" class="btn btn-primary">Find Min/Max</button>
+        
+        <div class="result-container" id="func-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> numbers = [<span class="num">5</span>, <span class="num">2</span>, <span class="num">8</span>, <span class="num">1</span>, <span class="num">9</span>];
+
+<span class="cmt">// Math.max expects individual arguments</span>
+<span class="cmt">// Math.max([5, 2, 8, 1, 9]) ❌ doesn't work</span>
+
+<span class="cmt">// Spread unpacks array into arguments!</span>
+<span class="kw">const</span> max = Math.<span class="fn">max</span>(<span class="spread">...</span>numbers); <span class="cmt">// 9</span>
+<span class="kw">const</span> min = Math.<span class="fn">min</span>(<span class="spread">...</span>numbers); <span class="cmt">// 1</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Remove Duplicates -->
+    <section class="demo-section">
+      <h2><span class="icon">🧹</span> Remove Duplicates</h2>
+      <p class="description">Use Set + Spread to get unique values</p>
+      
+      <div class="demo-box">
+        <div class="input-group">
+          <label>Array with Duplicates:</label>
+          <input type="text" id="unique-input" value="1, 2, 2, 3, 3, 3, 4, 4, 5" placeholder="Enter values">
+        </div>
+        <button onclick="demoRemoveDuplicates()" class="btn btn-primary">Remove Duplicates</button>
+        
+        <div class="result-container" id="unique-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> withDups = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">3</span>, <span class="num">3</span>, <span class="num">4</span>];
+
+<span class="cmt">// Set keeps only unique values</span>
+<span class="cmt">// Spread converts Set back to array</span>
+<span class="kw">const</span> unique = [<span class="spread">...</span><span class="kw">new</span> <span class="fn">Set</span>(withDups)];
+<span class="cmt">// [1, 2, 3, 4]</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: String to Array -->
+    <section class="demo-section">
+      <h2><span class="icon">✂️</span> String to Array</h2>
+      <p class="description">Split a string into characters using spread</p>
+      
+      <div class="demo-box">
+        <div class="input-group">
+          <label>Input String:</label>
+          <input type="text" id="string-input" value="Hello World" placeholder="Enter a string">
+        </div>
+        <button onclick="demoStringToArray()" class="btn btn-primary">Convert to Array</button>
+        
+        <div class="result-container" id="string-result">
+          <!-- Results will appear here -->
+        </div>
+        
+        <div class="code-preview">
+          <pre><code><span class="kw">const</span> word = <span class="str">'Hello'</span>;
+
+<span class="cmt">// Spread string into array of characters</span>
+<span class="kw">const</span> chars = [<span class="spread">...</span>word];
+<span class="cmt">// ['H', 'e', 'l', 'l', 'o']</span>
+
+<span class="cmt">// Useful for string manipulation</span>
+<span class="kw">const</span> reversed = [<span class="spread">...</span>word].<span class="fn">reverse</span>().<span class="fn">join</span>(<span class="str">''</span>);
+<span class="cmt">// 'olleH'</span></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Part of the <strong>ReactJS Course Sample Apps</strong></p>
+      <p class="muted">Chapter: Spread Operator - Array Operations</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

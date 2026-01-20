@@ -10,8 +10,9 @@ A comprehensive collection of sample applications demonstrating the journey from
 | **Chapter 3** | DOM Complete Guide | 6 apps |
 | **Chapter 3.1** | DOM Reflow & Performance | 5 apps |
 | **Chapter 5** | JavaScript vs TypeScript | 5 apps |
+| **Spread Operator** | Arrays, Objects, React State | 3 apps |
 
-**Total: 24 Sample Applications**
+**Total: 27 Sample Applications**
 
 ## 🎯 Quick Start
 
@@ -62,7 +63,11 @@ reactjs-course-samples/
 │   ├── 04-performance-demo/
 │   │
 │   │   # Chapter 5: JS vs TS
-│   └── 07-js-basics-comparison/
+│   ├── 07-js-basics-comparison/
+│   │
+│   │   # Spread Operator Chapter
+│   ├── 13-spread-arrays/
+│   └── 14-spread-objects/
 │
 └── react-apps/
     │
@@ -76,7 +81,10 @@ reactjs-course-samples/
     ├── 09-todo-javascript/      # Todo in JavaScript
     ├── 10-todo-typescript/      # Todo in TypeScript
     ├── 11-usercard-javascript/  # UserCard in JavaScript
-    └── 12-usercard-typescript/  # UserCard in TypeScript
+    ├── 12-usercard-typescript/  # UserCard in TypeScript
+    │
+    │   # Spread Operator Chapter
+    └── 15-task-manager-spread/  # Full Task Manager demo
 ```
 
 ## 🎓 Learning Path
@@ -105,13 +113,20 @@ Understand browser rendering performance:
 - **Read-Write Pattern** - Avoid forced layout
 - **Virtual DOM** - How React optimizes automatically
 
-### Chapter 5: JavaScript vs TypeScript 🆕
+### Chapter 5: JavaScript vs TypeScript
 Understand the differences between JS and TS in React:
 - **Syntax Comparison** - Variables, functions, objects, arrays
 - **Todo App (JS)** - Without type annotations
 - **Todo App (TS)** - With full type safety
 - **UserCard (JS)** - Component props without types
 - **UserCard (TS)** - Component props with interfaces
+
+### Spread Operator Chapter 🆕
+Master the three magical dots (...) for immutable operations:
+- **Array Spread** - Copy, merge, add elements, function arguments
+- **Object Spread** - Copy, update, merge, remove properties
+- **React State** - Immutable state updates with spread
+- **Task Manager** - Complete app using all spread patterns
 
 ## 🟨🟦 JavaScript vs TypeScript
 
@@ -137,6 +152,31 @@ interface Todo { id: number; text: string }
 const addTodo = (text: string): void => {
   setTodos([...todos, { id: Date.now(), text }])
 }
+```
+
+## ... Spread Operator Patterns
+
+| Operation | Pattern | Example |
+|-----------|---------|---------|
+| Copy Array | `[...arr]` | `const copy = [...original]` |
+| Add to Array | `[...arr, item]` | `setTodos([...todos, newTodo])` |
+| Merge Arrays | `[...a, ...b]` | `const all = [...arr1, ...arr2]` |
+| Copy Object | `{...obj}` | `const copy = {...user}` |
+| Update Object | `{...obj, key: val}` | `setUser({...user, name: 'New'})` |
+| Nested Update | `{...obj, nested: {...obj.nested}}` | `{...settings, prefs: {...prefs}}` |
+
+```javascript
+// React state update patterns
+// ADD
+setTasks([...tasks, newTask])
+
+// REMOVE
+setTasks(tasks.filter(t => t.id !== id))
+
+// UPDATE
+setTasks(tasks.map(t => 
+  t.id === id ? {...t, completed: !t.completed} : t
+))
 ```
 
 ## 🛠️ Technologies Used
