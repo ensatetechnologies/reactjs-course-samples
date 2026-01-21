@@ -1,0 +1,108 @@
+/* ============================================
+   StudentCard Styles - CSS Modules
+   Note: These classes won't conflict with App.module.css!
+   ============================================ */
+
+.card {
+  background: var(--surface2);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+/* Selected state - toggled by React */
+.selected {
+  border-color: var(--primary);
+  background: rgba(34, 211, 238, 0.1);
+  transform: scale(1.02);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.badge {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+}
+
+/* Grade colors */
+.gradeA { background: var(--accent); }
+.gradeB { background: #3b82f6; }
+.gradeC { background: var(--warning); }
+.gradeD { background: #f97316; }
+.gradeF { background: var(--danger); }
+
+.details {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Button base style */
+.button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.buttonPrimary {
+  background: var(--primary);
+  color: var(--bg);
+}
+
+.buttonPrimary:hover {
+  box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+}
+
+.buttonGhost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.buttonGhost:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.buttonDanger {
+  background: var(--danger);
+  color: white;
+}
+
+.buttonDanger:hover {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}

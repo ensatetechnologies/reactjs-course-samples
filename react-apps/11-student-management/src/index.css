@@ -1,0 +1,44 @@
+/* Global CSS Variables - Theme Definition */
+:root {
+  /* Colors */
+  --bg-primary: #0a0f1c;
+  --bg-surface: #111827;
+  --bg-surface-2: #1a2234;
+  --border-color: #2d3a52;
+  
+  --text-primary: #f1f5f9;
+  --text-muted: #94a3b8;
+  
+  --accent: #22d3ee;
+  --secondary: #a78bfa;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}

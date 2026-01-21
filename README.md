@@ -11,8 +11,9 @@ A comprehensive collection of sample applications demonstrating the journey from
 | **Chapter 3.1** | DOM Reflow & Performance | 5 apps |
 | **Chapter 5** | JavaScript vs TypeScript | 5 apps |
 | **Spread Operator** | Arrays, Objects, React State | 3 apps |
+| **Chapter 11** | React Styling Deep Dive | 5 apps |
 
-**Total: 27 Sample Applications**
+**Total: 32 Sample Applications**
 
 ## 🎯 Quick Start
 
@@ -67,7 +68,10 @@ reactjs-course-samples/
 │   │
 │   │   # Spread Operator Chapter
 │   ├── 13-spread-arrays/
-│   └── 14-spread-objects/
+│   ├── 14-spread-objects/
+│   │
+│   │   # Chapter 11: React Styling
+│   └── 11-traditional-css/         # Traditional HTML/CSS/JS approach
 │
 └── react-apps/
     │
@@ -84,7 +88,13 @@ reactjs-course-samples/
     ├── 12-usercard-typescript/  # UserCard in TypeScript
     │
     │   # Spread Operator Chapter
-    └── 15-task-manager-spread/  # Full Task Manager demo
+    ├── 15-task-manager-spread/     # Full Task Manager demo
+    │
+    │   # Chapter 11: React Styling
+    ├── 11-inline-styles/           # React inline styles
+    ├── 11-css-modules-demo/        # CSS Modules (recommended)
+    ├── 11-styled-components/       # CSS-in-JS styling
+    └── 11-student-management/      # Complete styled app
 ```
 
 ## 🎓 Learning Path
@@ -121,12 +131,19 @@ Understand the differences between JS and TS in React:
 - **UserCard (JS)** - Component props without types
 - **UserCard (TS)** - Component props with interfaces
 
-### Spread Operator Chapter 🆕
+### Spread Operator Chapter
 Master the three magical dots (...) for immutable operations:
 - **Array Spread** - Copy, merge, add elements, function arguments
 - **Object Spread** - Copy, update, merge, remove properties
 - **React State** - Immutable state updates with spread
 - **Task Manager** - Complete app using all spread patterns
+
+### Chapter 11: React Styling Deep Dive 🆕
+Master every way to style React components:
+- **Inline Styles** - JavaScript style objects, dynamic values
+- **CSS Modules** - Scoped styles, no conflicts (recommended!)
+- **Styled Components** - CSS-in-JS, prop-based styling
+- **Complete App** - Student Management with CSS Modules
 
 ## 🟨🟦 JavaScript vs TypeScript
 
@@ -179,6 +196,30 @@ setTasks(tasks.map(t =>
 ))
 ```
 
+## 🎨 React Styling Methods
+
+| Method | Scoped? | Dynamic? | Best For |
+|--------|---------|----------|----------|
+| **Inline Styles** | ✅ Yes | ✅ Easy | Quick dynamic styles |
+| **CSS Files** | ❌ No | ❌ Hard | Simple projects |
+| **CSS Modules** | ✅ Yes | ⚠️ Medium | Component libraries ⭐ |
+| **Styled Components** | ✅ Yes | ✅ Easy | Dynamic theming |
+| **Tailwind CSS** | ✅ Yes | ⚠️ Medium | Rapid prototyping |
+
+```jsx
+// CSS Modules - Recommended approach
+import styles from './Card.module.css';
+import clsx from 'clsx';
+
+function Card({ isSelected }) {
+  return (
+    <div className={clsx(styles.card, { [styles.selected]: isSelected })}>
+      Content
+    </div>
+  );
+}
+```
+
 ## 🛠️ Technologies Used
 
 - **HTML5** - Semantic markup
@@ -196,6 +237,7 @@ setTasks(tasks.map(t =>
 4. **Deep dive into DOM (Ch 3)** - Understand what React abstracts
 5. **Learn about Reflows (Ch 3.1)** - Appreciate Virtual DOM
 6. **Compare JS vs TS (Ch 5)** - Choose the right tool
+7. **Master Styling (Ch 11)** - Learn all styling approaches
 
 ## 🎨 Sample App Features
 

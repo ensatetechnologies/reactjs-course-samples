@@ -1,0 +1,98 @@
+/* Button Component Styles - Reusable */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  border: none;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.small {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.medium {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.9rem;
+}
+
+.large {
+  padding: 12px 24px;
+  font-size: 1rem;
+}
+
+/* Variants */
+.primary {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
+.primary:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+}
+
+.secondary {
+  background: var(--secondary);
+  color: white;
+}
+
+.secondary:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
+}
+
+.danger {
+  background: var(--danger);
+  color: white;
+}
+
+.danger:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.success {
+  background: var(--success);
+  color: white;
+}
+
+.success:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.ghost:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.link {
+  background: transparent;
+  color: var(--accent);
+  padding: 0;
+}
+
+.link:hover:not(:disabled) {
+  text-decoration: underline;
+  transform: none;
+}

@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Styling Deep Dive - Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --react: #61dafb; --css: #264de4; --tailwind: #38bdf8; --styled: #db7093;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(38,77,228,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(219,112,147,0.1) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--css), var(--styled)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-css { background: var(--css); color: white; }
+    .badge-react { background: #20232a; color: var(--react); }
+    .badge-tailwind { background: #0f172a; color: var(--tailwind); }
+    
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; }
+    .icon-concept { background: linear-gradient(135deg, var(--css), #1e3a8a); color: white; }
+    .icon-inline { background: linear-gradient(135deg, var(--warning), #d97706); color: white; }
+    .icon-stylesheet { background: linear-gradient(135deg, var(--accent), #059669); color: white; }
+    .icon-modules { background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; }
+    .icon-compare { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
+    .icon-project { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
+    .icon-cssinjs { background: linear-gradient(135deg, var(--styled), #be185d); color: white; }
+    .icon-tailwind { background: linear-gradient(135deg, var(--tailwind), #0284c7); color: white; }
+    .icon-bestpractice { background: linear-gradient(135deg, #818cf8, #4f46e5); color: white; }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .val { color: #98c379; } .prop { color: #e5c07b; } .css-sel { color: #e06c75; } .css-prop { color: #56b6c2; } .css-val { color: #d19a66; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .card-highlight { border-color: var(--primary); background: linear-gradient(135deg, rgba(34,211,238,0.05), transparent); }
+    .card-css { border-color: var(--css); background: linear-gradient(135deg, rgba(38,77,228,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    .card-warning { border-color: var(--warning); background: linear-gradient(135deg, rgba(251,191,36,0.05), transparent); }
+    .card-secondary { border-color: var(--secondary); background: linear-gradient(135deg, rgba(167,139,250,0.05), transparent); }
+    .card-danger { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+    .card-styled { border-color: var(--styled); background: linear-gradient(135deg, rgba(219,112,147,0.08), transparent); }
+    .card-tailwind { border-color: var(--tailwind); background: linear-gradient(135deg, rgba(56,189,248,0.08), transparent); }
+    
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(167,139,250,0.1); border-left: 4px solid var(--secondary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--secondary); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; background: var(--surface2); border-radius: 16px; margin: 1.5rem 0; flex-wrap: wrap; }
+    .flow-box { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; transition: all 0.3s; }
+    .flow-box:hover { border-color: var(--primary); transform: translateY(-3px); }
+    .flow-box.highlight { border-color: var(--css); box-shadow: 0 0 20px rgba(38,77,228,0.2); }
+    .flow-arrow { color: var(--primary); font-size: 1.5rem; }
+    
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-secondary { background: rgba(167,139,250,0.2); color: var(--secondary); }
+    .badge-accent { background: rgba(52,211,153,0.2); color: var(--accent); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    .vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: start; margin: 1.5rem 0; }
+    .vs-divider { display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--warning); font-size: 1.5rem; padding-top: 2rem; }
+    @media (max-width: 900px) { .vs-container { grid-template-columns: 1fr; } .vs-divider { padding: 1rem 0; } }
+    
+    .highlight-box { background: linear-gradient(135deg, rgba(38,77,228,0.1), rgba(219,112,147,0.05)); border: 1px solid rgba(38,77,228,0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    
+    .method-card { background: var(--surface); border: 2px solid var(--border); border-radius: 16px; padding: 1.5rem; margin: 1rem 0; transition: all 0.3s; }
+    .method-card:hover { border-color: var(--primary); }
+    .method-card h4 { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .method-icon { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    
+    .lines-compare { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: var(--surface2); border-radius: 10px; }
+    .lines-bar { height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; }
+    .lines-label { min-width: 120px; font-size: 0.9rem; }
+    
+    .file-structure { background: var(--surface2); border-radius: 12px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+    .file-structure .folder { color: var(--warning); }
+    .file-structure .file { color: var(--text); }
+    .file-structure .indent { margin-left: 1.5rem; }
+    
+    .style-demo { background: var(--surface2); border-radius: 16px; padding: 1.5rem; margin: 1.5rem 0; }
+    .demo-result { background: #1a1a2e; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-top: 1rem; }
+    .demo-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; }
+    
+    h2 { color: var(--css); margin-bottom: 1rem; }
+    h3 { color: var(--primary); margin: 1.5rem 0 1rem; }
+    
+    .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .pros { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); border-radius: 12px; padding: 1rem; }
+    .cons { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; padding: 1rem; }
+    .pros h5 { color: var(--accent); margin-bottom: 0.5rem; }
+    .cons h5 { color: var(--danger); margin-bottom: 0.5rem; }
+    @media (max-width: 768px) { .pros-cons { grid-template-columns: 1fr; } }
+    
+    .syntax-box { background: var(--surface); border: 2px dashed var(--border); border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
+    .syntax-box h5 { color: var(--primary); margin-bottom: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badges">
+        <span class="hero-badge badge-css">🎨 CSS</span>
+        <span class="hero-badge badge-react">⚛️ React</span>
+        <span class="hero-badge badge-tailwind">💨 Tailwind</span>
+      </div>
+      <h1>React Styling Deep Dive</h1>
+      <p>Master Every Way to Style Your React Components</p>
+    </div>
+
+    <!-- Section 1: Understanding Styling in React -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-concept">🎨</div>
+        <div class="section-title">Part 1: Understanding Styling in React - What and Why</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Styling in React: Multiple Approaches</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Unlike traditional HTML/CSS, React offers <strong>multiple ways to style components</strong>. 
+          Each approach has its strengths, and understanding when to use each is key to writing maintainable code.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--css); margin-bottom: 0.75rem;">🎯 Why Multiple Styling Methods?</h4>
+          <p style="color: var(--muted);">
+            React's component-based architecture means styles can be <strong>scoped</strong>, <strong>dynamic</strong>, and <strong>co-located</strong> with components.
+            This solves many traditional CSS problems like global namespace pollution and specificity wars.
+          </p>
+        </div>
+
+        <h3>📋 Styling Methods Overview</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📝</div>
+            <div style="font-weight: 600;">Inline Styles</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">JavaScript Objects</div>
+          </div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📄</div>
+            <div style="font-weight: 600;">CSS Files</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Traditional CSS</div>
+          </div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">📦</div>
+            <div style="font-weight: 600; color: var(--css);">CSS Modules</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Scoped CSS</div>
+          </div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">💅</div>
+            <div style="font-weight: 600;">CSS-in-JS</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Styled Components</div>
+          </div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">💨</div>
+            <div style="font-weight: 600;">Tailwind CSS</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Utility Classes</div>
+          </div>
+        </div>
+
+        <h3>📊 Quick Comparison</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Scoped?</th>
+              <th>Dynamic?</th>
+              <th>Learning Curve</th>
+              <th>Best For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Inline Styles</strong></td>
+              <td>✅ Yes</td>
+              <td>✅ Easy</td>
+              <td><span class="badge badge-accent">Low</span></td>
+              <td>Quick dynamic styles</td>
+            </tr>
+            <tr>
+              <td><strong>CSS Files</strong></td>
+              <td>❌ No</td>
+              <td>❌ Hard</td>
+              <td><span class="badge badge-accent">Low</span></td>
+              <td>Simple projects</td>
+            </tr>
+            <tr>
+              <td><strong>CSS Modules</strong></td>
+              <td>✅ Yes</td>
+              <td>⚠️ Medium</td>
+              <td><span class="badge badge-warning">Medium</span></td>
+              <td>Component libraries</td>
+            </tr>
+            <tr>
+              <td><strong>Styled Components</strong></td>
+              <td>✅ Yes</td>
+              <td>✅ Easy</td>
+              <td><span class="badge badge-warning">Medium</span></td>
+              <td>Dynamic theming</td>
+            </tr>
+            <tr>
+              <td><strong>Tailwind CSS</strong></td>
+              <td>✅ Yes</td>
+              <td>⚠️ Medium</td>
+              <td><span class="badge badge-warning">Medium</span></td>
+              <td>Rapid prototyping</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>🔑 Key Differences from Traditional CSS</h3>
+        <div class="grid-2">
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ Traditional HTML/CSS</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">&lt;!-- HTML --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"card"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"card active"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">/* CSS - GLOBAL! */</span>
+<span class="css-sel">.card</span> { ... }
+<span class="css-sel">.card.active</span> { ... }</pre></div>
+            </div>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1.25rem;">
+              <li>Uses <code>class</code> attribute</li>
+              <li>Styles are global</li>
+              <li>String-based class names</li>
+            </ul>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ React Styling</h4>
+            <div class="code-block">
+              <div class="code-body"><pre><span class="cmt">{/* JSX */}</span>
+<span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="str">`card </span>${isActive ? <span class="str">'active'</span> : <span class="str">''</span>}<span class="str">`</span>}<span class="tag">&gt;</span>
+
+<span class="cmt">{/* Or inline */}</span>
+<span class="tag">&lt;div</span> <span class="attr">style</span>={{ color: isActive ? <span class="str">'green'</span> : <span class="str">'gray'</span> }}<span class="tag">&gt;</span></pre></div>
+            </div>
+            <ul style="color: var(--muted); font-size: 0.9rem; padding-left: 1.25rem;">
+              <li>Uses <code>className</code> (not class!)</li>
+              <li>Can be scoped per component</li>
+              <li>Dynamic with JavaScript</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ Remember: className, not class!</div>
+          <div class="warning-content">
+            In JSX, use <code>className</code> instead of <code>class</code> because <code>class</code> is a reserved word in JavaScript.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Inline Styles -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-inline">📝</div>
+        <div class="section-title">Part 2: Inline Styles - JavaScript Style Objects</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Inline Styles in React</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Inline styles in React use <strong>JavaScript objects</strong> instead of CSS strings. 
+          This allows for dynamic styling based on props and state.
+        </p>
+
+        <h3>📐 Syntax Rules</h3>
+        <div class="syntax-box">
+          <h5>Key Differences from CSS:</h5>
+          <ul style="color: var(--muted); padding-left: 1.25rem;">
+            <li><strong>camelCase</strong> property names: <code>background-color</code> → <code>backgroundColor</code></li>
+            <li><strong>String values</strong> for most properties: <code>color: 'red'</code></li>
+            <li><strong>Numbers</strong> default to pixels: <code>padding: 16</code> → <code>16px</code></li>
+            <li><strong>Double curly braces</strong>: <code>style={{ }}</code> (object inside JSX expression)</li>
+          </ul>
+        </div>
+
+        <h3>📝 Basic Inline Styles</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Inline Style Examples</div>
+          <div class="code-body"><pre><span class="cmt">// Method 1: Direct inline (for simple cases)</span>
+<span class="kw">function</span> <span class="fn">Card</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">style</span>={{
+      <span class="prop">backgroundColor</span>: <span class="str">'#1a1a2e'</span>,
+      <span class="prop">padding</span>: <span class="num">20</span>,                  <span class="cmt">// 20px</span>
+      <span class="prop">borderRadius</span>: <span class="num">12</span>,              <span class="cmt">// 12px</span>
+      <span class="prop">border</span>: <span class="str">'1px solid #333'</span>,
+      <span class="prop">boxShadow</span>: <span class="str">'0 4px 6px rgba(0,0,0,0.3)'</span>
+    }}<span class="tag">&gt;</span>
+      <span class="tag">&lt;h2</span> <span class="attr">style</span>={{ <span class="prop">color</span>: <span class="str">'#22d3ee'</span>, <span class="prop">marginBottom</span>: <span class="num">8</span> }}<span class="tag">&gt;</span>
+        Card Title
+      <span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;p</span> <span class="attr">style</span>={{ <span class="prop">color</span>: <span class="str">'#94a3b8'</span> }}<span class="tag">&gt;</span>Card content<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Method 2: Style object variable (cleaner for complex styles)</span>
+<span class="kw">function</span> <span class="fn">Card</span>() {
+  <span class="kw">const</span> cardStyle = {
+    <span class="prop">backgroundColor</span>: <span class="str">'#1a1a2e'</span>,
+    <span class="prop">padding</span>: <span class="num">20</span>,
+    <span class="prop">borderRadius</span>: <span class="num">12</span>,
+    <span class="prop">border</span>: <span class="str">'1px solid #333'</span>
+  };
+
+  <span class="kw">const</span> titleStyle = {
+    <span class="prop">color</span>: <span class="str">'#22d3ee'</span>,
+    <span class="prop">fontSize</span>: <span class="num">24</span>,
+    <span class="prop">fontWeight</span>: <span class="num">600</span>,
+    <span class="prop">marginBottom</span>: <span class="num">8</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">style</span>={cardStyle}<span class="tag">&gt;</span>
+      <span class="tag">&lt;h2</span> <span class="attr">style</span>={titleStyle}<span class="tag">&gt;</span>Card Title<span class="tag">&lt;/h2&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Dynamic Styles (The Power of Inline!)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Dynamic Inline Styles</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected }) {
+  <span class="cmt">// Dynamic style based on grade</span>
+  <span class="kw">const</span> gradeColors = {
+    <span class="str">'A'</span>: <span class="str">'#22c55e'</span>,
+    <span class="str">'B'</span>: <span class="str">'#3b82f6'</span>,
+    <span class="str">'C'</span>: <span class="str">'#f59e0b'</span>,
+    <span class="str">'D'</span>: <span class="str">'#f97316'</span>,
+    <span class="str">'F'</span>: <span class="str">'#ef4444'</span>
+  };
+
+  <span class="kw">const</span> cardStyle = {
+    <span class="prop">padding</span>: <span class="num">16</span>,
+    <span class="prop">borderRadius</span>: <span class="num">12</span>,
+    <span class="prop">border</span>: isSelected 
+      ? <span class="str">'2px solid #22d3ee'</span> 
+      : <span class="str">'1px solid #333'</span>,
+    <span class="prop">backgroundColor</span>: isSelected 
+      ? <span class="str">'rgba(34,211,238,0.1)'</span> 
+      : <span class="str">'#1a1a2e'</span>,
+    <span class="prop">transform</span>: isSelected ? <span class="str">'scale(1.02)'</span> : <span class="str">'scale(1)'</span>,
+    <span class="prop">transition</span>: <span class="str">'all 0.2s ease'</span>
+  };
+
+  <span class="kw">const</span> badgeStyle = {
+    <span class="prop">backgroundColor</span>: gradeColors[student.grade],
+    <span class="prop">color</span>: <span class="str">'white'</span>,
+    <span class="prop">padding</span>: <span class="str">'4px 12px'</span>,
+    <span class="prop">borderRadius</span>: <span class="num">20</span>,
+    <span class="prop">fontSize</span>: <span class="num">14</span>,
+    <span class="prop">fontWeight</span>: <span class="num">600</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">style</span>={cardStyle}<span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">style</span>={{ <span class="prop">display</span>: <span class="str">'flex'</span>, <span class="prop">justifyContent</span>: <span class="str">'space-between'</span> }}<span class="tag">&gt;</span>
+        <span class="tag">&lt;h3&gt;</span>{student.name}<span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">style</span>={badgeStyle}<span class="tag">&gt;</span>{student.grade}<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;p</span> <span class="attr">style</span>={{ <span class="prop">color</span>: <span class="str">'#94a3b8'</span>, <span class="prop">marginTop</span>: <span class="num">8</span> }}<span class="tag">&gt;</span>
+        Age: {student.age}
+      <span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="style-demo">
+          <div class="demo-label">Visual Result</div>
+          <div class="demo-result">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <div style="padding: 16px; border-radius: 12px; border: 1px solid #333; background: #1a1a2e; min-width: 200px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h3 style="margin: 0; font-size: 1.1rem;">Alice</h3>
+                  <span style="background: #22c55e; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px;">A</span>
+                </div>
+                <p style="color: #94a3b8; margin-top: 8px; margin-bottom: 0;">Age: 15</p>
+              </div>
+              <div style="padding: 16px; border-radius: 12px; border: 2px solid #22d3ee; background: rgba(34,211,238,0.1); min-width: 200px; transform: scale(1.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h3 style="margin: 0; font-size: 1.1rem;">Bob (Selected)</h3>
+                  <span style="background: #3b82f6; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px;">B</span>
+                </div>
+                <p style="color: #94a3b8; margin-top: 8px; margin-bottom: 0;">Age: 16</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>✅ Pros & Cons</h3>
+        <div class="pros-cons">
+          <div class="pros">
+            <h5>✅ Advantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Fully dynamic with JS</li>
+              <li>Scoped to component</li>
+              <li>No CSS file needed</li>
+              <li>Easy conditional styles</li>
+              <li>No class name conflicts</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>❌ Disadvantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>No pseudo-classes (:hover, :focus)</li>
+              <li>No media queries</li>
+              <li>No animations/keyframes</li>
+              <li>Can clutter JSX</li>
+              <li>No CSS caching</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 When to Use Inline Styles</div>
+          <div class="tip-content">
+            Use inline styles for: dynamic values based on props/state, one-off styles, simple style adjustments.
+            <strong>Avoid</strong> for: complex layouts, hover/focus states, responsive designs.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: CSS Stylesheets -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-stylesheet">📄</div>
+        <div class="section-title">Part 3: CSS Stylesheets - Traditional Approach</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Regular CSS Files in React</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          You can use regular CSS files with React, just like in traditional web development. 
+          Simply import the CSS file into your component.
+        </p>
+
+        <h3>📁 File Structure</h3>
+        <div class="file-structure">
+          <div class="folder">📂 src/</div>
+          <div class="indent folder">📂 components/</div>
+          <div class="indent indent file">📄 StudentCard.jsx</div>
+          <div class="indent indent file">📄 StudentCard.css <span class="badge badge-primary">Styles here</span></div>
+          <div class="indent indent file">📄 Button.jsx</div>
+          <div class="indent indent file">📄 Button.css</div>
+          <div class="indent file">📄 App.jsx</div>
+          <div class="indent file">📄 App.css</div>
+          <div class="indent file">📄 index.css <span class="badge badge-secondary">Global styles</span></div>
+        </div>
+
+        <h3>📝 Basic Usage</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.css</div>
+            <div class="code-body"><pre><span class="cmt">/* Regular CSS file */</span>
+<span class="css-sel">.student-card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#1a1a2e</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">12px</span>;
+  <span class="css-prop">border</span>: <span class="css-val">1px solid #333</span>;
+  <span class="css-prop">transition</span>: <span class="css-val">all 0.2s ease</span>;
+}
+
+<span class="css-sel">.student-card:hover</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">transform</span>: <span class="css-val">translateY(-2px)</span>;
+}
+
+<span class="css-sel">.student-card.selected</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">background</span>: <span class="css-val">rgba(34,211,238,0.1)</span>;
+}
+
+<span class="css-sel">.card-header</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">justify-content</span>: <span class="css-val">space-between</span>;
+  <span class="css-prop">align-items</span>: <span class="css-val">center</span>;
+}
+
+<span class="css-sel">.student-name</span> {
+  <span class="css-prop">color</span>: <span class="css-val">#f1f5f9</span>;
+  <span class="css-prop">font-size</span>: <span class="css-val">1.1rem</span>;
+  <span class="css-prop">font-weight</span>: <span class="css-val">600</span>;
+}
+
+<span class="css-sel">.grade-badge</span> {
+  <span class="css-prop">padding</span>: <span class="css-val">4px 12px</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">20px</span>;
+  <span class="css-prop">color</span>: <span class="css-val">white</span>;
+  <span class="css-prop">font-weight</span>: <span class="css-val">600</span>;
+}
+
+<span class="css-sel">.grade-A</span> { <span class="css-prop">background</span>: <span class="css-val">#22c55e</span>; }
+<span class="css-sel">.grade-B</span> { <span class="css-prop">background</span>: <span class="css-val">#3b82f6</span>; }
+<span class="css-sel">.grade-C</span> { <span class="css-prop">background</span>: <span class="css-val">#f59e0b</span>; }
+
+<span class="cmt">/* Responsive */</span>
+<span class="css-sel">@media (max-width: 768px)</span> {
+  <span class="css-sel">.student-card</span> {
+    <span class="css-prop">padding</span>: <span class="css-val">12px</span>;
+  }
+}</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx</div>
+            <div class="code-body"><pre><span class="cmt">// Import the CSS file</span>
+<span class="kw">import</span> <span class="str">'./StudentCard.css'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected }) {
+  <span class="cmt">// Build className string dynamically</span>
+  <span class="kw">const</span> cardClasses = <span class="str">`student-card </span>${
+    isSelected ? <span class="str">'selected'</span> : <span class="str">''</span>
+  }<span class="str">`</span>;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={cardClasses}<span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card-header"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h3</span> <span class="attr">className</span>=<span class="str">"student-name"</span><span class="tag">&gt;</span>
+          {student.name}
+        <span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>={
+          <span class="str">`grade-badge grade-</span>${student.grade}<span class="str">`</span>
+        }<span class="tag">&gt;</span>
+          {student.grade}
+        <span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"student-age"</span><span class="tag">&gt;</span>
+        Age: {student.age}
+      <span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentCard;</pre></div>
+          </div>
+        </div>
+
+        <h3>🔗 Using clsx or classnames Library</h3>
+        <p style="color: var(--muted); margin-bottom: 1rem;">For complex conditional class names, use the <code>clsx</code> or <code>classnames</code> library:</p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Using clsx for conditional classes</div>
+          <div class="code-body"><pre><span class="kw">import</span> clsx <span class="kw">from</span> <span class="str">'clsx'</span>;
+<span class="kw">import</span> <span class="str">'./StudentCard.css'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected, isHighlighted, isDisabled }) {
+  <span class="cmt">// Much cleaner than string concatenation!</span>
+  <span class="kw">const</span> cardClasses = <span class="fn">clsx</span>(
+    <span class="str">'student-card'</span>,           <span class="cmt">// Always applied</span>
+    {
+      <span class="str">'selected'</span>: isSelected,   <span class="cmt">// Applied if isSelected is true</span>
+      <span class="str">'highlighted'</span>: isHighlighted,
+      <span class="str">'disabled'</span>: isDisabled
+    }
+  );
+
+  <span class="cmt">// Result: "student-card selected highlighted" (based on conditions)</span>
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={cardClasses}<span class="tag">&gt;</span>
+      ...
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="danger">
+          <div class="danger-title">⚠️ The Big Problem: Global Scope!</div>
+          <div class="danger-content">
+            CSS files are <strong>GLOBAL</strong>. If you have <code>.card</code> in two different CSS files, they WILL conflict!
+            <br><br>
+            <strong>File1.css:</strong> <code>.card { background: red; }</code><br>
+            <strong>File2.css:</strong> <code>.card { background: blue; }</code><br>
+            <strong>Result:</strong> One will override the other - unpredictable! 😱
+          </div>
+        </div>
+
+        <h3>✅ Pros & Cons</h3>
+        <div class="pros-cons">
+          <div class="pros">
+            <h5>✅ Advantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Full CSS features (hover, media queries)</li>
+              <li>Familiar syntax</li>
+              <li>Separation of concerns</li>
+              <li>CSS caching by browser</li>
+              <li>Easy to copy existing CSS</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>❌ Disadvantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Global scope (name collisions!)</li>
+              <li>Need unique class names</li>
+              <li>Dead CSS hard to track</li>
+              <li>No dynamic values from JS</li>
+              <li>Separate file to maintain</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: CSS Modules -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-modules">📦</div>
+        <div class="section-title">Part 4: CSS Modules - Scoped Styles (Recommended!)</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>CSS Modules: The Best of Both Worlds</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>CSS Modules</strong> give you all CSS features with <strong>automatic local scoping</strong>. 
+          Class names are transformed to unique identifiers, preventing conflicts.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--secondary); margin-bottom: 0.75rem;">🎯 How CSS Modules Work</h4>
+          <p style="color: var(--muted);">
+            You write: <code>.card { }</code><br>
+            Browser sees: <code>.StudentCard_card_x7yz3 { }</code><br>
+            Each class gets a <strong>unique hash</strong> - no more conflicts!
+          </p>
+        </div>
+
+        <h3>📝 Setup & Usage</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.module.css</div>
+            <div class="code-body"><pre><span class="cmt">/* Note the .module.css extension! */</span>
+
+<span class="css-sel">.card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#1a1a2e</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">12px</span>;
+  <span class="css-prop">border</span>: <span class="css-val">1px solid #333</span>;
+  <span class="css-prop">transition</span>: <span class="css-val">all 0.2s ease</span>;
+}
+
+<span class="css-sel">.card:hover</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">transform</span>: <span class="css-val">translateY(-2px)</span>;
+}
+
+<span class="css-sel">.selected</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">background</span>: <span class="css-val">rgba(34,211,238,0.1)</span>;
+}
+
+<span class="css-sel">.header</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">justify-content</span>: <span class="css-val">space-between</span>;
+  <span class="css-prop">align-items</span>: <span class="css-val">center</span>;
+}
+
+<span class="css-sel">.name</span> {
+  <span class="css-prop">color</span>: <span class="css-val">#f1f5f9</span>;
+  <span class="css-prop">font-size</span>: <span class="css-val">1.1rem</span>;
+  <span class="css-prop">font-weight</span>: <span class="css-val">600</span>;
+  <span class="css-prop">margin</span>: <span class="css-val">0</span>;
+}
+
+<span class="css-sel">.badge</span> {
+  <span class="css-prop">padding</span>: <span class="css-val">4px 12px</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">20px</span>;
+  <span class="css-prop">color</span>: <span class="css-val">white</span>;
+  <span class="css-prop">font-weight</span>: <span class="css-val">600</span>;
+}
+
+<span class="css-sel">.gradeA</span> { <span class="css-prop">background</span>: <span class="css-val">#22c55e</span>; }
+<span class="css-sel">.gradeB</span> { <span class="css-prop">background</span>: <span class="css-val">#3b82f6</span>; }
+<span class="css-sel">.gradeC</span> { <span class="css-prop">background</span>: <span class="css-val">#f59e0b</span>; }
+
+<span class="css-sel">.details</span> {
+  <span class="css-prop">color</span>: <span class="css-val">#94a3b8</span>;
+  <span class="css-prop">margin-top</span>: <span class="css-val">8px</span>;
+}</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx</div>
+            <div class="code-body"><pre><span class="cmt">// Import as an object!</span>
+<span class="kw">import</span> styles <span class="kw">from</span> <span class="str">'./StudentCard.module.css'</span>;
+<span class="kw">import</span> clsx <span class="kw">from</span> <span class="str">'clsx'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected }) {
+  <span class="cmt">// Access classes as object properties</span>
+  <span class="kw">const</span> cardClasses = <span class="fn">clsx</span>(
+    styles.card,
+    { [styles.selected]: isSelected }
+  );
+
+  <span class="cmt">// Dynamic grade class</span>
+  <span class="kw">const</span> gradeClass = styles[<span class="str">`grade</span>${student.grade}<span class="str">`</span>];
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={cardClasses}<span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.header}<span class="tag">&gt;</span>
+        <span class="tag">&lt;h3</span> <span class="attr">className</span>={styles.name}<span class="tag">&gt;</span>
+          {student.name}
+        <span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>={<span class="fn">clsx</span>(styles.badge, gradeClass)}<span class="tag">&gt;</span>
+          {student.grade}
+        <span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;p</span> <span class="attr">className</span>={styles.details}<span class="tag">&gt;</span>
+        Age: {student.age}
+      <span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentCard;
+
+<span class="cmt">// What styles object looks like:</span>
+<span class="cmt">// {</span>
+<span class="cmt">//   card: "StudentCard_card_x7yz3",</span>
+<span class="cmt">//   selected: "StudentCard_selected_a2bc4",</span>
+<span class="cmt">//   header: "StudentCard_header_m9nop",</span>
+<span class="cmt">//   ...</span>
+<span class="cmt">// }</span></pre></div>
+          </div>
+        </div>
+
+        <h3>🔍 How Class Names Transform</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Class Name Transformation</div>
+          <div class="code-body"><pre><span class="cmt">/* You write in StudentCard.module.css: */</span>
+<span class="css-sel">.card</span> { ... }
+<span class="css-sel">.selected</span> { ... }
+
+<span class="cmt">/* Browser receives: */</span>
+<span class="css-sel">.StudentCard_card_x7yz3</span> { ... }
+<span class="css-sel">.StudentCard_selected_a2bc4</span> { ... }
+
+<span class="cmt">/* In another component (Button.module.css): */</span>
+<span class="css-sel">.card</span> { ... }  <span class="cmt">/* Same class name, NO conflict! */</span>
+
+<span class="cmt">/* Browser receives: */</span>
+<span class="css-sel">.Button_card_p5qrs</span> { ... }  <span class="cmt">/* Different hash! */</span></pre></div>
+        </div>
+
+        <h3>🎨 Composing Styles</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Using composes</div>
+          <div class="code-body"><pre><span class="cmt">/* Base styles */</span>
+<span class="css-sel">.button</span> {
+  <span class="css-prop">padding</span>: <span class="css-val">8px 16px</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">8px</span>;
+  <span class="css-prop">border</span>: <span class="css-val">none</span>;
+  <span class="css-prop">cursor</span>: <span class="css-val">pointer</span>;
+  <span class="css-prop">font-weight</span>: <span class="css-val">600</span>;
+}
+
+<span class="cmt">/* Compose = extend the base style */</span>
+<span class="css-sel">.primaryButton</span> {
+  <span class="css-prop">composes</span>: <span class="css-val">button</span>;
+  <span class="css-prop">background</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">color</span>: <span class="css-val">#0a0f1c</span>;
+}
+
+<span class="css-sel">.dangerButton</span> {
+  <span class="css-prop">composes</span>: <span class="css-val">button</span>;
+  <span class="css-prop">background</span>: <span class="css-val">#ef4444</span>;
+  <span class="css-prop">color</span>: <span class="css-val">white</span>;
+}
+
+<span class="cmt">/* Usage in JSX: */</span>
+<span class="cmt">// &lt;button className={styles.primaryButton}&gt;Save&lt;/button&gt;</span>
+<span class="cmt">// &lt;button className={styles.dangerButton}&gt;Delete&lt;/button&gt;</span></pre></div>
+        </div>
+
+        <h3>✅ Pros & Cons</h3>
+        <div class="pros-cons">
+          <div class="pros">
+            <h5>✅ Advantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li><strong>Locally scoped</strong> - no conflicts!</li>
+              <li>Full CSS features</li>
+              <li>Works with existing CSS</li>
+              <li>Built into Create React App</li>
+              <li>Composition support</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>❌ Disadvantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Verbose syntax (<code>styles.className</code>)</li>
+              <li>Dynamic values still need inline styles</li>
+              <li>TypeScript requires setup for autocomplete</li>
+              <li>Can't share styles between files easily</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">💡 CSS Modules is Often the Best Choice</div>
+          <div class="tip-content">
+            CSS Modules provide the best balance of features, simplicity, and safety for most projects. 
+            It's the <strong>recommended approach</strong> for component-based styling!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Vanilla CSS vs React Styling -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-compare">⚖️</div>
+        <div class="section-title">Part 5: Vanilla CSS vs React Styling - Complete Comparison</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>The Same UI: Two Approaches</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Let's style a <strong>Student Card with Dynamic States</strong> - comparing traditional CSS with React styling approaches.
+        </p>
+
+        <h3>📊 Approach Comparison</h3>
+        <div class="lines-compare">
+          <div class="lines-label" style="color: #e34c26;">Traditional HTML/CSS</div>
+          <div class="lines-bar" style="width: 100%; background: linear-gradient(90deg, #e34c26, #f06529); color: #000;">~85 lines (3 files)</div>
+        </div>
+        <div class="lines-compare">
+          <div class="lines-label" style="color: var(--react);">React + CSS Modules</div>
+          <div class="lines-bar" style="width: 60%; background: linear-gradient(90deg, var(--react), var(--primary)); color: #000;">~55 lines (2 files)</div>
+        </div>
+
+        <h3 style="color: #e34c26;">❌ Traditional HTML/CSS Approach</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; index.html</div>
+            <div class="code-body"><pre><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"student-card"</span> <span class="attr">id</span>=<span class="val">"card-1"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"card-header"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h3</span> <span class="attr">class</span>=<span class="val">"student-name"</span><span class="tag">&gt;</span>Alice<span class="tag">&lt;/h3&gt;</span>
+    <span class="tag">&lt;span</span> <span class="attr">class</span>=<span class="val">"grade-badge grade-A"</span><span class="tag">&gt;</span>A<span class="tag">&lt;/span&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"student-details"</span><span class="tag">&gt;</span>Age: 15<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"card-actions"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="val">"btn btn-edit"</span> 
+            <span class="attr">onclick</span>=<span class="val">"toggleSelect(1)"</span><span class="tag">&gt;</span>
+      Select
+    <span class="tag">&lt;/button&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"script.js"</span><span class="tag">&gt;&lt;/script&gt;</span></pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; script.js</div>
+            <div class="code-body"><pre><span class="cmt">// Must manually toggle classes!</span>
+<span class="kw">let</span> selectedCards = <span class="kw">new</span> <span class="fn">Set</span>();
+
+<span class="kw">function</span> <span class="fn">toggleSelect</span>(id) {
+  <span class="kw">const</span> card = document
+    .<span class="fn">getElementById</span>(<span class="str">`card-</span>${id}<span class="str">`</span>);
+  
+  <span class="kw">if</span> (selectedCards.<span class="fn">has</span>(id)) {
+    selectedCards.<span class="fn">delete</span>(id);
+    card.classList.<span class="fn">remove</span>(<span class="str">'selected'</span>);
+  } <span class="kw">else</span> {
+    selectedCards.<span class="fn">add</span>(id);
+    card.classList.<span class="fn">add</span>(<span class="str">'selected'</span>);
+  }
+  
+  <span class="fn">updateSelectButton</span>(card, id);
+}
+
+<span class="kw">function</span> <span class="fn">updateSelectButton</span>(card, id) {
+  <span class="kw">const</span> btn = card.<span class="fn">querySelector</span>(<span class="str">'.btn-edit'</span>);
+  btn.textContent = selectedCards.<span class="fn">has</span>(id) 
+    ? <span class="str">'Deselect'</span> 
+    : <span class="str">'Select'</span>;
+  btn.classList.<span class="fn">toggle</span>(
+    <span class="str">'btn-selected'</span>, 
+    selectedCards.<span class="fn">has</span>(id)
+  );
+}</pre></div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; styles.css</div>
+          <div class="code-body"><pre><span class="css-sel">.student-card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#1a1a2e</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">12px</span>;
+  <span class="css-prop">border</span>: <span class="css-val">1px solid #333</span>;
+  <span class="css-prop">transition</span>: <span class="css-val">all 0.2s</span>;
+}
+<span class="css-sel">.student-card:hover</span> { <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>; }
+<span class="css-sel">.student-card.selected</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">background</span>: <span class="css-val">rgba(34,211,238,0.1)</span>;
+  <span class="css-prop">transform</span>: <span class="css-val">scale(1.02)</span>;
+}
+<span class="css-sel">.card-header</span> { <span class="css-prop">display</span>: <span class="css-val">flex</span>; <span class="css-prop">justify-content</span>: <span class="css-val">space-between</span>; }
+<span class="css-sel">.student-name</span> { <span class="css-prop">color</span>: <span class="css-val">#f1f5f9</span>; <span class="css-prop">font-weight</span>: <span class="css-val">600</span>; }
+<span class="css-sel">.grade-badge</span> { <span class="css-prop">padding</span>: <span class="css-val">4px 12px</span>; <span class="css-prop">border-radius</span>: <span class="css-val">20px</span>; <span class="css-prop">color</span>: <span class="css-val">white</span>; }
+<span class="css-sel">.grade-A</span> { <span class="css-prop">background</span>: <span class="css-val">#22c55e</span>; }
+<span class="css-sel">.grade-B</span> { <span class="css-prop">background</span>: <span class="css-val">#3b82f6</span>; }
+<span class="css-sel">.btn</span> { <span class="css-prop">padding</span>: <span class="css-val">8px 16px</span>; <span class="css-prop">border-radius</span>: <span class="css-val">8px</span>; <span class="css-prop">cursor</span>: <span class="css-val">pointer</span>; }
+<span class="css-sel">.btn-edit</span> { <span class="css-prop">background</span>: <span class="css-val">#22d3ee</span>; <span class="css-prop">color</span>: <span class="css-val">#0a0f1c</span>; }
+<span class="css-sel">.btn-selected</span> { <span class="css-prop">background</span>: <span class="css-val">#ef4444</span>; <span class="css-prop">color</span>: <span class="css-val">white</span>; }</pre></div>
+        </div>
+
+        <div class="danger">
+          <div class="danger-title">😫 Traditional Approach Pain Points</div>
+          <div class="danger-content">
+            • Manual DOM manipulation for class changes<br>
+            • State (selectedCards) separate from view<br>
+            • Must sync button text manually<br>
+            • Global CSS - class name conflicts possible<br>
+            • 3 separate files to maintain
+          </div>
+        </div>
+
+        <h3 style="color: var(--react); margin-top: 2rem;">✅ React + CSS Modules Approach</h3>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.module.css</div>
+            <div class="code-body"><pre><span class="css-sel">.card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">#1a1a2e</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">12px</span>;
+  <span class="css-prop">border</span>: <span class="css-val">1px solid #333</span>;
+  <span class="css-prop">transition</span>: <span class="css-val">all 0.2s</span>;
+}
+
+<span class="css-sel">.card:hover</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+}
+
+<span class="css-sel">.selected</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">background</span>: <span class="css-val">rgba(34,211,238,0.1)</span>;
+  <span class="css-prop">transform</span>: <span class="css-val">scale(1.02)</span>;
+}
+
+<span class="css-sel">.header</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">justify-content</span>: <span class="css-val">space-between</span>;
+}
+
+<span class="css-sel">.name</span> { <span class="css-prop">color</span>: <span class="css-val">#f1f5f9</span>; }
+<span class="css-sel">.badge</span> { <span class="css-prop">padding</span>: <span class="css-val">4px 12px</span>; <span class="css-prop">border-radius</span>: <span class="css-val">20px</span>; }
+<span class="css-sel">.gradeA</span> { <span class="css-prop">background</span>: <span class="css-val">#22c55e</span>; }
+<span class="css-sel">.gradeB</span> { <span class="css-prop">background</span>: <span class="css-val">#3b82f6</span>; }
+<span class="css-sel">.btn</span> { <span class="css-prop">padding</span>: <span class="css-val">8px 16px</span>; }
+<span class="css-sel">.btnPrimary</span> { <span class="css-prop">background</span>: <span class="css-val">#22d3ee</span>; }
+<span class="css-sel">.btnDanger</span> { <span class="css-prop">background</span>: <span class="css-val">#ef4444</span>; }</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx</div>
+            <div class="code-body"><pre><span class="kw">import</span> styles <span class="kw">from</span> <span class="str">'./StudentCard.module.css'</span>;
+<span class="kw">import</span> clsx <span class="kw">from</span> <span class="str">'clsx'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected, onToggle }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="fn">clsx</span>(
+      styles.card,
+      { [styles.selected]: isSelected }
+    )}<span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.header}<span class="tag">&gt;</span>
+        <span class="tag">&lt;h3</span> <span class="attr">className</span>={styles.name}<span class="tag">&gt;</span>
+          {student.name}
+        <span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>={<span class="fn">clsx</span>(
+          styles.badge, 
+          styles[<span class="str">`grade</span>${student.grade}<span class="str">`</span>]
+        )}<span class="tag">&gt;</span>
+          {student.grade}
+        <span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="tag">&lt;p&gt;</span>Age: {student.age}<span class="tag">&lt;/p&gt;</span>
+      
+      <span class="tag">&lt;button</span>
+        <span class="attr">className</span>={<span class="fn">clsx</span>(
+          styles.btn,
+          isSelected ? styles.btnDanger : styles.btnPrimary
+        )}
+        <span class="attr">onClick</span>={onToggle}
+      <span class="tag">&gt;</span>
+        {isSelected ? <span class="str">'Deselect'</span> : <span class="str">'Select'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-title">🎉 React + CSS Modules Benefits</div>
+          <div class="tip-content">
+            ✅ State and view in one place<br>
+            ✅ Classes automatically scoped<br>
+            ✅ Button text syncs with state<br>
+            ✅ No manual DOM manipulation<br>
+            ✅ Only 2 files, co-located
+          </div>
+        </div>
+
+        <h3>📊 Complete Comparison Table</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th style="color: #e34c26;">Traditional HTML/CSS/JS</th>
+              <th style="color: var(--react);">React + CSS Modules</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Dynamic Classes</strong></td>
+              <td>classList.add/remove manually</td>
+              <td>Computed from props/state</td>
+            </tr>
+            <tr>
+              <td><strong>Scope</strong></td>
+              <td>Global (conflicts possible)</td>
+              <td>Local per component</td>
+            </tr>
+            <tr>
+              <td><strong>State → Style</strong></td>
+              <td>Must sync manually</td>
+              <td>Automatic on re-render</td>
+            </tr>
+            <tr>
+              <td><strong>Files</strong></td>
+              <td>3 (HTML + CSS + JS)</td>
+              <td>2 (JSX + CSS Module)</td>
+            </tr>
+            <tr>
+              <td><strong>Hover/Focus</strong></td>
+              <td>✅ CSS</td>
+              <td>✅ CSS</td>
+            </tr>
+            <tr>
+              <td><strong>Maintainability</strong></td>
+              <td>⚠️ Scattered logic</td>
+              <td>✅ Co-located</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 6: Complete Student Management with Styles -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-project">🎓</div>
+        <div class="section-title">Part 6: Complete Student Management System - Styled</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Full Project with CSS Modules</h2>
+        <p style="color: var(--muted); margin-bottom: 1.5rem;">
+          Let's build a complete styled Student Management System using CSS Modules for component styles.
+        </p>
+
+        <h3>📁 Project Structure</h3>
+        <div class="file-structure">
+          <div class="folder">📂 src/</div>
+          <div class="indent folder">📂 components/</div>
+          <div class="indent indent file">📄 App.jsx + App.module.css</div>
+          <div class="indent indent file">📄 Header.jsx + Header.module.css</div>
+          <div class="indent indent file">📄 StudentCard.jsx + StudentCard.module.css</div>
+          <div class="indent indent file">📄 StudentForm.jsx + StudentForm.module.css</div>
+          <div class="indent indent file">📄 Button.jsx + Button.module.css</div>
+          <div class="indent file">📄 index.css <span class="badge badge-secondary">Global variables</span></div>
+        </div>
+
+        <h3>🌐 Global Styles (CSS Variables)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; index.css - Global CSS Variables</div>
+          <div class="code-body"><pre><span class="cmt">/* Global CSS Variables - Available everywhere */</span>
+<span class="css-sel">:root</span> {
+  <span class="cmt">/* Colors */</span>
+  <span class="css-prop">--bg-primary</span>: <span class="css-val">#0a0f1c</span>;
+  <span class="css-prop">--bg-surface</span>: <span class="css-val">#111827</span>;
+  <span class="css-prop">--bg-surface-2</span>: <span class="css-val">#1a2234</span>;
+  <span class="css-prop">--border-color</span>: <span class="css-val">#2d3a52</span>;
+  
+  <span class="css-prop">--text-primary</span>: <span class="css-val">#f1f5f9</span>;
+  <span class="css-prop">--text-muted</span>: <span class="css-val">#94a3b8</span>;
+  
+  <span class="css-prop">--accent</span>: <span class="css-val">#22d3ee</span>;
+  <span class="css-prop">--success</span>: <span class="css-val">#22c55e</span>;
+  <span class="css-prop">--warning</span>: <span class="css-val">#f59e0b</span>;
+  <span class="css-prop">--danger</span>: <span class="css-val">#ef4444</span>;
+  
+  <span class="cmt">/* Spacing */</span>
+  <span class="css-prop">--spacing-xs</span>: <span class="css-val">4px</span>;
+  <span class="css-prop">--spacing-sm</span>: <span class="css-val">8px</span>;
+  <span class="css-prop">--spacing-md</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">--spacing-lg</span>: <span class="css-val">24px</span>;
+  
+  <span class="cmt">/* Border Radius */</span>
+  <span class="css-prop">--radius-sm</span>: <span class="css-val">8px</span>;
+  <span class="css-prop">--radius-md</span>: <span class="css-val">12px</span>;
+  <span class="css-prop">--radius-lg</span>: <span class="css-val">16px</span>;
+  <span class="css-prop">--radius-full</span>: <span class="css-val">9999px</span>;
+}
+
+<span class="css-sel">*</span> {
+  <span class="css-prop">margin</span>: <span class="css-val">0</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">0</span>;
+  <span class="css-prop">box-sizing</span>: <span class="css-val">border-box</span>;
+}
+
+<span class="css-sel">body</span> {
+  <span class="css-prop">font-family</span>: <span class="css-val">'Outfit', sans-serif</span>;
+  <span class="css-prop">background</span>: <span class="css-val">var(--bg-primary)</span>;
+  <span class="css-prop">color</span>: <span class="css-val">var(--text-primary)</span>;
+  <span class="css-prop">line-height</span>: <span class="css-val">1.6</span>;
+}</pre></div>
+        </div>
+
+        <h3>🎨 Component Styles</h3>
+
+        <h4 style="color: var(--accent); margin: 1.5rem 0 0.75rem;">Button Component (Reusable)</h4>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Button.module.css</div>
+            <div class="code-body"><pre><span class="css-sel">.button</span> {
+  <span class="css-prop">padding</span>: <span class="css-val">var(--spacing-sm) var(--spacing-md)</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">var(--radius-sm)</span>;
+  <span class="css-prop">border</span>: <span class="css-val">none</span>;
+  <span class="css-prop">font-size</span>: <span class="css-val">0.9rem</span>;
+  <span class="css-prop">font-weight</span>: <span class="css-val">600</span>;
+  <span class="css-prop">cursor</span>: <span class="css-val">pointer</span>;
+  <span class="css-prop">transition</span>: <span class="css-val">all 0.2s ease</span>;
+}
+
+<span class="css-sel">.button:hover</span> {
+  <span class="css-prop">transform</span>: <span class="css-val">translateY(-2px)</span>;
+}
+
+<span class="css-sel">.button:disabled</span> {
+  <span class="css-prop">opacity</span>: <span class="css-val">0.5</span>;
+  <span class="css-prop">cursor</span>: <span class="css-val">not-allowed</span>;
+}
+
+<span class="css-sel">.primary</span> {
+  <span class="css-prop">background</span>: <span class="css-val">var(--accent)</span>;
+  <span class="css-prop">color</span>: <span class="css-val">var(--bg-primary)</span>;
+}
+
+<span class="css-sel">.danger</span> {
+  <span class="css-prop">background</span>: <span class="css-val">var(--danger)</span>;
+  <span class="css-prop">color</span>: <span class="css-val">white</span>;
+}
+
+<span class="css-sel">.ghost</span> {
+  <span class="css-prop">background</span>: <span class="css-val">transparent</span>;
+  <span class="css-prop">border</span>: <span class="css-val">1px solid var(--border-color)</span>;
+  <span class="css-prop">color</span>: <span class="css-val">var(--text-primary)</span>;
+}</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Button.jsx</div>
+            <div class="code-body"><pre><span class="kw">import</span> styles <span class="kw">from</span> <span class="str">'./Button.module.css'</span>;
+<span class="kw">import</span> clsx <span class="kw">from</span> <span class="str">'clsx'</span>;
+
+<span class="kw">function</span> <span class="fn">Button</span>({ 
+  children, 
+  variant = <span class="str">'primary'</span>,
+  disabled = <span class="kw">false</span>,
+  onClick 
+}) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span>
+      <span class="attr">className</span>={<span class="fn">clsx</span>(
+        styles.button,
+        styles[variant]
+      )}
+      <span class="attr">disabled</span>={disabled}
+      <span class="attr">onClick</span>={onClick}
+    <span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> Button;</pre></div>
+          </div>
+        </div>
+
+        <h4 style="color: var(--secondary); margin: 1.5rem 0 0.75rem;">StudentCard Component</h4>
+        <div class="grid-2">
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.module.css</div>
+            <div class="code-body"><pre><span class="css-sel">.card</span> {
+  <span class="css-prop">background</span>: <span class="css-val">var(--bg-surface)</span>;
+  <span class="css-prop">border</span>: <span class="css-val">1px solid var(--border-color)</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">var(--radius-md)</span>;
+  <span class="css-prop">padding</span>: <span class="css-val">var(--spacing-md)</span>;
+  <span class="css-prop">transition</span>: <span class="css-val">all 0.2s ease</span>;
+}
+
+<span class="css-sel">.card:hover</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">var(--accent)</span>;
+  <span class="css-prop">transform</span>: <span class="css-val">translateY(-2px)</span>;
+}
+
+<span class="css-sel">.selected</span> {
+  <span class="css-prop">border-color</span>: <span class="css-val">var(--accent)</span>;
+  <span class="css-prop">background</span>: <span class="css-val">rgba(34,211,238,0.08)</span>;
+}
+
+<span class="css-sel">.header</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">justify-content</span>: <span class="css-val">space-between</span>;
+  <span class="css-prop">align-items</span>: <span class="css-val">center</span>;
+  <span class="css-prop">margin-bottom</span>: <span class="css-val">var(--spacing-sm)</span>;
+}
+
+<span class="css-sel">.name</span> {
+  <span class="css-prop">font-size</span>: <span class="css-val">1.1rem</span>;
+  <span class="css-prop">font-weight</span>: <span class="css-val">600</span>;
+}
+
+<span class="css-sel">.badge</span> {
+  <span class="css-prop">padding</span>: <span class="css-val">var(--spacing-xs) var(--spacing-sm)</span>;
+  <span class="css-prop">border-radius</span>: <span class="css-val">var(--radius-full)</span>;
+  <span class="css-prop">font-size</span>: <span class="css-val">0.8rem</span>;
+  <span class="css-prop">font-weight</span>: <span class="css-val">600</span>;
+  <span class="css-prop">color</span>: <span class="css-val">white</span>;
+}
+
+<span class="css-sel">.gradeA</span> { <span class="css-prop">background</span>: <span class="css-val">var(--success)</span>; }
+<span class="css-sel">.gradeB</span> { <span class="css-prop">background</span>: <span class="css-val">#3b82f6</span>; }
+<span class="css-sel">.gradeC</span> { <span class="css-prop">background</span>: <span class="css-val">var(--warning)</span>; }
+
+<span class="css-sel">.details</span> {
+  <span class="css-prop">color</span>: <span class="css-val">var(--text-muted)</span>;
+  <span class="css-prop">font-size</span>: <span class="css-val">0.9rem</span>;
+}
+
+<span class="css-sel">.actions</span> {
+  <span class="css-prop">display</span>: <span class="css-val">flex</span>;
+  <span class="css-prop">gap</span>: <span class="css-val">var(--spacing-sm)</span>;
+  <span class="css-prop">margin-top</span>: <span class="css-val">var(--spacing-md)</span>;
+}</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard.jsx</div>
+            <div class="code-body"><pre><span class="kw">import</span> styles <span class="kw">from</span> <span class="str">'./StudentCard.module.css'</span>;
+<span class="kw">import</span> Button <span class="kw">from</span> <span class="str">'./Button'</span>;
+<span class="kw">import</span> clsx <span class="kw">from</span> <span class="str">'clsx'</span>;
+
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ 
+  student, 
+  isSelected, 
+  onSelect, 
+  onDelete 
+}) {
+  <span class="kw">const</span> cardClasses = <span class="fn">clsx</span>(
+    styles.card,
+    { [styles.selected]: isSelected }
+  );
+
+  <span class="kw">const</span> badgeClasses = <span class="fn">clsx</span>(
+    styles.badge,
+    styles[<span class="str">`grade</span>${student.grade}<span class="str">`</span>]
+  );
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={cardClasses}<span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.header}<span class="tag">&gt;</span>
+        <span class="tag">&lt;h3</span> <span class="attr">className</span>={styles.name}<span class="tag">&gt;</span>
+          {student.name}
+        <span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>={badgeClasses}<span class="tag">&gt;</span>
+          {student.grade}
+        <span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="tag">&lt;p</span> <span class="attr">className</span>={styles.details}<span class="tag">&gt;</span>
+        Age: {student.age}
+      <span class="tag">&lt;/p&gt;</span>
+
+      <span class="tag">&lt;div</span> <span class="attr">className</span>={styles.actions}<span class="tag">&gt;</span>
+        <span class="tag">&lt;Button</span> 
+          <span class="attr">variant</span>={isSelected ? <span class="str">"ghost"</span> : <span class="str">"primary"</span>}
+          <span class="attr">onClick</span>={onSelect}
+        <span class="tag">&gt;</span>
+          {isSelected ? <span class="str">'Deselect'</span> : <span class="str">'Select'</span>}
+        <span class="tag">&lt;/Button&gt;</span>
+        <span class="tag">&lt;Button</span> <span class="attr">variant</span>=<span class="str">"danger"</span> <span class="attr">onClick</span>={onDelete}<span class="tag">&gt;</span>
+          Delete
+        <span class="tag">&lt;/Button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> StudentCard;</pre></div>
+          </div>
+        </div>
+
+        <div class="style-demo">
+          <div class="demo-label">Visual Result</div>
+          <div class="demo-result">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+              <div style="background: #111827; border: 1px solid #2d3a52; border-radius: 12px; padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0;">Alice Johnson</h3>
+                  <span style="background: #22c55e; color: white; padding: 4px 8px; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">A</span>
+                </div>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin: 0 0 16px 0;">Age: 15</p>
+                <div style="display: flex; gap: 8px;">
+                  <button style="padding: 8px 16px; border-radius: 8px; border: none; background: #22d3ee; color: #0a0f1c; font-weight: 600; cursor: pointer;">Select</button>
+                  <button style="padding: 8px 16px; border-radius: 8px; border: none; background: #ef4444; color: white; font-weight: 600; cursor: pointer;">Delete</button>
+                </div>
+              </div>
+              <div style="background: rgba(34,211,238,0.08); border: 1px solid #22d3ee; border-radius: 12px; padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0;">Bob Smith (Selected)</h3>
+                  <span style="background: #3b82f6; color: white; padding: 4px 8px; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">B</span>
+                </div>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin: 0 0 16px 0;">Age: 16</p>
+                <div style="display: flex; gap: 8px;">
+                  <button style="padding: 8px 16px; border-radius: 8px; border: 1px solid #2d3a52; background: transparent; color: #f1f5f9; font-weight: 600; cursor: pointer;">Deselect</button>
+                  <button style="padding: 8px 16px; border-radius: 8px; border: none; background: #ef4444; color: white; font-weight: 600; cursor: pointer;">Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: CSS-in-JS -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-cssinjs">💅</div>
+        <div class="section-title">Part 7: CSS-in-JS - Styled Components</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Styled Components: CSS in JavaScript</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Styled Components</strong> lets you write actual CSS inside JavaScript. 
+          Styles are scoped, dynamic, and components are automatically generated.
+        </p>
+
+        <h3>📦 Installation</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Terminal</div>
+          <div class="code-body"><pre>npm install styled-components</pre></div>
+        </div>
+
+        <h3>📝 Basic Usage</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Styled Components Basics</div>
+          <div class="code-body"><pre><span class="kw">import</span> styled <span class="kw">from</span> <span class="str">'styled-components'</span>;
+
+<span class="cmt">// Create a styled component</span>
+<span class="kw">const</span> Card = styled.div<span class="str">`
+  background: #1a1a2e;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #22d3ee;
+    transform: translateY(-2px);
+  }
+`</span>;
+
+<span class="kw">const</span> Title = styled.h3<span class="str">`
+  color: #f1f5f9;
+  font-size: 1.1rem;
+  margin: 0;
+`</span>;
+
+<span class="cmt">// Use like regular components!</span>
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;Card&gt;</span>
+      <span class="tag">&lt;Title&gt;</span>{student.name}<span class="tag">&lt;/Title&gt;</span>
+    <span class="tag">&lt;/Card&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>🎯 Dynamic Styles with Props</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Props-based Styling</div>
+          <div class="code-body"><pre><span class="kw">import</span> styled <span class="kw">from</span> <span class="str">'styled-components'</span>;
+
+<span class="cmt">// Dynamic styles based on props</span>
+<span class="kw">const</span> Card = styled.div<span class="str">`
+  background: </span>${props => props.isSelected 
+    ? <span class="str">'rgba(34,211,238,0.1)'</span> 
+    : <span class="str">'#1a1a2e'</span>}<span class="str">;
+  border: 1px solid </span>${props => props.isSelected 
+    ? <span class="str">'#22d3ee'</span> 
+    : <span class="str">'#333'</span>}<span class="str">;
+  padding: 16px;
+  border-radius: 12px;
+  transform: </span>${props => props.isSelected 
+    ? <span class="str">'scale(1.02)'</span> 
+    : <span class="str">'scale(1)'</span>}<span class="str">;
+  transition: all 0.2s ease;
+`</span>;
+
+<span class="kw">const</span> Badge = styled.span<span class="str">`
+  background: </span>${props => {
+    <span class="kw">const</span> colors = { A: <span class="str">'#22c55e'</span>, B: <span class="str">'#3b82f6'</span>, C: <span class="str">'#f59e0b'</span> };
+    <span class="kw">return</span> colors[props.grade] || <span class="str">'#666'</span>;
+  }}<span class="str">;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+`</span>;
+
+<span class="kw">const</span> Button = styled.button<span class="str">`
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  
+  background: </span>${props => 
+    props.variant === <span class="str">'danger'</span> ? <span class="str">'#ef4444'</span> : <span class="str">'#22d3ee'</span>}<span class="str">;
+  color: </span>${props => 
+    props.variant === <span class="str">'danger'</span> ? <span class="str">'white'</span> : <span class="str">'#0a0f1c'</span>}<span class="str">;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+`</span>;
+
+<span class="cmt">// Usage</span>
+<span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected, onDelete }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;Card</span> <span class="attr">isSelected</span>={isSelected}<span class="tag">&gt;</span>
+      <span class="tag">&lt;Title&gt;</span>{student.name}<span class="tag">&lt;/Title&gt;</span>
+      <span class="tag">&lt;Badge</span> <span class="attr">grade</span>={student.grade}<span class="tag">&gt;</span>{student.grade}<span class="tag">&lt;/Badge&gt;</span>
+      <span class="tag">&lt;Button</span> <span class="attr">variant</span>=<span class="str">"danger"</span> <span class="attr">onClick</span>={onDelete}<span class="tag">&gt;</span>Delete<span class="tag">&lt;/Button&gt;</span>
+    <span class="tag">&lt;/Card&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>✅ Pros & Cons</h3>
+        <div class="pros-cons">
+          <div class="pros">
+            <h5>✅ Advantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>True dynamic styles</li>
+              <li>Automatic scoping</li>
+              <li>Theming support built-in</li>
+              <li>No separate CSS files</li>
+              <li>Full CSS features</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>❌ Disadvantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Runtime cost (generates CSS)</li>
+              <li>Larger bundle size</li>
+              <li>Learning curve</li>
+              <li>Less IDE support</li>
+              <li>Mixing concerns</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Tailwind CSS -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon icon-tailwind">💨</div>
+        <div class="section-title">Part 8: Tailwind CSS - Utility-First Styling</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Tailwind CSS: Utility Classes</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          <strong>Tailwind CSS</strong> provides low-level utility classes that you compose directly in your JSX.
+          Instead of writing CSS, you apply pre-built classes.
+        </p>
+
+        <div class="highlight-box">
+          <h4 style="color: var(--tailwind); margin-bottom: 0.75rem;">🎯 The Tailwind Philosophy</h4>
+          <p style="color: var(--muted);">
+            Instead of: <code>.card { padding: 16px; border-radius: 12px; }</code><br>
+            You write: <code>className="p-4 rounded-xl"</code>
+          </p>
+        </div>
+
+        <h3>📝 Basic Usage</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; StudentCard with Tailwind</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">StudentCard</span>({ student, isSelected, onDelete }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>={<span class="str">`
+      bg-slate-800 
+      p-4 
+      rounded-xl 
+      border 
+      transition-all 
+      duration-200
+      hover:border-cyan-400 
+      hover:-translate-y-0.5
+      </span>${isSelected 
+        ? <span class="str">'border-cyan-400 bg-cyan-400/10 scale-[1.02]'</span> 
+        : <span class="str">'border-slate-600'</span>}<span class="str">
+    `</span>}<span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"flex justify-between items-center mb-2"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h3</span> <span class="attr">className</span>=<span class="str">"text-lg font-semibold text-slate-100"</span><span class="tag">&gt;</span>
+          {student.name}
+        <span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;span</span> <span class="attr">className</span>={<span class="str">`
+          px-3 py-1 rounded-full text-sm font-semibold text-white
+          </span>${student.grade === <span class="str">'A'</span> ? <span class="str">'bg-green-500'</span> : <span class="str">''</span>}<span class="str">
+          </span>${student.grade === <span class="str">'B'</span> ? <span class="str">'bg-blue-500'</span> : <span class="str">''</span>}<span class="str">
+          </span>${student.grade === <span class="str">'C'</span> ? <span class="str">'bg-amber-500'</span> : <span class="str">''</span>}<span class="str">
+        `</span>}<span class="tag">&gt;</span>
+          {student.grade}
+        <span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="str">"text-slate-400 text-sm"</span><span class="tag">&gt;</span>
+        Age: {student.age}
+      <span class="tag">&lt;/p&gt;</span>
+
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"flex gap-2 mt-4"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">className</span>=<span class="str">"
+          px-4 py-2 
+          bg-cyan-400 
+          text-slate-900 
+          rounded-lg 
+          font-semibold
+          hover:-translate-y-0.5 
+          transition-transform
+        "</span><span class="tag">&gt;</span>
+          Select
+        <span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;button</span> 
+          <span class="attr">className</span>=<span class="str">"
+            px-4 py-2 
+            bg-red-500 
+            text-white 
+            rounded-lg 
+            font-semibold
+            hover:-translate-y-0.5 
+            transition-transform
+          "</span>
+          <span class="attr">onClick</span>={onDelete}
+        <span class="tag">&gt;</span>
+          Delete
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3>📚 Common Tailwind Classes</h3>
+        <div class="grid-3">
+          <div class="card card-tailwind">
+            <h5 style="color: var(--tailwind); margin-bottom: 0.5rem;">Spacing</h5>
+            <code style="font-size: 0.85rem; color: var(--muted);">
+              p-4 (padding: 1rem)<br>
+              m-2 (margin: 0.5rem)<br>
+              px-4 (padding-x)<br>
+              mt-2 (margin-top)<br>
+              gap-4 (gap: 1rem)
+            </code>
+          </div>
+          <div class="card card-tailwind">
+            <h5 style="color: var(--tailwind); margin-bottom: 0.5rem;">Colors</h5>
+            <code style="font-size: 0.85rem; color: var(--muted);">
+              bg-slate-800<br>
+              text-white<br>
+              border-cyan-400<br>
+              bg-red-500/50 (50% opacity)
+            </code>
+          </div>
+          <div class="card card-tailwind">
+            <h5 style="color: var(--tailwind); margin-bottom: 0.5rem;">Layout</h5>
+            <code style="font-size: 0.85rem; color: var(--muted);">
+              flex<br>
+              justify-between<br>
+              items-center<br>
+              grid grid-cols-3
+            </code>
+          </div>
+        </div>
+
+        <h3>✅ Pros & Cons</h3>
+        <div class="pros-cons">
+          <div class="pros">
+            <h5>✅ Advantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Rapid development</li>
+              <li>No context switching</li>
+              <li>Small final CSS (purged)</li>
+              <li>Consistent design system</li>
+              <li>Great for prototyping</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>❌ Disadvantages</h5>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Long class strings</li>
+              <li>Learning curve</li>
+              <li>Harder to read</li>
+              <li>Less semantic</li>
+              <li>Requires build setup</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📝 Tip: Use clsx with Tailwind</div>
+          <div class="note-content">
+            Use <code>clsx</code> or <code>tailwind-merge</code> to manage conditional Tailwind classes more cleanly.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9: Best Practices -->
+    <div class="section" id="s9">
+      <div class="section-header" onclick="toggleSection('s9')">
+        <div class="section-icon icon-bestpractice">✨</div>
+        <div class="section-title">Part 9: Best Practices & Which to Choose</div>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2>Making the Right Choice</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          There's no "one best" styling method. The right choice depends on your project, team, and requirements.
+        </p>
+
+        <h3>🎯 Decision Guide</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>If you need...</th>
+              <th>Use...</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Quick dynamic styles</td>
+              <td><strong>Inline Styles</strong></td>
+            </tr>
+            <tr>
+              <td>Simple project, familiar CSS</td>
+              <td><strong>CSS Files</strong></td>
+            </tr>
+            <tr>
+              <td>Scoped styles without extra libraries</td>
+              <td><strong>CSS Modules</strong> ⭐ Recommended</td>
+            </tr>
+            <tr>
+              <td>Complex theming, truly dynamic styles</td>
+              <td><strong>Styled Components</strong></td>
+            </tr>
+            <tr>
+              <td>Rapid prototyping, utility-first</td>
+              <td><strong>Tailwind CSS</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>📋 Best Practices Summary</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent); margin-bottom: 0.75rem;">✅ DO</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Use CSS variables for theming</li>
+              <li>Co-locate styles with components</li>
+              <li>Use clsx for conditional classes</li>
+              <li>Keep styles scoped when possible</li>
+              <li>Extract reusable styled components</li>
+              <li>Use consistent naming conventions</li>
+            </ul>
+          </div>
+          <div class="card card-danger">
+            <h4 style="color: var(--danger); margin-bottom: 0.75rem;">❌ DON'T</h4>
+            <ul style="color: var(--muted); padding-left: 1.25rem; font-size: 0.9rem;">
+              <li>Mix too many styling methods</li>
+              <li>Use !important frequently</li>
+              <li>Create deeply nested selectors</li>
+              <li>Forget about responsive design</li>
+              <li>Ignore accessibility (color contrast)</li>
+              <li>Over-engineer simple styles</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 1.5rem;">
+          <h4 style="color: var(--primary); margin-bottom: 0.75rem;">🏆 Recommended Stack for Most Projects</h4>
+          <p style="color: var(--muted);">
+            <strong>CSS Modules</strong> for component styles<br>
+            + <strong>Inline styles</strong> for dynamic values<br>
+            + <strong>Global CSS</strong> for variables and resets<br>
+            + <strong>clsx</strong> for conditional class names
+          </p>
+        </div>
+
+        <h3 style="margin-top: 2rem;">🎯 Key Takeaways</h3>
+        <div class="flow-diagram">
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📝</div>
+            <div style="font-weight: 600;">Inline</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Dynamic values</div>
+          </div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">📄</div>
+            <div style="font-weight: 600;">CSS Files</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Simple projects</div>
+          </div>
+          <div class="flow-box highlight">
+            <div style="font-size: 1.5rem;">📦</div>
+            <div style="font-weight: 600; color: var(--css);">CSS Modules</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Best default</div>
+          </div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">💅</div>
+            <div style="font-weight: 600;">Styled</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Dynamic theming</div>
+          </div>
+          <div class="flow-box">
+            <div style="font-size: 1.5rem;">💨</div>
+            <div style="font-weight: 600;">Tailwind</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Rapid dev</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(38,77,228,0.1), rgba(219,112,147,0.05)); border-radius: 16px; border: 1px solid var(--border);">
+      <h3 style="color: var(--css); margin-bottom: 0.5rem;">🎉 You've Mastered React Styling!</h3>
+      <p style="color: var(--muted);">From inline styles to Tailwind - You know all the approaches!</p>
+      <div style="margin-top: 1rem;">
+        <span class="badge badge-warning" style="margin: 0.25rem;">Inline Styles</span>
+        <span class="badge badge-accent" style="margin: 0.25rem;">CSS Files</span>
+        <span class="badge badge-secondary" style="margin: 0.25rem;">CSS Modules</span>
+        <span class="badge badge-danger" style="margin: 0.25rem;">Styled Components</span>
+        <span class="badge badge-primary" style="margin: 0.25rem;">Tailwind CSS</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Open first section by default
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>
