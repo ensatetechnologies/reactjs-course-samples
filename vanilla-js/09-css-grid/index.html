@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Grid Playground</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div class="badge">Chapter 9</div>
+      <h1>CSS Grid Playground</h1>
+      <p>Master two-dimensional layouts with interactive controls</p>
+    </header>
+
+    <div class="main-layout">
+      <!-- Controls Panel -->
+      <aside class="controls-panel">
+        <h2>🔲 Grid Container</h2>
+
+        <!-- Grid Template Columns -->
+        <div class="control-group">
+          <label>grid-template-columns</label>
+          <select id="columns-select">
+            <option value="1fr 1fr 1fr">1fr 1fr 1fr</option>
+            <option value="repeat(3, 1fr)" selected>repeat(3, 1fr)</option>
+            <option value="repeat(4, 1fr)">repeat(4, 1fr)</option>
+            <option value="200px 1fr 200px">200px 1fr 200px</option>
+            <option value="1fr 2fr 1fr">1fr 2fr 1fr</option>
+            <option value="repeat(auto-fit, minmax(150px, 1fr))">auto-fit, minmax(150px, 1fr)</option>
+            <option value="100px auto 100px">100px auto 100px</option>
+          </select>
+        </div>
+
+        <!-- Grid Template Rows -->
+        <div class="control-group">
+          <label>grid-template-rows</label>
+          <select id="rows-select">
+            <option value="auto" selected>auto</option>
+            <option value="100px 100px">100px 100px</option>
+            <option value="1fr 1fr 1fr">1fr 1fr 1fr</option>
+            <option value="auto 1fr auto">auto 1fr auto</option>
+            <option value="minmax(100px, auto)">minmax(100px, auto)</option>
+          </select>
+        </div>
+
+        <!-- Gap -->
+        <div class="control-group">
+          <label>gap: <span id="gap-value">16</span>px</label>
+          <input type="range" id="gap-slider" min="0" max="40" value="16">
+        </div>
+
+        <!-- Justify Items -->
+        <div class="control-group">
+          <label>justify-items</label>
+          <div class="btn-group">
+            <button class="prop-btn" data-prop="justifyItems" data-value="start">start</button>
+            <button class="prop-btn" data-prop="justifyItems" data-value="center">center</button>
+            <button class="prop-btn" data-prop="justifyItems" data-value="end">end</button>
+            <button class="prop-btn active" data-prop="justifyItems" data-value="stretch">stretch</button>
+          </div>
+        </div>
+
+        <!-- Align Items -->
+        <div class="control-group">
+          <label>align-items</label>
+          <div class="btn-group">
+            <button class="prop-btn" data-prop="alignItems" data-value="start">start</button>
+            <button class="prop-btn" data-prop="alignItems" data-value="center">center</button>
+            <button class="prop-btn" data-prop="alignItems" data-value="end">end</button>
+            <button class="prop-btn active" data-prop="alignItems" data-value="stretch">stretch</button>
+          </div>
+        </div>
+
+        <!-- Number of Items -->
+        <div class="control-group">
+          <label>Grid Items: <span id="items-value">6</span></label>
+          <input type="range" id="items-slider" min="1" max="12" value="6">
+        </div>
+
+        <hr class="divider">
+
+        <!-- Item Span Controls -->
+        <h2>📦 Selected Item</h2>
+        <p class="hint">Click a grid item to select</p>
+        
+        <div class="control-group">
+          <label>grid-column: span <span id="col-span-value">1</span></label>
+          <input type="range" id="col-span-slider" min="1" max="4" value="1">
+        </div>
+
+        <div class="control-group">
+          <label>grid-row: span <span id="row-span-value">1</span></label>
+          <input type="range" id="row-span-slider" min="1" max="3" value="1">
+        </div>
+      </aside>
+
+      <!-- Preview Area -->
+      <main class="preview-area">
+        <div class="grid-container" id="grid-container">
+          <div class="grid-item selected" data-index="1">1</div>
+          <div class="grid-item" data-index="2">2</div>
+          <div class="grid-item" data-index="3">3</div>
+          <div class="grid-item" data-index="4">4</div>
+          <div class="grid-item" data-index="5">5</div>
+          <div class="grid-item" data-index="6">6</div>
+        </div>
+
+        <!-- CSS Output -->
+        <div class="code-output">
+          <div class="code-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span>Generated CSS</span>
+          </div>
+          <pre id="css-output"><code></code></pre>
+        </div>
+      </main>
+    </div>
+
+    <!-- Grid Template Areas Demo -->
+    <section class="areas-section">
+      <h2>🏗️ Grid Template Areas</h2>
+      <p class="section-desc">Define layout with named areas - powerful and readable!</p>
+      
+      <div class="areas-demo">
+        <div class="areas-preview">
+          <div class="area-header">header</div>
+          <div class="area-sidebar">sidebar</div>
+          <div class="area-main">main</div>
+          <div class="area-aside">aside</div>
+          <div class="area-footer">footer</div>
+        </div>
+
+        <div class="code-output">
+          <div class="code-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span>grid-template-areas</span>
+          </div>
+          <pre><code><span class="selector">.layout</span> {
+  <span class="property">display</span>: <span class="value">grid</span>;
+  <span class="property">grid-template-columns</span>: <span class="value">200px 1fr 200px</span>;
+  <span class="property">grid-template-rows</span>: <span class="value">auto 1fr auto</span>;
+  <span class="property">grid-template-areas</span>:
+    <span class="value">"header  header  header"</span>
+    <span class="value">"sidebar main    aside"</span>
+    <span class="value">"footer  footer  footer"</span>;
+  <span class="property">min-height</span>: <span class="value">300px</span>;
+  <span class="property">gap</span>: <span class="value">1rem</span>;
+}
+
+<span class="selector">.header</span>  { <span class="property">grid-area</span>: <span class="value">header</span>;  }
+<span class="selector">.sidebar</span> { <span class="property">grid-area</span>: <span class="value">sidebar</span>; }
+<span class="selector">.main</span>    { <span class="property">grid-area</span>: <span class="value">main</span>;    }
+<span class="selector">.aside</span>   { <span class="property">grid-area</span>: <span class="value">aside</span>;   }
+<span class="selector">.footer</span>  { <span class="property">grid-area</span>: <span class="value">footer</span>;  }</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Flexbox vs Grid Comparison -->
+    <section class="comparison-section">
+      <h2>⚖️ Flexbox vs Grid</h2>
+      <div class="comparison-grid">
+        <div class="comparison-card flexbox-card">
+          <h3>📏 Flexbox</h3>
+          <ul>
+            <li>One-dimensional (row OR column)</li>
+            <li>Content-first approach</li>
+            <li>Best for: navbars, button groups</li>
+            <li>Items can grow/shrink dynamically</li>
+          </ul>
+          <div class="comparison-demo">
+            <div class="flex-demo">
+              <div class="flex-item">1</div>
+              <div class="flex-item">2</div>
+              <div class="flex-item">3</div>
+            </div>
+          </div>
+          <code>display: flex;</code>
+        </div>
+
+        <div class="comparison-card grid-card">
+          <h3>🔲 Grid</h3>
+          <ul>
+            <li>Two-dimensional (rows AND columns)</li>
+            <li>Layout-first approach</li>
+            <li>Best for: page layouts, dashboards</li>
+            <li>Precise control over placement</li>
+          </ul>
+          <div class="comparison-demo">
+            <div class="grid-demo">
+              <div class="grid-demo-item">1</div>
+              <div class="grid-demo-item">2</div>
+              <div class="grid-demo-item">3</div>
+              <div class="grid-demo-item">4</div>
+            </div>
+          </div>
+          <code>display: grid;</code>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 Pro Tip:</strong> Use Grid for overall page layout, Flexbox for component internals. They work great together!
+      </div>
+    </section>
+
+    <!-- Common Grid Patterns -->
+    <section class="patterns-section">
+      <h2>🎨 Common Grid Patterns</h2>
+      <div class="patterns-grid">
+        <!-- Holy Grail Layout -->
+        <div class="pattern-card">
+          <h3>Holy Grail Layout</h3>
+          <div class="pattern-demo holy-grail">
+            <div class="hg-header">Header</div>
+            <div class="hg-nav">Nav</div>
+            <div class="hg-main">Main</div>
+            <div class="hg-aside">Aside</div>
+            <div class="hg-footer">Footer</div>
+          </div>
+          <code>grid-template-areas</code>
+        </div>
+
+        <!-- Card Grid -->
+        <div class="pattern-card">
+          <h3>Responsive Card Grid</h3>
+          <div class="pattern-demo card-pattern">
+            <div class="cp-card">Card 1</div>
+            <div class="cp-card">Card 2</div>
+            <div class="cp-card">Card 3</div>
+            <div class="cp-card">Card 4</div>
+          </div>
+          <code>repeat(auto-fit, minmax(200px, 1fr))</code>
+        </div>
+
+        <!-- Masonry-like -->
+        <div class="pattern-card">
+          <h3>Spanning Items</h3>
+          <div class="pattern-demo span-pattern">
+            <div class="sp-item span-2">Wide</div>
+            <div class="sp-item">1</div>
+            <div class="sp-item">2</div>
+            <div class="sp-item tall">Tall</div>
+            <div class="sp-item">3</div>
+          </div>
+          <code>grid-column: span 2;</code>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="pattern-card">
+          <h3>Dashboard Layout</h3>
+          <div class="pattern-demo dashboard-pattern">
+            <div class="db-widget full-width">Stats</div>
+            <div class="db-widget">Chart</div>
+            <div class="db-widget">Chart</div>
+            <div class="db-widget">Table</div>
+            <div class="db-widget">List</div>
+          </div>
+          <code>grid-template-columns: repeat(2, 1fr)</code>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
