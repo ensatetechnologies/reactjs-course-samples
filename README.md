@@ -10,9 +10,10 @@ A comprehensive collection of sample applications demonstrating the journey from
 | **Chapter 3** | DOM Complete Guide | 6 apps |
 | **Chapter 3.1** | DOM Reflow & Performance | 5 apps |
 | **Chapter 5** | JavaScript vs TypeScript | 5 apps |
+| **Chapter 9** | CSS & Stylesheets Complete Guide | 9 apps |
 | **Spread Operator** | Arrays, Objects, React State | 3 apps |
 
-**Total: 27 Sample Applications**
+**Total: 36 Sample Applications**
 
 ## 🎯 Quick Start
 
@@ -65,6 +66,14 @@ reactjs-course-samples/
 │   │   # Chapter 5: JS vs TS
 │   ├── 07-js-basics-comparison/
 │   │
+│   │   # Chapter 9: CSS & Stylesheets
+│   ├── 09-css-selectors/       # CSS selector playground
+│   ├── 09-box-model/           # Box model visualizer
+│   ├── 09-flexbox/             # Flexbox patterns
+│   ├── 09-css-grid/            # CSS Grid layouts
+│   ├── 09-responsive/          # Responsive design & media queries
+│   ├── 09-animations/          # Transitions & keyframes
+│   │
 │   │   # Spread Operator Chapter
 │   ├── 13-spread-arrays/
 │   └── 14-spread-objects/
@@ -82,6 +91,11 @@ reactjs-course-samples/
     ├── 10-todo-typescript/      # Todo in TypeScript
     ├── 11-usercard-javascript/  # UserCard in JavaScript
     ├── 12-usercard-typescript/  # UserCard in TypeScript
+    │
+    │   # Chapter 9: CSS in React
+    ├── 09-css-modules/          # CSS Modules with scoped styles
+    ├── 09-react-bootstrap/      # React-Bootstrap components
+    ├── 09-responsive-hooks/     # useMediaQuery custom hook
     │
     │   # Spread Operator Chapter
     └── 15-task-manager-spread/  # Full Task Manager demo
@@ -121,7 +135,19 @@ Understand the differences between JS and TS in React:
 - **UserCard (JS)** - Component props without types
 - **UserCard (TS)** - Component props with interfaces
 
-### Spread Operator Chapter 🆕
+### Chapter 9: CSS & Stylesheets Complete Guide 🆕
+Master CSS fundamentals and React styling patterns:
+- **CSS Selectors** - Element, class, ID, pseudo-classes, attribute selectors
+- **Box Model** - Content, padding, border, margin visualization
+- **Flexbox** - One-dimensional layouts with interactive controls
+- **CSS Grid** - Two-dimensional layouts and template areas
+- **Responsive Design** - Media queries, mobile-first approach
+- **Animations** - Transitions, keyframes, timing functions
+- **CSS Modules** - Scoped styles in React
+- **React-Bootstrap** - Bootstrap 5 components for React
+- **Responsive Hooks** - Custom useMediaQuery hook
+
+### Spread Operator Chapter
 Master the three magical dots (...) for immutable operations:
 - **Array Spread** - Copy, merge, add elements, function arguments
 - **Object Spread** - Copy, update, merge, remove properties

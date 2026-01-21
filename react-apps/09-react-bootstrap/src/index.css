@@ -1,0 +1,182 @@
+/* Custom dark theme overrides for Bootstrap */
+:root {
+  --bs-body-bg: #0a0f1c;
+  --bs-body-color: #f1f5f9;
+  --bs-primary: #22d3ee;
+  --bs-secondary: #a78bfa;
+  --bs-success: #34d399;
+  --bs-danger: #ef4444;
+  --bs-warning: #fbbf24;
+  --surface: #111827;
+  --surface2: #1a2234;
+  --border: #2d3a52;
+  --muted: #94a3b8;
+}
+
+body {
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+/* Override Bootstrap card styles */
+.card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.card-header {
+  background: var(--surface2);
+  border-color: var(--border);
+}
+
+/* Override form controls */
+.form-control, .form-select {
+  background: var(--surface2);
+  border-color: var(--border);
+  color: var(--bs-body-color);
+}
+
+.form-control:focus, .form-select:focus {
+  background: var(--surface2);
+  border-color: var(--bs-primary);
+  color: var(--bs-body-color);
+  box-shadow: 0 0 0 0.25rem rgba(34, 211, 238, 0.25);
+}
+
+.form-control::placeholder {
+  color: var(--muted);
+}
+
+/* Override table styles */
+.table {
+  --bs-table-bg: var(--surface);
+  --bs-table-color: var(--bs-body-color);
+  --bs-table-border-color: var(--border);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  --bs-table-accent-bg: var(--surface2);
+}
+
+.table-hover > tbody > tr:hover {
+  --bs-table-accent-bg: rgba(34, 211, 238, 0.1);
+}
+
+/* Override modal */
+.modal-content {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.modal-header, .modal-footer {
+  border-color: var(--border);
+}
+
+/* Override list group */
+.list-group-item {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--bs-body-color);
+}
+
+.list-group-item:hover {
+  background: var(--surface2);
+}
+
+/* Override nav */
+.nav-tabs .nav-link {
+  color: var(--muted);
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: var(--border) var(--border) transparent;
+  color: var(--bs-body-color);
+}
+
+.nav-tabs .nav-link.active {
+  background: var(--surface);
+  border-color: var(--border) var(--border) var(--surface);
+  color: var(--bs-primary);
+}
+
+/* Override alert */
+.alert {
+  border-width: 1px;
+}
+
+/* Custom button styles */
+.btn-cyan {
+  --bs-btn-bg: #22d3ee;
+  --bs-btn-border-color: #22d3ee;
+  --bs-btn-color: #0a0f1c;
+  --bs-btn-hover-bg: #06b6d4;
+  --bs-btn-hover-border-color: #06b6d4;
+  --bs-btn-hover-color: #0a0f1c;
+}
+
+.btn-outline-cyan {
+  --bs-btn-color: #22d3ee;
+  --bs-btn-border-color: #22d3ee;
+  --bs-btn-hover-bg: #22d3ee;
+  --bs-btn-hover-border-color: #22d3ee;
+  --bs-btn-hover-color: #0a0f1c;
+}
+
+/* Hero section */
+.hero {
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(167,139,250,0.1) 0%, transparent 50%);
+}
+
+/* Code block */
+.code-block {
+  background: #0d1321;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.5rem 1rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-red { background: #ef4444; }
+.dot-yellow { background: #fbbf24; }
+.dot-green { background: #22c55e; }
+
+.code-content {
+  padding: 1rem;
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}

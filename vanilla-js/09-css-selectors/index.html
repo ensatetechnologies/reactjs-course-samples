@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Selectors Playground</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div class="badge">Chapter 9</div>
+      <h1>CSS Selectors Playground</h1>
+      <p>Explore different CSS selector types interactively</p>
+    </header>
+
+    <!-- Selector Type Navigator -->
+    <nav class="selector-nav">
+      <button class="nav-btn active" data-selector="element">Element</button>
+      <button class="nav-btn" data-selector="class">Class</button>
+      <button class="nav-btn" data-selector="id">ID</button>
+      <button class="nav-btn" data-selector="combinators">Combinators</button>
+      <button class="nav-btn" data-selector="pseudo-class">Pseudo-Class</button>
+      <button class="nav-btn" data-selector="pseudo-element">Pseudo-Element</button>
+      <button class="nav-btn" data-selector="attribute">Attribute</button>
+    </nav>
+
+    <!-- Demo Area -->
+    <main class="demo-area">
+      <!-- Element Selectors -->
+      <section class="selector-demo active" id="demo-element">
+        <div class="demo-header">
+          <h2>Element Selectors</h2>
+          <p>Select ALL elements of a specific type</p>
+        </div>
+        <div class="demo-content">
+          <div class="code-panel">
+            <div class="code-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span>CSS</span>
+            </div>
+            <pre><code><span class="selector">p</span> {
+  <span class="property">color</span>: <span class="value">#22d3ee</span>;
+  <span class="property">font-size</span>: <span class="value">1rem</span>;
+}
+
+<span class="selector">h3</span> {
+  <span class="property">color</span>: <span class="value">#a78bfa</span>;
+  <span class="property">font-weight</span>: <span class="value">600</span>;
+}</code></pre>
+          </div>
+          <div class="preview-panel">
+            <div class="preview-header">Preview</div>
+            <div class="preview-content element-demo">
+              <h3>This is an H3 heading</h3>
+              <p>This is a paragraph element.</p>
+              <p>This is another paragraph.</p>
+              <h3>Another H3 heading</h3>
+              <p>And one more paragraph.</p>
+            </div>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>💡 Key Point:</strong> Element selectors apply to ALL instances of that HTML tag. Use with caution in large projects!
+        </div>
+      </section>
+
+      <!-- Class Selectors -->
+      <section class="selector-demo" id="demo-class">
+        <div class="demo-header">
+          <h2>Class Selectors</h2>
+          <p>Select elements with a specific class attribute</p>
+        </div>
+        <div class="demo-content">
+          <div class="code-panel">
+            <div class="code-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span>CSS</span>
+            </div>
+            <pre><code><span class="selector">.highlight</span> {
+  <span class="property">background</span>: <span class="value">rgba(34, 211, 238, 0.2)</span>;
+  <span class="property">padding</span>: <span class="value">0.5rem 1rem</span>;
+  <span class="property">border-radius</span>: <span class="value">8px</span>;
+}
+
+<span class="selector">.primary-text</span> {
+  <span class="property">color</span>: <span class="value">#22d3ee</span>;
+}
+
+<span class="selector">.card</span> {
+  <span class="property">background</span>: <span class="value">#1a2234</span>;
+  <span class="property">border</span>: <span class="value">1px solid #2d3a52</span>;
+}</code></pre>
+          </div>
+          <div class="preview-panel">
+            <div class="preview-header">Preview</div>
+            <div class="preview-content class-demo">
+              <p>Normal paragraph text</p>
+              <p class="highlight">Highlighted paragraph</p>
+              <p class="primary-text">Primary colored text</p>
+              <div class="card">
+                <p class="highlight primary-text">Multiple classes applied!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>💡 Key Point:</strong> Classes are reusable! An element can have multiple classes: <code>class="card highlight"</code>
+        </div>
+      </section>
+
+      <!-- ID Selectors -->
+      <section class="selector-demo" id="demo-id">
+        <div class="demo-header">
+          <h2>ID Selectors</h2>
+          <p>Select a UNIQUE element by its ID</p>
+        </div>
+        <div class="demo-content">
+          <div class="code-panel">
+            <div class="code-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span>CSS</span>
+            </div>
+            <pre><code><span class="selector">#main-header</span> {
+  <span class="property">background</span>: <span class="value">linear-gradient(135deg, #22d3ee, #a78bfa)</span>;
+  <span class="property">padding</span>: <span class="value">1rem</span>;
+  <span class="property">color</span>: <span class="value">white</span>;
+}
+
+<span class="selector">#special-box</span> {
+  <span class="property">border</span>: <span class="value">3px solid #ef4444</span>;
+  <span class="property">animation</span>: <span class="value">pulse 2s infinite</span>;
+}</code></pre>
+          </div>
+          <div class="preview-panel">
+            <div class="preview-header">Preview</div>
+            <div class="preview-content id-demo">
+              <div id="main-header">Main Header (ID: main-header)</div>
+              <div class="regular-box">Regular Box</div>
+              <div id="special-box">Special Box (ID: special-box)</div>
+              <div class="regular-box">Another Regular Box</div>
+            </div>
+          </div>
+        </div>
+        <div class="info-box warning">
+          <strong>⚠️ Warning:</strong> IDs must be unique per page. Higher specificity than classes - use sparingly!
+        </div>
+      </section>
+
+      <!-- Combinators -->
+      <section class="selector-demo" id="demo-combinators">
+        <div class="demo-header">
+          <h2>Combinator Selectors</h2>
+          <p>Select elements based on their relationship</p>
+        </div>
+        <div class="demo-content">
+          <div class="code-panel">
+            <div class="code-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span>CSS</span>
+            </div>
+            <pre><code><span class="comment">/* Descendant: any nested span */</span>
+<span class="selector">.parent span</span> {
+  <span class="property">color</span>: <span class="value">#22d3ee</span>;
+}
+
+<span class="comment">/* Child: direct children only */</span>
+<span class="selector">.parent > p</span> {
+  <span class="property">border-left</span>: <span class="value">3px solid #a78bfa</span>;
+}
+
+<span class="comment">/* Adjacent Sibling: immediately after */</span>
+<span class="selector">h4 + p</span> {
+  <span class="property">font-weight</span>: <span class="value">bold</span>;
+}</code></pre>
+          </div>
+          <div class="preview-panel">
+            <div class="preview-header">Preview</div>
+            <div class="preview-content combinator-demo">
+              <div class="parent">
+                <p>Direct child paragraph (styled)</p>
+                <div>
+                  <p>Nested paragraph (not direct child)</p>
+                  <span>Descendant span (styled)</span>
+                </div>
+                <span>Direct span (also styled)</span>
+              </div>
+              <h4>Heading 4</h4>
+              <p>Adjacent sibling (bold)</p>
+              <p>Not adjacent (normal)</p>
+            </div>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>💡 Key Point:</strong> Combinators: space (descendant), &gt; (child), + (adjacent), ~ (general sibling)
+        </div>
+      </section>
+
+      <!-- Pseudo-Classes -->
+      <section class="selector-demo" id="demo-pseudo-class">
+        <div class="demo-header">
+          <h2>Pseudo-Class Selectors</h2>
+          <p>Select elements based on state or position</p>
+        </div>
+        <div class="demo-content">
+          <div class="code-panel">
+            <div class="code-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span>CSS</span>
+            </div>
+            <pre><code><span class="selector">.btn:hover</span> {
+  <span class="property">background</span>: <span class="value">#06b6d4</span>;
+  <span class="property">transform</span>: <span class="value">translateY(-2px)</span>;
+}
+
+<span class="selector">input:focus</span> {
+  <span class="property">border-color</span>: <span class="value">#22d3ee</span>;
+  <span class="property">box-shadow</span>: <span class="value">0 0 10px rgba(34,211,238,0.3)</span>;
+}
+
+<span class="selector">li:first-child</span> {
+  <span class="property">font-weight</span>: <span class="value">bold</span>;
+}
+
+<span class="selector">li:nth-child(even)</span> {
+  <span class="property">background</span>: <span class="value">#1a2234</span>;
+}</code></pre>
+          </div>
+          <div class="preview-panel">
+            <div class="preview-header">Preview</div>
+            <div class="preview-content pseudo-class-demo">
+              <button class="btn">Hover Me!</button>
+              <input type="text" placeholder="Focus me...">
+              <ul>
+                <li>First item (bold)</li>
+                <li>Second item (even bg)</li>
+                <li>Third item</li>
+                <li>Fourth item (even bg)</li>
+                <li>Fifth item</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>💡 Key Point:</strong> Common pseudo-classes: :hover, :focus, :active, :first-child, :last-child, :nth-child()
+        </div>
+      </section>
+
+      <!-- Pseudo-Elements -->
+      <section class="selector-demo" id="demo-pseudo-element">
+        <div class="demo-header">
+          <h2>Pseudo-Element Selectors</h2>
+          <p>Style specific parts of elements or add content</p>
+        </div>
+        <div class="demo-content">
+          <div class="code-panel">
+            <div class="code-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span>CSS</span>
+            </div>
+            <pre><code><span class="selector">.quote::before</span> {
+  <span class="property">content</span>: <span class="value">'"'</span>;
+  <span class="property">font-size</span>: <span class="value">2rem</span>;
+  <span class="property">color</span>: <span class="value">#22d3ee</span>;
+}
+
+<span class="selector">.quote::after</span> {
+  <span class="property">content</span>: <span class="value">'"'</span>;
+}
+
+<span class="selector">.highlight-text::selection</span> {
+  <span class="property">background</span>: <span class="value">#a78bfa</span>;
+  <span class="property">color</span>: <span class="value">white</span>;
+}
+
+<span class="selector">.fancy-link::after</span> {
+  <span class="property">content</span>: <span class="value">' →'</span>;
+}</code></pre>
+          </div>
+          <div class="preview-panel">
+            <div class="preview-header">Preview</div>
+            <div class="preview-content pseudo-element-demo">
+              <p class="quote">This is a quoted text with decorative quotes</p>
+              <p class="highlight-text">Select this text to see custom selection color!</p>
+              <a href="#" class="fancy-link">Learn more</a>
+            </div>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>💡 Key Point:</strong> Use :: for pseudo-elements. ::before and ::after require the content property!
+        </div>
+      </section>
+
+      <!-- Attribute Selectors -->
+      <section class="selector-demo" id="demo-attribute">
+        <div class="demo-header">
+          <h2>Attribute Selectors</h2>
+          <p>Select elements based on their attributes</p>
+        </div>
+        <div class="demo-content">
+          <div class="code-panel">
+            <div class="code-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span>CSS</span>
+            </div>
+            <pre><code><span class="comment">/* Has attribute */</span>
+<span class="selector">[disabled]</span> {
+  <span class="property">opacity</span>: <span class="value">0.5</span>;
+  <span class="property">cursor</span>: <span class="value">not-allowed</span>;
+}
+
+<span class="comment">/* Exact value */</span>
+<span class="selector">input[type="email"]</span> {
+  <span class="property">border-color</span>: <span class="value">#22d3ee</span>;
+}
+
+<span class="comment">/* Starts with */</span>
+<span class="selector">a[href^="https"]</span> {
+  <span class="property">color</span>: <span class="value">#34d399</span>;
+}
+
+<span class="comment">/* Ends with */</span>
+<span class="selector">a[href$=".pdf"]</span> {
+  <span class="property">color</span>: <span class="value">#ef4444</span>;
+}</code></pre>
+          </div>
+          <div class="preview-panel">
+            <div class="preview-header">Preview</div>
+            <div class="preview-content attribute-demo">
+              <button>Normal Button</button>
+              <button disabled>Disabled Button</button>
+              <input type="text" placeholder="Text input">
+              <input type="email" placeholder="Email input (cyan border)">
+              <div class="links">
+                <a href="https://example.com">HTTPS Link (green)</a>
+                <a href="http://example.com">HTTP Link (normal)</a>
+                <a href="/document.pdf">Download PDF (red)</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>💡 Key Point:</strong> Attribute selectors: [attr], [attr=value], [attr^=start], [attr$=end], [attr*=contains]
+        </div>
+      </section>
+    </main>
+
+    <!-- Specificity Calculator -->
+    <section class="specificity-section">
+      <h2>🎯 Specificity Calculator</h2>
+      <div class="specificity-display">
+        <div class="spec-column">
+          <span class="spec-label">Inline</span>
+          <span class="spec-value" id="spec-inline">0</span>
+        </div>
+        <div class="spec-column">
+          <span class="spec-label">IDs</span>
+          <span class="spec-value" id="spec-id">0</span>
+        </div>
+        <div class="spec-column">
+          <span class="spec-label">Classes</span>
+          <span class="spec-value" id="spec-class">0</span>
+        </div>
+        <div class="spec-column">
+          <span class="spec-label">Elements</span>
+          <span class="spec-value" id="spec-element">0</span>
+        </div>
+      </div>
+      <input type="text" id="selector-input" placeholder="Enter a selector (e.g., #header .nav a:hover)">
+      <button id="calc-btn" class="calc-btn">Calculate</button>
+      <div id="spec-result" class="spec-result"></div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

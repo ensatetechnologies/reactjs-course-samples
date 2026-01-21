@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Animations & Transitions</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div class="badge">Chapter 9</div>
+      <h1>CSS Animations & Transitions</h1>
+      <p>Bring your UI to life with smooth motion</p>
+    </header>
+
+    <!-- Transitions Section -->
+    <section class="demo-section">
+      <h2>🔄 CSS Transitions</h2>
+      <p class="section-desc">Animate property changes on state change (hover, focus, etc.)</p>
+      
+      <div class="transitions-grid">
+        <!-- Background Transition -->
+        <div class="transition-card">
+          <h3>Background</h3>
+          <div class="demo-box bg-transition">Hover Me</div>
+          <code>transition: background 0.3s ease;</code>
+        </div>
+
+        <!-- Transform Scale -->
+        <div class="transition-card">
+          <h3>Scale Transform</h3>
+          <div class="demo-box scale-transition">Hover Me</div>
+          <code>transition: transform 0.3s ease;</code>
+        </div>
+
+        <!-- Transform Rotate -->
+        <div class="transition-card">
+          <h3>Rotate Transform</h3>
+          <div class="demo-box rotate-transition">Hover Me</div>
+          <code>transform: rotate(180deg);</code>
+        </div>
+
+        <!-- Box Shadow -->
+        <div class="transition-card">
+          <h3>Box Shadow</h3>
+          <div class="demo-box shadow-transition">Hover Me</div>
+          <code>transition: box-shadow 0.3s ease;</code>
+        </div>
+
+        <!-- Border Radius -->
+        <div class="transition-card">
+          <h3>Border Radius</h3>
+          <div class="demo-box radius-transition">Hover Me</div>
+          <code>transition: border-radius 0.4s ease;</code>
+        </div>
+
+        <!-- Multiple Properties -->
+        <div class="transition-card">
+          <h3>Multiple Props</h3>
+          <div class="demo-box multi-transition">Hover Me</div>
+          <code>transition: all 0.3s ease;</code>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>transitions.css</span>
+        </div>
+        <pre><code><span class="selector">.button</span> {
+  <span class="property">background</span>: <span class="value">#22d3ee</span>;
+  <span class="property">transform</span>: <span class="value">scale(1)</span>;
+  
+  <span class="comment">/* transition: property | duration | timing | delay */</span>
+  <span class="property">transition</span>: <span class="value">all 0.3s ease</span>;
+  
+  <span class="comment">/* Or specify individual properties */</span>
+  <span class="property">transition</span>: <span class="value">background 0.3s ease,
+               transform 0.2s ease</span>;
+}
+
+<span class="selector">.button:hover</span> {
+  <span class="property">background</span>: <span class="value">#06b6d4</span>;
+  <span class="property">transform</span>: <span class="value">scale(1.05) translateY(-2px)</span>;
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- Timing Functions Section -->
+    <section class="demo-section">
+      <h2>⏱️ Timing Functions</h2>
+      <p class="section-desc">Control the acceleration curve of animations</p>
+      
+      <div class="timing-demo">
+        <button class="timing-btn" id="play-timing">▶ Play All</button>
+        
+        <div class="timing-row">
+          <span class="timing-label">linear</span>
+          <div class="timing-track">
+            <div class="timing-ball linear-ball"></div>
+          </div>
+        </div>
+
+        <div class="timing-row">
+          <span class="timing-label">ease</span>
+          <div class="timing-track">
+            <div class="timing-ball ease-ball"></div>
+          </div>
+        </div>
+
+        <div class="timing-row">
+          <span class="timing-label">ease-in</span>
+          <div class="timing-track">
+            <div class="timing-ball ease-in-ball"></div>
+          </div>
+        </div>
+
+        <div class="timing-row">
+          <span class="timing-label">ease-out</span>
+          <div class="timing-track">
+            <div class="timing-ball ease-out-ball"></div>
+          </div>
+        </div>
+
+        <div class="timing-row">
+          <span class="timing-label">ease-in-out</span>
+          <div class="timing-track">
+            <div class="timing-ball ease-in-out-ball"></div>
+          </div>
+        </div>
+
+        <div class="timing-row">
+          <span class="timing-label">bounce</span>
+          <div class="timing-track">
+            <div class="timing-ball bounce-ball"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Keyframe Animations Section -->
+    <section class="demo-section">
+      <h2>🎬 Keyframe Animations</h2>
+      <p class="section-desc">Create complex multi-step animations</p>
+      
+      <div class="keyframes-grid">
+        <!-- Fade In -->
+        <div class="keyframe-card">
+          <h3>Fade In</h3>
+          <div class="anim-container">
+            <div class="anim-box fade-in-anim">Box</div>
+          </div>
+          <button class="replay-btn" data-target="fade-in-anim">↻ Replay</button>
+        </div>
+
+        <!-- Slide In -->
+        <div class="keyframe-card">
+          <h3>Slide In</h3>
+          <div class="anim-container">
+            <div class="anim-box slide-in-anim">Box</div>
+          </div>
+          <button class="replay-btn" data-target="slide-in-anim">↻ Replay</button>
+        </div>
+
+        <!-- Bounce -->
+        <div class="keyframe-card">
+          <h3>Bounce</h3>
+          <div class="anim-container">
+            <div class="anim-box bounce-anim">Box</div>
+          </div>
+          <button class="replay-btn" data-target="bounce-anim">↻ Replay</button>
+        </div>
+
+        <!-- Pulse -->
+        <div class="keyframe-card">
+          <h3>Pulse (Infinite)</h3>
+          <div class="anim-container">
+            <div class="anim-box pulse-anim">Box</div>
+          </div>
+          <span class="infinite-label">∞</span>
+        </div>
+
+        <!-- Spin -->
+        <div class="keyframe-card">
+          <h3>Spin (Infinite)</h3>
+          <div class="anim-container">
+            <div class="anim-box spin-anim">Box</div>
+          </div>
+          <span class="infinite-label">∞</span>
+        </div>
+
+        <!-- Shake -->
+        <div class="keyframe-card">
+          <h3>Shake</h3>
+          <div class="anim-container">
+            <div class="anim-box shake-anim">Box</div>
+          </div>
+          <button class="replay-btn" data-target="shake-anim">↻ Replay</button>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>keyframes.css</span>
+        </div>
+        <pre><code><span class="comment">/* Define the animation */</span>
+<span class="selector">@keyframes fadeIn</span> {
+  <span class="selector">from</span> {
+    <span class="property">opacity</span>: <span class="value">0</span>;
+    <span class="property">transform</span>: <span class="value">translateY(20px)</span>;
+  }
+  <span class="selector">to</span> {
+    <span class="property">opacity</span>: <span class="value">1</span>;
+    <span class="property">transform</span>: <span class="value">translateY(0)</span>;
+  }
+}
+
+<span class="selector">@keyframes pulse</span> {
+  <span class="selector">0%, 100%</span> { <span class="property">transform</span>: <span class="value">scale(1)</span>; }
+  <span class="selector">50%</span> { <span class="property">transform</span>: <span class="value">scale(1.1)</span>; }
+}
+
+<span class="comment">/* Apply the animation */</span>
+<span class="selector">.fade-in</span> {
+  <span class="property">animation</span>: <span class="value">fadeIn 0.5s ease forwards</span>;
+}
+
+<span class="selector">.pulsing</span> {
+  <span class="property">animation</span>: <span class="value">pulse 2s ease-in-out infinite</span>;
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- Practical Examples Section -->
+    <section class="demo-section">
+      <h2>🎨 Practical Examples</h2>
+      <p class="section-desc">Real-world UI animation patterns</p>
+      
+      <div class="examples-grid">
+        <!-- Button Hover -->
+        <div class="example-card">
+          <h3>Button Hover</h3>
+          <button class="animated-btn primary-btn">Click Me</button>
+          <button class="animated-btn outline-btn">Click Me</button>
+        </div>
+
+        <!-- Card Hover -->
+        <div class="example-card">
+          <h3>Card Hover Effect</h3>
+          <div class="hover-card">
+            <div class="card-content">
+              <h4>Card Title</h4>
+              <p>Hover to see effect</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="example-card">
+          <h3>Loading Spinner</h3>
+          <div class="spinners">
+            <div class="spinner spinner-1"></div>
+            <div class="spinner spinner-2"></div>
+            <div class="spinner spinner-3"></div>
+          </div>
+        </div>
+
+        <!-- Skeleton Loading -->
+        <div class="example-card">
+          <h3>Skeleton Loading</h3>
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-avatar"></div>
+            <div class="skeleton-content">
+              <div class="skeleton skeleton-title"></div>
+              <div class="skeleton skeleton-text"></div>
+              <div class="skeleton skeleton-text short"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification Badge -->
+        <div class="example-card">
+          <h3>Notification Badge</h3>
+          <div class="notification-demo">
+            <div class="notification-icon">🔔</div>
+            <span class="notification-badge">3</span>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="example-card">
+          <h3>Progress Animation</h3>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <button class="replay-btn progress-replay" id="progress-replay">↻ Replay</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance Tips -->
+    <section class="demo-section">
+      <h2>⚡ Performance Tips</h2>
+      
+      <div class="tips-grid">
+        <div class="tip-card good">
+          <h3>✅ DO Animate</h3>
+          <ul>
+            <li><code>transform</code> (translate, scale, rotate)</li>
+            <li><code>opacity</code></li>
+          </ul>
+          <p>These use GPU acceleration for smooth 60fps</p>
+        </div>
+
+        <div class="tip-card bad">
+          <h3>❌ AVOID Animating</h3>
+          <ul>
+            <li><code>width</code>, <code>height</code></li>
+            <li><code>margin</code>, <code>padding</code></li>
+            <li><code>top</code>, <code>left</code>, etc.</li>
+          </ul>
+          <p>These trigger expensive layout recalculations</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>performance.css</span>
+        </div>
+        <pre><code><span class="comment">/* ❌ BAD - Animating width */</span>
+<span class="selector">.element</span> {
+  <span class="property">width</span>: <span class="value">100px</span>;
+  <span class="property">transition</span>: <span class="value">width 0.3s</span>;
+}
+<span class="selector">.element:hover</span> {
+  <span class="property">width</span>: <span class="value">200px</span>;
+}
+
+<span class="comment">/* ✅ GOOD - Using transform instead */</span>
+<span class="selector">.element</span> {
+  <span class="property">transform</span>: <span class="value">scaleX(1)</span>;
+  <span class="property">transition</span>: <span class="value">transform 0.3s</span>;
+}
+<span class="selector">.element:hover</span> {
+  <span class="property">transform</span>: <span class="value">scaleX(2)</span>;
+}
+
+<span class="comment">/* Enable hardware acceleration */</span>
+<span class="selector">.smooth-animation</span> {
+  <span class="property">will-change</span>: <span class="value">transform, opacity</span>;
+}</code></pre>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
