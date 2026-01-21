@@ -1,0 +1,544 @@
+/* ============================================
+   CSS Box Model Visualizer - Styles
+   ============================================ */
+
+:root {
+  --primary: #22d3ee;
+  --secondary: #a78bfa;
+  --accent: #34d399;
+  --danger: #ef4444;
+  --warning: #fbbf24;
+  --bg: #0a0f1c;
+  --surface: #111827;
+  --surface2: #1a2234;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #2d3a52;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(52,211,153,0.1) 0%, transparent 50%);
+}
+
+.hero .badge {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, var(--text), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.hero p {
+  color: var(--muted);
+  font-size: 1.1rem;
+  position: relative;
+}
+
+/* Main Content Layout */
+.main-content {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Controls Panel */
+.controls-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.controls-panel h2 {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.control-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.section-title {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.control-group {
+  margin-bottom: 1rem;
+}
+
+.control-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.control-group label span {
+  color: var(--primary);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Range Sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  background: var(--surface2);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Toggle Buttons */
+.box-sizing-toggle {
+  margin-bottom: 1.5rem;
+}
+
+.toggle-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.toggle-btn.active {
+  background: var(--primary);
+  color: var(--bg);
+  border-color: var(--primary);
+  font-weight: 600;
+}
+
+/* Code Output */
+.code-output {
+  margin-top: 1.5rem;
+  background: #0d1321;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot.red { background: #ef4444; }
+.dot.yellow { background: #fbbf24; }
+.dot.green { background: #22c55e; }
+
+.code-output pre {
+  padding: 1rem;
+  margin: 0;
+  overflow-x: auto;
+}
+
+.code-output code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+/* Visualization Panel */
+.visualization-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.visualization-panel h2 {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+
+/* Box Model Diagram */
+.box-model-diagram {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: var(--surface2);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  min-height: 400px;
+}
+
+.margin-layer {
+  position: relative;
+  background: rgba(239, 68, 68, 0.2);
+  border: 2px dashed var(--danger);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.border-layer {
+  position: relative;
+  background: rgba(251, 191, 36, 0.3);
+  border: 4px solid var(--warning);
+  transition: all 0.3s ease;
+}
+
+.padding-layer {
+  position: relative;
+  background: rgba(52, 211, 153, 0.2);
+  transition: all 0.3s ease;
+}
+
+.content-layer {
+  position: relative;
+  background: rgba(34, 211, 238, 0.3);
+  border: 2px dashed var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.layer-label {
+  position: absolute;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.margin-label {
+  top: 5px;
+  left: 5px;
+  background: var(--danger);
+  color: white;
+}
+
+.border-label {
+  top: 5px;
+  left: 5px;
+  background: var(--warning);
+  color: #000;
+}
+
+.padding-label {
+  top: 5px;
+  left: 5px;
+  background: var(--accent);
+  color: #000;
+}
+
+.content-label {
+  background: var(--primary);
+  color: #000;
+}
+
+/* Computed Dimensions */
+.computed-dimensions {
+  margin-bottom: 1.5rem;
+}
+
+.computed-dimensions h3 {
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dimension-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .dimension-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.dimension-card {
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.content-dim { background: rgba(34, 211, 238, 0.1); border-color: var(--primary); }
+.padding-dim { background: rgba(52, 211, 153, 0.1); border-color: var(--accent); }
+.border-dim { background: rgba(251, 191, 36, 0.1); border-color: var(--warning); }
+.total-dim { background: rgba(239, 68, 68, 0.1); border-color: var(--danger); }
+
+.dim-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.dim-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.content-dim .dim-value { color: var(--primary); }
+.padding-dim .dim-value { color: var(--accent); }
+.border-dim .dim-value { color: var(--warning); }
+.total-dim .dim-value { color: var(--danger); }
+
+/* Explanation Box */
+.explanation-box {
+  padding: 1.25rem;
+  background: var(--surface2);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+}
+
+.explanation-box h3 {
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.explanation-box h3 span {
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.explanation-box p {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Comparison Section */
+.comparison-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.comparison-section h2 {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.comparison-card {
+  background: var(--surface2);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.comparison-card h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.comparison-box {
+  background: var(--bg);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inner-box {
+  padding: 20px;
+  border: 4px solid var(--warning);
+  background: rgba(34, 211, 238, 0.2);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+}
+
+.content-box-demo .inner-box {
+  width: 200px;
+  box-sizing: content-box;
+}
+
+.border-box-demo .inner-box {
+  width: 200px;
+  box-sizing: border-box;
+}
+
+.comparison-card p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.dim-detail {
+  color: var(--text);
+}
+
+.dim-detail strong {
+  color: var(--primary);
+}
+
+.comparison-card code {
+  display: block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg);
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+/* Tip Box */
+.tip-box {
+  padding: 1.25rem;
+  background: rgba(34, 211, 238, 0.1);
+  border-left: 4px solid var(--primary);
+  border-radius: 0 8px 8px 0;
+  text-align: center;
+}
+
+.tip-box strong {
+  color: var(--primary);
+}
+
+.block-code {
+  display: block;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg);
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+}

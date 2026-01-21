@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flexbox Playground</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div class="badge">Chapter 9</div>
+      <h1>Flexbox Playground</h1>
+      <p>Master one-dimensional layouts with interactive controls</p>
+    </header>
+
+    <div class="main-layout">
+      <!-- Controls Panel -->
+      <aside class="controls-panel">
+        <h2>🎛️ Container Properties</h2>
+
+        <!-- Flex Direction -->
+        <div class="control-group">
+          <label>flex-direction</label>
+          <div class="btn-group">
+            <button class="prop-btn active" data-prop="flexDirection" data-value="row">row</button>
+            <button class="prop-btn" data-prop="flexDirection" data-value="row-reverse">row-reverse</button>
+            <button class="prop-btn" data-prop="flexDirection" data-value="column">column</button>
+            <button class="prop-btn" data-prop="flexDirection" data-value="column-reverse">column-reverse</button>
+          </div>
+        </div>
+
+        <!-- Flex Wrap -->
+        <div class="control-group">
+          <label>flex-wrap</label>
+          <div class="btn-group">
+            <button class="prop-btn active" data-prop="flexWrap" data-value="nowrap">nowrap</button>
+            <button class="prop-btn" data-prop="flexWrap" data-value="wrap">wrap</button>
+            <button class="prop-btn" data-prop="flexWrap" data-value="wrap-reverse">wrap-reverse</button>
+          </div>
+        </div>
+
+        <!-- Justify Content -->
+        <div class="control-group">
+          <label>justify-content <span class="axis-hint">(main axis)</span></label>
+          <div class="btn-group">
+            <button class="prop-btn active" data-prop="justifyContent" data-value="flex-start">flex-start</button>
+            <button class="prop-btn" data-prop="justifyContent" data-value="flex-end">flex-end</button>
+            <button class="prop-btn" data-prop="justifyContent" data-value="center">center</button>
+            <button class="prop-btn" data-prop="justifyContent" data-value="space-between">space-between</button>
+            <button class="prop-btn" data-prop="justifyContent" data-value="space-around">space-around</button>
+            <button class="prop-btn" data-prop="justifyContent" data-value="space-evenly">space-evenly</button>
+          </div>
+        </div>
+
+        <!-- Align Items -->
+        <div class="control-group">
+          <label>align-items <span class="axis-hint">(cross axis)</span></label>
+          <div class="btn-group">
+            <button class="prop-btn active" data-prop="alignItems" data-value="stretch">stretch</button>
+            <button class="prop-btn" data-prop="alignItems" data-value="flex-start">flex-start</button>
+            <button class="prop-btn" data-prop="alignItems" data-value="flex-end">flex-end</button>
+            <button class="prop-btn" data-prop="alignItems" data-value="center">center</button>
+            <button class="prop-btn" data-prop="alignItems" data-value="baseline">baseline</button>
+          </div>
+        </div>
+
+        <!-- Align Content -->
+        <div class="control-group">
+          <label>align-content <span class="axis-hint">(multi-line)</span></label>
+          <div class="btn-group">
+            <button class="prop-btn active" data-prop="alignContent" data-value="stretch">stretch</button>
+            <button class="prop-btn" data-prop="alignContent" data-value="flex-start">flex-start</button>
+            <button class="prop-btn" data-prop="alignContent" data-value="flex-end">flex-end</button>
+            <button class="prop-btn" data-prop="alignContent" data-value="center">center</button>
+            <button class="prop-btn" data-prop="alignContent" data-value="space-between">space-between</button>
+            <button class="prop-btn" data-prop="alignContent" data-value="space-around">space-around</button>
+          </div>
+        </div>
+
+        <!-- Gap -->
+        <div class="control-group">
+          <label>gap: <span id="gap-value">10</span>px</label>
+          <input type="range" id="gap-slider" min="0" max="40" value="10">
+        </div>
+
+        <!-- Item Controls -->
+        <h2 style="margin-top: 1.5rem;">📦 Item Controls</h2>
+        
+        <div class="control-group">
+          <label>Number of items: <span id="items-value">5</span></label>
+          <input type="range" id="items-slider" min="1" max="12" value="5">
+        </div>
+
+        <div class="control-group">
+          <label>Item min-width: <span id="item-width-value">80</span>px</label>
+          <input type="range" id="item-width-slider" min="40" max="200" value="80">
+        </div>
+      </aside>
+
+      <!-- Preview Area -->
+      <main class="preview-area">
+        <div class="axis-indicators">
+          <span class="main-axis" id="main-axis">Main Axis →</span>
+          <span class="cross-axis" id="cross-axis">Cross Axis ↓</span>
+        </div>
+        
+        <div class="flex-container" id="flex-container">
+          <div class="flex-item" data-index="1">1</div>
+          <div class="flex-item" data-index="2">2</div>
+          <div class="flex-item" data-index="3">3</div>
+          <div class="flex-item" data-index="4">4</div>
+          <div class="flex-item" data-index="5">5</div>
+        </div>
+
+        <!-- CSS Output -->
+        <div class="code-output">
+          <div class="code-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span>Generated CSS</span>
+          </div>
+          <pre id="css-output"><code></code></pre>
+        </div>
+      </main>
+    </div>
+
+    <!-- Common Patterns Section -->
+    <section class="patterns-section">
+      <h2>🎨 Common Flexbox Patterns</h2>
+      <div class="patterns-grid">
+        <!-- Perfect Centering -->
+        <div class="pattern-card">
+          <h3>Perfect Centering</h3>
+          <div class="pattern-demo centering-demo">
+            <div class="centered-item">Centered!</div>
+          </div>
+          <code>
+display: flex;<br>
+justify-content: center;<br>
+align-items: center;
+          </code>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="pattern-card">
+          <h3>Navigation Bar</h3>
+          <div class="pattern-demo navbar-demo">
+            <span class="logo">Logo</span>
+            <nav>
+              <a href="#">Home</a>
+              <a href="#">About</a>
+              <a href="#">Contact</a>
+            </nav>
+          </div>
+          <code>
+display: flex;<br>
+justify-content: space-between;<br>
+align-items: center;
+          </code>
+        </div>
+
+        <!-- Card Grid -->
+        <div class="pattern-card">
+          <h3>Responsive Card Grid</h3>
+          <div class="pattern-demo card-grid-demo">
+            <div class="mini-card">Card 1</div>
+            <div class="mini-card">Card 2</div>
+            <div class="mini-card">Card 3</div>
+          </div>
+          <code>
+display: flex;<br>
+flex-wrap: wrap;<br>
+gap: 1rem;
+          </code>
+        </div>
+
+        <!-- Sticky Footer -->
+        <div class="pattern-card">
+          <h3>Sticky Footer</h3>
+          <div class="pattern-demo footer-demo">
+            <header>Header</header>
+            <main>Content</main>
+            <footer>Footer</footer>
+          </div>
+          <code>
+display: flex;<br>
+flex-direction: column;<br>
+min-height: 100vh;
+          </code>
+        </div>
+
+        <!-- Equal Height Columns -->
+        <div class="pattern-card">
+          <h3>Equal Height Columns</h3>
+          <div class="pattern-demo columns-demo">
+            <div class="col">Short</div>
+            <div class="col">Longer content here with more text</div>
+            <div class="col">Med</div>
+          </div>
+          <code>
+display: flex;<br>
+/* align-items: stretch; (default) */
+          </code>
+        </div>
+
+        <!-- Input with Button -->
+        <div class="pattern-card">
+          <h3>Input with Button</h3>
+          <div class="pattern-demo input-demo">
+            <input type="text" placeholder="Search...">
+            <button>Go</button>
+          </div>
+          <code>
+display: flex;<br>
+input { flex: 1; }<br>
+button { flex-shrink: 0; }
+          </code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Item Properties Section -->
+    <section class="item-props-section">
+      <h2>🧩 Flex Item Properties</h2>
+      <div class="item-props-demo">
+        <div class="item-controls">
+          <h3>Selected Item: <span id="selected-item-num">1</span></h3>
+          
+          <div class="control-group">
+            <label>flex-grow: <span id="grow-value">0</span></label>
+            <input type="range" id="grow-slider" min="0" max="5" value="0">
+          </div>
+
+          <div class="control-group">
+            <label>flex-shrink: <span id="shrink-value">1</span></label>
+            <input type="range" id="shrink-slider" min="0" max="5" value="1">
+          </div>
+
+          <div class="control-group">
+            <label>flex-basis: <span id="basis-value">auto</span></label>
+            <select id="basis-select">
+              <option value="auto">auto</option>
+              <option value="0">0</option>
+              <option value="50px">50px</option>
+              <option value="100px">100px</option>
+              <option value="150px">150px</option>
+              <option value="200px">200px</option>
+              <option value="25%">25%</option>
+              <option value="50%">50%</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>align-self</label>
+            <select id="align-self-select">
+              <option value="auto">auto</option>
+              <option value="flex-start">flex-start</option>
+              <option value="flex-end">flex-end</option>
+              <option value="center">center</option>
+              <option value="stretch">stretch</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>order: <span id="order-value">0</span></label>
+            <input type="range" id="order-slider" min="-3" max="3" value="0">
+          </div>
+        </div>
+
+        <div class="item-preview">
+          <div class="item-flex-container" id="item-flex-container">
+            <div class="item-flex-item selected" data-index="1">1</div>
+            <div class="item-flex-item" data-index="2">2</div>
+            <div class="item-flex-item" data-index="3">3</div>
+          </div>
+          <p class="hint">Click an item to select and modify its properties</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

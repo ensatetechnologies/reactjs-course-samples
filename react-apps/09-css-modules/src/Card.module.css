@@ -1,0 +1,87 @@
+/* ============================================
+   Card Component - CSS Module
+   ============================================ */
+
+.card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--primary);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cardIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.iconPrimary {
+  composes: cardIcon;
+  background: rgba(34, 211, 238, 0.2);
+}
+
+.iconSecondary {
+  composes: cardIcon;
+  background: rgba(167, 139, 250, 0.2);
+}
+
+.iconAccent {
+  composes: cardIcon;
+  background: rgba(52, 211, 153, 0.2);
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.cardSubtitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.cardBody {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.cardFooter {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Card Variants */
+.featured {
+  composes: card;
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border-color: var(--primary);
+}
+
+.compact {
+  composes: card;
+  padding: 1rem;
+}

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Design Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div class="badge">Chapter 9</div>
+      <h1>Responsive Design</h1>
+      <p>Mobile-First Development with Media Queries</p>
+    </header>
+
+    <!-- Current Viewport Indicator -->
+    <section class="viewport-indicator">
+      <div class="viewport-info">
+        <span class="viewport-icon">📱</span>
+        <span class="viewport-name">Mobile</span>
+        <span class="viewport-size" id="viewport-size">320px</span>
+      </div>
+      <div class="breakpoint-bar">
+        <div class="breakpoint mobile" data-label="Mobile">< 768px</div>
+        <div class="breakpoint tablet" data-label="Tablet">768-1023px</div>
+        <div class="breakpoint desktop" data-label="Desktop">1024-1439px</div>
+        <div class="breakpoint large" data-label="Large">1440px+</div>
+      </div>
+    </section>
+
+    <!-- Responsive Grid Demo -->
+    <section class="demo-section">
+      <h2>📐 Responsive Grid</h2>
+      <p class="section-desc">Watch the grid change as you resize the browser</p>
+      
+      <div class="responsive-grid">
+        <div class="grid-card">
+          <div class="card-icon">📱</div>
+          <h3>Card 1</h3>
+          <p>Responsive content</p>
+        </div>
+        <div class="grid-card">
+          <div class="card-icon">💻</div>
+          <h3>Card 2</h3>
+          <p>Responsive content</p>
+        </div>
+        <div class="grid-card">
+          <div class="card-icon">🖥️</div>
+          <h3>Card 3</h3>
+          <p>Responsive content</p>
+        </div>
+        <div class="grid-card">
+          <div class="card-icon">⌨️</div>
+          <h3>Card 4</h3>
+          <p>Responsive content</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>responsive-grid.css</span>
+        </div>
+        <pre><code><span class="comment">/* Mobile First: Base styles */</span>
+<span class="selector">.responsive-grid</span> {
+  <span class="property">display</span>: <span class="value">grid</span>;
+  <span class="property">grid-template-columns</span>: <span class="value">1fr</span>;
+  <span class="property">gap</span>: <span class="value">1rem</span>;
+}
+
+<span class="comment">/* Tablet: 768px and up */</span>
+<span class="selector">@media (min-width: 768px)</span> {
+  <span class="selector">.responsive-grid</span> {
+    <span class="property">grid-template-columns</span>: <span class="value">repeat(2, 1fr)</span>;
+  }
+}
+
+<span class="comment">/* Desktop: 1024px and up */</span>
+<span class="selector">@media (min-width: 1024px)</span> {
+  <span class="selector">.responsive-grid</span> {
+    <span class="property">grid-template-columns</span>: <span class="value">repeat(4, 1fr)</span>;
+    <span class="property">gap</span>: <span class="value">1.5rem</span>;
+  }
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- Show/Hide Demo -->
+    <section class="demo-section">
+      <h2>👁️ Responsive Visibility</h2>
+      <p class="section-desc">Elements that show/hide based on screen size</p>
+      
+      <div class="visibility-demo">
+        <div class="vis-item mobile-only">
+          <span>📱</span>
+          <p>Mobile Only</p>
+        </div>
+        <div class="vis-item tablet-only">
+          <span>📱</span>
+          <p>Tablet Only</p>
+        </div>
+        <div class="vis-item desktop-only">
+          <span>🖥️</span>
+          <p>Desktop Only</p>
+        </div>
+        <div class="vis-item always-visible">
+          <span>✓</span>
+          <p>Always Visible</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>visibility.css</span>
+        </div>
+        <pre><code><span class="comment">/* Hide on mobile, show on tablet+ */</span>
+<span class="selector">.desktop-only</span> {
+  <span class="property">display</span>: <span class="value">none</span>;
+}
+
+<span class="selector">@media (min-width: 768px)</span> {
+  <span class="selector">.desktop-only</span> {
+    <span class="property">display</span>: <span class="value">block</span>;
+  }
+}
+
+<span class="comment">/* Show on mobile, hide on tablet+ */</span>
+<span class="selector">.mobile-only</span> {
+  <span class="property">display</span>: <span class="value">block</span>;
+}
+
+<span class="selector">@media (min-width: 768px)</span> {
+  <span class="selector">.mobile-only</span> {
+    <span class="property">display</span>: <span class="value">none</span>;
+  }
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- Responsive Navigation -->
+    <section class="demo-section">
+      <h2>🧭 Responsive Navigation</h2>
+      <p class="section-desc">Classic hamburger menu pattern</p>
+      
+      <div class="nav-demo">
+        <nav class="responsive-nav">
+          <div class="nav-brand">Brand</div>
+          <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <ul class="nav-links" id="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>responsive-nav.css</span>
+        </div>
+        <pre><code><span class="comment">/* Mobile: Hamburger menu */</span>
+<span class="selector">.nav-links</span> {
+  <span class="property">display</span>: <span class="value">none</span>;
+  <span class="property">flex-direction</span>: <span class="value">column</span>;
+  <span class="property">position</span>: <span class="value">absolute</span>;
+  <span class="property">top</span>: <span class="value">100%</span>;
+  <span class="property">left</span>: <span class="value">0</span>;
+  <span class="property">right</span>: <span class="value">0</span>;
+}
+
+<span class="selector">.nav-links.active</span> {
+  <span class="property">display</span>: <span class="value">flex</span>;
+}
+
+<span class="selector">.hamburger</span> {
+  <span class="property">display</span>: <span class="value">block</span>;
+}
+
+<span class="comment">/* Desktop: Horizontal nav */</span>
+<span class="selector">@media (min-width: 768px)</span> {
+  <span class="selector">.nav-links</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;
+    <span class="property">flex-direction</span>: <span class="value">row</span>;
+    <span class="property">position</span>: <span class="value">static</span>;
+  }
+  
+  <span class="selector">.hamburger</span> {
+    <span class="property">display</span>: <span class="value">none</span>;
+  }
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- Responsive Units -->
+    <section class="demo-section">
+      <h2>📏 Responsive Units</h2>
+      <p class="section-desc">Compare different CSS units</p>
+      
+      <div class="units-demo">
+        <div class="unit-item">
+          <div class="unit-bar px-bar">200px</div>
+          <span>Pixels (fixed)</span>
+        </div>
+        <div class="unit-item">
+          <div class="unit-bar percent-bar">50%</div>
+          <span>Percentage (relative to parent)</span>
+        </div>
+        <div class="unit-item">
+          <div class="unit-bar vw-bar">30vw</div>
+          <span>Viewport Width (relative to screen)</span>
+        </div>
+        <div class="unit-item">
+          <div class="unit-bar rem-bar">15rem</div>
+          <span>REM (relative to root font-size)</span>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 Best Practices:</strong>
+        <ul>
+          <li>Use <code>rem</code> for typography and spacing</li>
+          <li>Use <code>%</code> or <code>fr</code> for layout widths</li>
+          <li>Use <code>vh/vw</code> for full-screen sections</li>
+          <li>Avoid <code>px</code> for layout (OK for borders, shadows)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Responsive Images -->
+    <section class="demo-section">
+      <h2>🖼️ Responsive Images</h2>
+      <p class="section-desc">Images that scale properly</p>
+      
+      <div class="images-demo">
+        <div class="image-container">
+          <img src="https://picsum.photos/800/400?random=1" alt="Demo image" class="responsive-image">
+          <p>Basic responsive image</p>
+        </div>
+        <div class="image-container aspect-ratio">
+          <img src="https://picsum.photos/800/400?random=2" alt="Demo image" class="cover-image">
+          <p>Object-fit: cover (maintains aspect ratio)</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>responsive-images.css</span>
+        </div>
+        <pre><code><span class="comment">/* Basic responsive image */</span>
+<span class="selector">img</span> {
+  <span class="property">max-width</span>: <span class="value">100%</span>;
+  <span class="property">height</span>: <span class="value">auto</span>;
+  <span class="property">display</span>: <span class="value">block</span>;
+}
+
+<span class="comment">/* Cover container while maintaining aspect ratio */</span>
+<span class="selector">.hero-image</span> {
+  <span class="property">width</span>: <span class="value">100%</span>;
+  <span class="property">height</span>: <span class="value">300px</span>;
+  <span class="property">object-fit</span>: <span class="value">cover</span>;
+  <span class="property">object-position</span>: <span class="value">center</span>;
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- Clamp Function -->
+    <section class="demo-section">
+      <h2>🔧 Modern CSS: clamp()</h2>
+      <p class="section-desc">Responsive values without media queries</p>
+      
+      <div class="clamp-demo">
+        <h3 class="clamp-heading">This heading uses clamp()</h3>
+        <p class="clamp-text">
+          The <code>clamp(min, preferred, max)</code> function creates responsive values 
+          that smoothly scale between a minimum and maximum.
+        </p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>clamp.css</span>
+        </div>
+        <pre><code><span class="comment">/* Responsive font-size with clamp */</span>
+<span class="selector">.heading</span> {
+  <span class="property">font-size</span>: <span class="value">clamp(1.5rem, 4vw, 3rem)</span>;
+  <span class="comment">/* min: 1.5rem, preferred: 4vw, max: 3rem */</span>
+}
+
+<span class="comment">/* Responsive container width */</span>
+<span class="selector">.container</span> {
+  <span class="property">width</span>: <span class="value">min(100% - 2rem, 1200px)</span>;
+  <span class="property">margin-inline</span>: <span class="value">auto</span>;
+}
+
+<span class="comment">/* Responsive padding */</span>
+<span class="selector">.section</span> {
+  <span class="property">padding</span>: <span class="value">clamp(1rem, 5vw, 4rem)</span>;
+}</code></pre>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

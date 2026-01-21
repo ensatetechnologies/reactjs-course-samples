@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Box Model Visualizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div class="badge">Chapter 9</div>
+      <h1>CSS Box Model Visualizer</h1>
+      <p>Interactive exploration of content, padding, border, and margin</p>
+    </header>
+
+    <div class="main-content">
+      <!-- Controls Panel -->
+      <section class="controls-panel">
+        <h2>📐 Box Properties</h2>
+        
+        <!-- Box Sizing Toggle -->
+        <div class="control-group box-sizing-toggle">
+          <label>Box Sizing</label>
+          <div class="toggle-btns">
+            <button class="toggle-btn" data-value="content-box">content-box</button>
+            <button class="toggle-btn active" data-value="border-box">border-box</button>
+          </div>
+        </div>
+
+        <!-- Width & Height -->
+        <div class="control-group">
+          <label for="width-slider">Width: <span id="width-value">200</span>px</label>
+          <input type="range" id="width-slider" min="100" max="400" value="200">
+        </div>
+
+        <div class="control-group">
+          <label for="height-slider">Height: <span id="height-value">150</span>px</label>
+          <input type="range" id="height-slider" min="50" max="300" value="150">
+        </div>
+
+        <!-- Padding -->
+        <div class="control-section">
+          <h3 class="section-title" style="color: var(--accent);">📦 Padding</h3>
+          <div class="control-group">
+            <label for="padding-slider">All Sides: <span id="padding-value">20</span>px</label>
+            <input type="range" id="padding-slider" min="0" max="50" value="20">
+          </div>
+        </div>
+
+        <!-- Border -->
+        <div class="control-section">
+          <h3 class="section-title" style="color: var(--warning);">🔲 Border</h3>
+          <div class="control-group">
+            <label for="border-slider">Width: <span id="border-value">4</span>px</label>
+            <input type="range" id="border-slider" min="0" max="20" value="4">
+          </div>
+          <div class="control-group">
+            <label for="radius-slider">Border Radius: <span id="radius-value">8</span>px</label>
+            <input type="range" id="radius-slider" min="0" max="50" value="8">
+          </div>
+        </div>
+
+        <!-- Margin -->
+        <div class="control-section">
+          <h3 class="section-title" style="color: var(--danger);">↔️ Margin</h3>
+          <div class="control-group">
+            <label for="margin-slider">All Sides: <span id="margin-value">20</span>px</label>
+            <input type="range" id="margin-slider" min="0" max="50" value="20">
+          </div>
+        </div>
+
+        <!-- Code Output -->
+        <div class="code-output">
+          <div class="code-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span>Generated CSS</span>
+          </div>
+          <pre id="css-output"><code></code></pre>
+        </div>
+      </section>
+
+      <!-- Visualization Panel -->
+      <section class="visualization-panel">
+        <h2>👁️ Live Preview</h2>
+        
+        <!-- Box Model Diagram -->
+        <div class="box-model-diagram">
+          <div class="margin-layer" id="margin-layer">
+            <span class="layer-label margin-label">MARGIN</span>
+            <div class="border-layer" id="border-layer">
+              <span class="layer-label border-label">BORDER</span>
+              <div class="padding-layer" id="padding-layer">
+                <span class="layer-label padding-label">PADDING</span>
+                <div class="content-layer" id="content-layer">
+                  <span class="layer-label content-label">CONTENT</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Computed Dimensions -->
+        <div class="computed-dimensions">
+          <h3>📊 Computed Dimensions</h3>
+          <div class="dimension-grid">
+            <div class="dimension-card content-dim">
+              <span class="dim-label">Content</span>
+              <span class="dim-value" id="content-dim">200 × 150</span>
+            </div>
+            <div class="dimension-card padding-dim">
+              <span class="dim-label">+ Padding</span>
+              <span class="dim-value" id="with-padding-dim">240 × 190</span>
+            </div>
+            <div class="dimension-card border-dim">
+              <span class="dim-label">+ Border</span>
+              <span class="dim-value" id="with-border-dim">248 × 198</span>
+            </div>
+            <div class="dimension-card total-dim">
+              <span class="dim-label">Total Space</span>
+              <span class="dim-value" id="total-dim">288 × 238</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box Sizing Explanation -->
+        <div class="explanation-box" id="explanation-box">
+          <h3>💡 Box Sizing: <span id="box-sizing-mode">border-box</span></h3>
+          <p id="box-sizing-explanation">
+            With <strong>border-box</strong>, the width/height includes padding and border. 
+            The content area shrinks to fit within the specified dimensions.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Comparison Section -->
+    <section class="comparison-section">
+      <h2>⚖️ content-box vs border-box</h2>
+      <div class="comparison-grid">
+        <div class="comparison-card">
+          <h3 style="color: var(--danger);">❌ content-box (Default)</h3>
+          <div class="comparison-box content-box-demo">
+            <div class="inner-box">200px width</div>
+          </div>
+          <p>Width = 200px</p>
+          <p class="dim-detail">Actual: 200 + 40 + 8 = <strong>248px</strong></p>
+          <code>box-sizing: content-box;</code>
+        </div>
+        <div class="comparison-card">
+          <h3 style="color: var(--accent);">✅ border-box (Recommended)</h3>
+          <div class="comparison-box border-box-demo">
+            <div class="inner-box">200px width</div>
+          </div>
+          <p>Width = 200px</p>
+          <p class="dim-detail">Actual: <strong>200px</strong> (as specified!)</p>
+          <code>box-sizing: border-box;</code>
+        </div>
+      </div>
+      
+      <div class="tip-box">
+        <strong>💡 Pro Tip:</strong> Always add this to your CSS reset:
+        <code class="block-code">*, *::before, *::after { box-sizing: border-box; }</code>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
