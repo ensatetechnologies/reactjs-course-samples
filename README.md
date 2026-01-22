@@ -13,8 +13,10 @@ A comprehensive collection of sample applications demonstrating the journey from
 | **Spread Operator** | Arrays, Objects, React State | 3 apps |
 | **Chapter 11** | React Styling Deep Dive | 5 apps |
 | **Chapter 18** | React + TypeScript Core Concepts | 6 apps |
+| **Chapter 19** | JavaScript const Explained | 3 apps |
+| **Chapter 20** | TypeScript const Explained | 3 apps |
 
-**Total: 38 Sample Applications**
+**Total: 44 Sample Applications**
 
 ## 🎯 Quick Start
 
@@ -103,7 +105,17 @@ reactjs-course-samples/
     ├── 18-ts-typed-hooks/          # useState, useRef, useReducer with types
     ├── 18-ts-event-handlers/       # Typed event handlers & forms
     ├── 18-ts-generics/             # Generic components & custom hooks
-    └── 18-ts-task-manager/         # Complete type-safe Task Manager
+    ├── 18-ts-task-manager/         # Complete type-safe Task Manager
+    │
+    │   # Chapter 19: JavaScript const Explained
+    ├── 19-js-const-basics/         # const vs let vs var, scope, TDZ
+    ├── 19-js-const-objects-arrays/ # Object/array mutation with const
+    ├── 19-js-const-react-patterns/ # const in React hooks & handlers
+    │
+    │   # Chapter 20: TypeScript const Explained
+    ├── 20-ts-const-inference/      # Literal type inference with const
+    ├── 20-ts-as-const-readonly/    # as const, readonly, Readonly<T>
+    └── 20-ts-const-react/          # const patterns in React TypeScript
 ```
 
 ## 🎓 Learning Path
@@ -154,7 +166,7 @@ Master every way to style React components:
 - **Styled Components** - CSS-in-JS, prop-based styling
 - **Complete App** - Student Management with CSS Modules
 
-### Chapter 18: React + TypeScript Core Concepts 🆕
+### Chapter 18: React + TypeScript Core Concepts
 Build type-safe React applications with confidence:
 - **Basic Types** - Primitives, arrays, objects, interfaces, union types
 - **Typed Props** - Component props with interfaces, children, callbacks
@@ -162,6 +174,23 @@ Build type-safe React applications with confidence:
 - **Event Handlers** - ChangeEvent, FormEvent, MouseEvent, KeyboardEvent
 - **Generics** - Generic components, custom hooks, type inference
 - **Complete App** - Type-safe Task Manager with all concepts
+
+### Chapter 19: JavaScript const Explained 🆕
+Master the const keyword and immutability concepts:
+- **const vs let vs var** - Reassignment, redeclaration, scope differences
+- **Block Scope** - How const/let are block-scoped vs function-scoped var
+- **Temporal Dead Zone** - Understanding TDZ and hoisting behavior
+- **Objects & Arrays** - const doesn't mean immutable contents!
+- **Object.freeze()** - Runtime immutability for objects
+- **React Patterns** - Using const with hooks, handlers, derived values
+
+### Chapter 20: TypeScript const Explained 🆕
+TypeScript's powerful const features for type safety:
+- **Literal Type Inference** - How const narrows types to literal values
+- **as const Assertion** - Deep readonly and literal types
+- **readonly Modifier** - Marking individual properties as immutable
+- **Readonly<T>** - Utility type for shallow immutability
+- **React Patterns** - Action types, enum-like arrays, configuration objects
 
 ## 🟨🟦 JavaScript vs TypeScript
 
@@ -238,6 +267,30 @@ function Card({ isSelected }) {
 }
 ```
 
+## 🔒 const Patterns Reference
+
+| Feature | JavaScript | TypeScript |
+|---------|------------|------------|
+| **Reassignment** | `const x = 1; x = 2;` ❌ | Same as JS |
+| **Object Mutation** | `const obj = {}; obj.a = 1;` ✅ | Same (unless readonly) |
+| **Literal Types** | N/A | `const x = "a"` → type is `"a"` |
+| **as const** | N/A | `{x: 1} as const` → readonly + literal |
+| **readonly** | N/A | `readonly id: number` |
+| **Readonly<T>** | N/A | `Readonly<User>` → all props readonly |
+| **Runtime Immutable** | `Object.freeze(obj)` | Same (with type support) |
+
+```typescript
+// TypeScript: Creating type-safe constants
+const ROLES = ["admin", "user", "guest"] as const;
+type Role = typeof ROLES[number]; // "admin" | "user" | "guest"
+
+const CONFIG = {
+  apiUrl: "https://api.example.com",
+  timeout: 5000
+} as const;
+// Type: { readonly apiUrl: "https://..."; readonly timeout: 5000 }
+```
+
 ## 🔷 React + TypeScript Patterns
 
 | Concept | Pattern | Example |
@@ -286,6 +339,8 @@ function TaskItem({ task, onToggle, onDelete }: TaskItemProps): JSX.Element {
 6. **Compare JS vs TS (Ch 5)** - Choose the right tool
 7. **Master Styling (Ch 11)** - Learn all styling approaches
 8. **Master TypeScript (Ch 18)** - Build type-safe React apps
+9. **Understand JS const (Ch 19)** - Master immutability concepts
+10. **Understand TS const (Ch 20)** - Leverage TypeScript's const features
 
 ## 🎨 Sample App Features
 
