@@ -13,8 +13,9 @@ A comprehensive collection of sample applications demonstrating the journey from
 | **Chapter 9** | CSS & Stylesheets Complete Guide | 9 apps |
 | **Spread Operator** | Arrays, Objects, React State | 3 apps |
 | **Chapter 11** | React Styling Deep Dive | 5 apps |
+| **Chapter 18** | React + TypeScript Core Concepts | 6 apps |
 
-**Total: 32 Sample Applications**
+**Total: 38 Sample Applications**
 
 ## 🎯 Quick Start
 
@@ -108,7 +109,15 @@ reactjs-course-samples/
     ├── 11-inline-styles/           # React inline styles
     ├── 11-css-modules-demo/        # CSS Modules (recommended)
     ├── 11-styled-components/       # CSS-in-JS styling
-    └── 11-student-management/      # Complete styled app
+    ├── 11-student-management/      # Complete styled app
+    │
+    │   # Chapter 18: React + TypeScript Core Concepts
+    ├── 18-ts-basic-types/          # TypeScript basic types demo
+    ├── 18-ts-typed-props/          # Component props with interfaces
+    ├── 18-ts-typed-hooks/          # useState, useRef, useReducer with types
+    ├── 18-ts-event-handlers/       # Typed event handlers & forms
+    ├── 18-ts-generics/             # Generic components & custom hooks
+    └── 18-ts-task-manager/         # Complete type-safe Task Manager
 ```
 
 ## 🎓 Learning Path
@@ -152,12 +161,21 @@ Master the three magical dots (...) for immutable operations:
 - **React State** - Immutable state updates with spread
 - **Task Manager** - Complete app using all spread patterns
 
-### Chapter 11: React Styling Deep Dive 🆕
+### Chapter 11: React Styling Deep Dive
 Master every way to style React components:
 - **Inline Styles** - JavaScript style objects, dynamic values
 - **CSS Modules** - Scoped styles, no conflicts (recommended!)
 - **Styled Components** - CSS-in-JS, prop-based styling
 - **Complete App** - Student Management with CSS Modules
+
+### Chapter 18: React + TypeScript Core Concepts 🆕
+Build type-safe React applications with confidence:
+- **Basic Types** - Primitives, arrays, objects, interfaces, union types
+- **Typed Props** - Component props with interfaces, children, callbacks
+- **Typed Hooks** - useState, useRef, useReducer, useEffect with types
+- **Event Handlers** - ChangeEvent, FormEvent, MouseEvent, KeyboardEvent
+- **Generics** - Generic components, custom hooks, type inference
+- **Complete App** - Type-safe Task Manager with all concepts
 
 ## 🟨🟦 JavaScript vs TypeScript
 
@@ -234,6 +252,35 @@ function Card({ isSelected }) {
 }
 ```
 
+## 🔷 React + TypeScript Patterns
+
+| Concept | Pattern | Example |
+|---------|---------|---------|
+| **Typed Props** | `interface Props { ... }` | `function Button({ label }: ButtonProps)` |
+| **useState** | `useState<Type>()` | `useState<User \| null>(null)` |
+| **useRef (DOM)** | `useRef<HTMLElement>(null)` | `useRef<HTMLInputElement>(null)` |
+| **Events** | `ChangeEvent<Element>` | `(e: ChangeEvent<HTMLInputElement>) => void` |
+| **Callbacks** | `(param: Type) => void` | `onToggle: (id: string) => void` |
+| **Generics** | `function Comp<T>()` | `function List<T>({ items }: ListProps<T>)` |
+
+```typescript
+// Typed component with props interface
+interface TaskItemProps {
+  task: Task
+  onToggle: (id: string) => void
+  onDelete: (id: string) => void
+}
+
+function TaskItem({ task, onToggle, onDelete }: TaskItemProps): JSX.Element {
+  // Full type safety and autocomplete!
+  return (
+    <div onClick={() => onToggle(task.id)}>
+      {task.text}
+    </div>
+  )
+}
+```
+
 ## 🛠️ Technologies Used
 
 - **HTML5** - Semantic markup
@@ -252,6 +299,7 @@ function Card({ isSelected }) {
 5. **Learn about Reflows (Ch 3.1)** - Appreciate Virtual DOM
 6. **Compare JS vs TS (Ch 5)** - Choose the right tool
 7. **Master Styling (Ch 11)** - Learn all styling approaches
+8. **Master TypeScript (Ch 18)** - Build type-safe React apps
 
 ## 🎨 Sample App Features
 

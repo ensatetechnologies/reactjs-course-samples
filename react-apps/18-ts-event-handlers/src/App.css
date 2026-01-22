@@ -1,0 +1,468 @@
+.app {
+  background: var(--surface);
+  border: 2px solid var(--event);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.badge.event {
+  background: var(--event);
+  color: white;
+}
+
+.header h1 {
+  color: var(--event);
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.header p {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* Main Grid */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 800px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sections */
+.section {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.code-hint {
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.code-hint code {
+  color: var(--type);
+  font-family: 'Consolas', monospace;
+  font-size: 0.8rem;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper input,
+.input-wrapper select,
+.input-wrapper textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  color: var(--text);
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus,
+.input-wrapper textarea:focus {
+  outline: none;
+  border-color: var(--event);
+}
+
+.input-wrapper input.focused {
+  border-color: var(--primary);
+}
+
+.input-wrapper textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.input-wrapper select {
+  cursor: pointer;
+}
+
+.type-tag {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(251, 146, 60, 0.15);
+  color: var(--event);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-family: 'Consolas', monospace;
+  pointer-events: none;
+}
+
+.input-wrapper textarea + .type-tag {
+  top: auto;
+  bottom: 8px;
+  transform: none;
+}
+
+/* Checkbox */
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--event);
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  background: var(--event);
+  color: white;
+  border: none;
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 146, 60, 0.3);
+}
+
+.submit-btn .type-tag {
+  position: static;
+  transform: none;
+}
+
+.type-tag.light {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Success Message */
+.success-message {
+  background: rgba(52, 211, 153, 0.15);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Keyboard Events */
+.key-display {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+}
+
+.key-badge {
+  display: inline-block;
+  background: var(--event);
+  color: white;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: 'Consolas', monospace;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Click Area */
+.click-area {
+  position: relative;
+  background: var(--bg);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  cursor: crosshair;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.click-marker {
+  position: absolute;
+  background: var(--event);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  0% { transform: translate(-50%, -50%) scale(0); }
+  50% { transform: translate(-50%, -50%) scale(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Hover Boxes */
+.hover-boxes {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.hover-box {
+  flex: 1;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  color: var(--muted);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.hover-box:hover {
+  border-color: var(--event);
+  background: rgba(251, 146, 60, 0.1);
+  color: var(--event);
+}
+
+/* Click Button */
+.click-btn {
+  width: 100%;
+  background: var(--surface);
+  border: 2px solid var(--event);
+  color: var(--event);
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.click-btn:hover {
+  background: var(--event);
+  color: white;
+}
+
+.click-btn .type-tag {
+  position: static;
+  transform: none;
+}
+
+.click-btn:hover .type-tag {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Event Log */
+.event-log-section {
+  position: sticky;
+  top: 1rem;
+}
+
+.event-log {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.empty-log {
+  color: var(--muted);
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+}
+
+.log-entry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+  animation: slideIn 0.2s ease;
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.log-type {
+  background: rgba(251, 146, 60, 0.2);
+  color: var(--event);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Consolas', monospace;
+  font-size: 0.7rem;
+}
+
+.log-details {
+  color: var(--text);
+  flex: 1;
+}
+
+.log-time {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+/* Form State */
+.form-state {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.form-state pre {
+  font-family: 'Consolas', monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin: 0;
+}
+
+/* Reference Table */
+.reference-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ref-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  gap: 0.5rem;
+}
+
+.ref-event {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.ref-row code {
+  color: var(--type);
+  font-family: 'Consolas', monospace;
+  font-size: 0.7rem;
+  background: var(--surface);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* Summary */
+.summary {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(34, 211, 238, 0.1));
+  border: 1px solid var(--event);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.summary h3 {
+  color: var(--event);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.patterns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.pattern {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.pattern code {
+  background: var(--bg);
+  padding: 0.5rem;
+  border-radius: 6px;
+  color: var(--type);
+  font-size: 0.7rem;
+  font-family: 'Consolas', monospace;
+}
+
+.pattern span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}

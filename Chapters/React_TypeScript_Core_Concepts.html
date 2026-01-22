@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React with TypeScript | Complete Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1c; --surface: #111827; --surface2: #1a2234; --border: #2d3a52;
+      --primary: #22d3ee; --secondary: #a78bfa; --accent: #34d399;
+      --warning: #fbbf24; --danger: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
+      --ts: #3178c6; --react: #61dafb; --type: #f472b6; --interface: #4ade80;
+      --generic: #fb923c; --hook: #a78bfa;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    /* Hero Section */
+    .hero { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, var(--surface), var(--surface2)); border-radius: 20px; margin-bottom: 2.5rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(49,120,198,0.2) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(97,218,251,0.15) 0%, transparent 50%); }
+    .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #fff, var(--ts), var(--react)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; }
+    .hero-icon { font-size: 4rem; margin-bottom: 0.5rem; position: relative; display: flex; justify-content: center; align-items: center; gap: 1rem; }
+    .hero p { color: var(--muted); font-size: 1.1rem; position: relative; }
+    .hero-badges { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; position: relative; flex-wrap: wrap; }
+    .hero-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 600; }
+    .badge-ts { background: var(--ts); color: white; }
+    .badge-react { background: var(--react); color: #000; }
+    .badge-type { background: var(--type); color: white; }
+    .badge-interface { background: var(--interface); color: #000; }
+    
+    /* Section Styles */
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 2rem; overflow: hidden; }
+    .section-header { padding: 1.25rem 1.5rem; background: var(--surface2); cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: background 0.2s; }
+    .section-header:hover { background: #1f2a3f; }
+    .section-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; }
+    .icon-intro { background: linear-gradient(135deg, var(--ts), #2563eb); }
+    .icon-basics { background: linear-gradient(135deg, var(--type), #db2777); }
+    .icon-props { background: linear-gradient(135deg, var(--interface), #16a34a); }
+    .icon-hooks { background: linear-gradient(135deg, var(--hook), #7c3aed); }
+    .icon-events { background: linear-gradient(135deg, var(--warning), #d97706); }
+    .icon-generics { background: linear-gradient(135deg, var(--generic), #ea580c); }
+    .icon-api { background: linear-gradient(135deg, var(--primary), #0891b2); }
+    .icon-app { background: linear-gradient(135deg, var(--react), var(--ts)); }
+    .icon-tips { background: linear-gradient(135deg, var(--danger), #b91c1c); }
+    .section-title { flex: 1; font-weight: 600; font-size: 1.1rem; }
+    .section-badge { font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px; }
+    .section-toggle { color: var(--muted); transition: transform 0.3s; font-size: 1.2rem; }
+    .section.open .section-toggle { transform: rotate(180deg); }
+    .section-content { display: none; padding: 1.5rem; }
+    .section.open .section-content { display: block; }
+    
+    /* Code Blocks */
+    .code-block { background: #0d1321; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1rem 0; }
+    .code-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .code-header .dots { display: flex; gap: 5px; }
+    .code-header .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ef4444; } .dot-y { background: #fbbf24; } .dot-g { background: #22c55e; }
+    .code-body { padding: 1.25rem; overflow-x: auto; }
+    .code-body pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; margin: 0; white-space: pre; }
+    
+    /* Syntax Highlighting */
+    .kw { color: #c678dd; } .str { color: #98c379; } .fn { color: #61afef; } .cmt { color: #5c6370; font-style: italic; } .num { color: #d19a66; } .tag { color: #e06c75; } .attr { color: #d19a66; } .prop { color: #e5c07b; } .op { color: #56b6c2; }
+    .type { color: #3178c6; font-weight: 500; } .interface { color: #4ade80; } .generic { color: #fb923c; } .hook { color: #a78bfa; font-weight: bold; }
+    
+    /* Grid Layouts */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 500px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    
+    /* Cards */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; transition: all 0.3s; }
+    .card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .card-ts { border-color: var(--ts); background: linear-gradient(135deg, rgba(49,120,198,0.1), transparent); }
+    .card-type { border-color: var(--type); background: linear-gradient(135deg, rgba(244,114,182,0.08), transparent); }
+    .card-interface { border-color: var(--interface); background: linear-gradient(135deg, rgba(74,222,128,0.08), transparent); }
+    .card-accent { border-color: var(--accent); background: linear-gradient(135deg, rgba(52,211,153,0.05), transparent); }
+    
+    /* Info Boxes */
+    .tip { background: rgba(34,211,238,0.1); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .tip-title { color: var(--primary); font-weight: 600; margin-bottom: 0.35rem; }
+    .tip-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .note { background: rgba(49,120,198,0.15); border-left: 4px solid var(--ts); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .note-title { color: var(--ts); font-weight: 600; margin-bottom: 0.35rem; }
+    .note-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .warning { background: rgba(251,191,36,0.1); border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .warning-title { color: var(--warning); font-weight: 600; margin-bottom: 0.35rem; }
+    .warning-content { color: var(--muted); font-size: 0.9rem; }
+    
+    .danger { background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 1rem 1.25rem; border-radius: 0 10px 10px 0; margin: 1.25rem 0; }
+    .danger-title { color: var(--danger); font-weight: 600; margin-bottom: 0.35rem; }
+    .danger-content { color: var(--muted); font-size: 0.9rem; }
+    
+    /* Visual Containers */
+    .visual-container { background: var(--surface2); border: 2px solid var(--border); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; }
+    .visual-title { color: var(--primary); font-weight: 600; margin-bottom: 1.5rem; text-align: center; font-size: 1.1rem; }
+    
+    /* Type Box */
+    .type-box { background: var(--surface); border: 2px solid var(--ts); border-radius: 12px; padding: 1rem; text-align: center; }
+    .type-box.primitive { border-color: var(--type); }
+    .type-box.object { border-color: var(--interface); }
+    .type-box.special { border-color: var(--generic); }
+    .type-name { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 1.1rem; }
+    .type-example { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+    
+    /* VS Container */
+    .vs-container { display: flex; align-items: stretch; gap: 1rem; margin: 1rem 0; }
+    .vs-box { flex: 1; padding: 1rem; border-radius: 12px; }
+    .vs-box.js { background: rgba(251,191,36,0.1); border: 1px solid var(--warning); }
+    .vs-box.ts { background: rgba(49,120,198,0.1); border: 1px solid var(--ts); }
+    .vs-divider { display: flex; align-items: center; font-weight: 700; color: var(--muted); }
+    @media (max-width: 768px) { .vs-container { flex-direction: column; } .vs-divider { justify-content: center; padding: 0.5rem; } }
+    
+    /* Demo Container */
+    .demo-container { background: var(--surface2); border: 2px solid var(--border); border-radius: 16px; padding: 1.5rem; margin: 1.5rem 0; }
+    
+    /* App Preview */
+    .app-preview { background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .app-header { background: var(--surface); padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .app-title { font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+    .app-body { padding: 1.5rem; }
+    
+    /* Buttons */
+    .btn { padding: 0.75rem 1.25rem; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 0.95rem; font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-primary { background: var(--primary); color: var(--bg); }
+    .btn-primary:hover { background: #06b6d4; transform: translateY(-2px); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 2px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--primary); }
+    .btn-ts { background: var(--ts); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-success { background: var(--accent); color: var(--bg); }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    
+    /* Input */
+    .input { padding: 0.75rem 1rem; background: var(--surface); border: 2px solid var(--border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 1rem; width: 100%; transition: border-color 0.2s; }
+    .input:focus { outline: none; border-color: var(--primary); }
+    
+    /* Select */
+    .select { padding: 0.75rem 1rem; background: var(--surface); border: 2px solid var(--border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 1rem; cursor: pointer; }
+    
+    /* Badge */
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-primary { background: rgba(34,211,238,0.2); color: var(--primary); }
+    .badge-ts { background: rgba(49,120,198,0.2); color: var(--ts); }
+    .badge-type { background: rgba(244,114,182,0.2); color: var(--type); }
+    .badge-interface { background: rgba(74,222,128,0.2); color: var(--interface); }
+    .badge-warning { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    
+    /* Table */
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border: 1px solid var(--border); }
+    .comparison-table th { background: var(--surface2); color: var(--primary); font-weight: 600; }
+    .comparison-table td { background: var(--surface); }
+    
+    /* Task List */
+    .task-list { list-style: none; }
+    .task-item { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; transition: all 0.2s; }
+    .task-item:hover { border-color: var(--primary); }
+    .task-item.completed { opacity: 0.6; }
+    .task-item.completed .task-text { text-decoration: line-through; }
+    .task-checkbox { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+    .task-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+    .task-text { flex: 1; }
+    .task-priority { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    .priority-high { background: rgba(239,68,68,0.2); color: var(--danger); }
+    .priority-medium { background: rgba(251,191,36,0.2); color: var(--warning); }
+    .priority-low { background: rgba(74,222,128,0.2); color: var(--interface); }
+    .task-delete { background: none; border: none; color: var(--muted); cursor: pointer; padding: 0.25rem; font-size: 1.2rem; transition: color 0.2s; }
+    .task-delete:hover { color: var(--danger); }
+    
+    /* Stats */
+    .stats-bar { display: flex; gap: 1rem; padding: 1rem; background: var(--surface); border-radius: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+    .stat-item { text-align: center; flex: 1; min-width: 80px; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); }
+    
+    /* Filter Tabs */
+    .filter-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-tab { padding: 0.5rem 1rem; background: var(--surface); border: 2px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; font-size: 0.9rem; }
+    .filter-tab:hover { border-color: var(--primary); }
+    .filter-tab.active { background: var(--ts); color: white; border-color: var(--ts); }
+    
+    /* Footer */
+    .footer { text-align: center; padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, rgba(49,120,198,0.15), rgba(97,218,251,0.1)); border-radius: 16px; border: 1px solid var(--border); }
+    
+    /* TS Logo */
+    .ts-logo { display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; background: var(--ts); color: white; font-weight: 700; font-size: 1.5rem; border-radius: 8px; }
+    .react-logo { font-size: 3.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="hero">
+      <div class="hero-icon">
+        <span class="react-logo">⚛️</span>
+        <span style="font-size: 2rem; color: var(--muted);">+</span>
+        <span class="ts-logo">TS</span>
+      </div>
+      <h1>React with TypeScript</h1>
+      <p>Build type-safe React applications with confidence</p>
+      <div class="hero-badges">
+        <span class="hero-badge badge-ts">TypeScript</span>
+        <span class="hero-badge badge-react">React 18+</span>
+        <span class="hero-badge badge-type">Type Safety</span>
+        <span class="hero-badge badge-interface">Interfaces</span>
+      </div>
+    </div>
+
+    <!-- Section 1: Why TypeScript -->
+    <div class="section open" id="s1">
+      <div class="section-header" onclick="toggleSection('s1')">
+        <div class="section-icon icon-intro">💡</div>
+        <div class="section-title">Why TypeScript with React?</div>
+        <span class="section-badge badge-ts">Introduction</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--ts); margin-bottom: 1rem;">Why Add TypeScript to React?</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          TypeScript adds <strong>static type checking</strong> to JavaScript, catching errors at compile time
+          instead of runtime. This makes your React apps more reliable and easier to maintain.
+        </p>
+
+        <h3 style="color: var(--primary);">🎯 Benefits</h3>
+        <div class="grid-4">
+          <div class="card card-ts">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🐛</div>
+            <h4 style="color: var(--ts);">Catch Bugs Early</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">Find errors before runtime</p>
+          </div>
+          <div class="card card-ts">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📝</div>
+            <h4 style="color: var(--ts);">Better Autocomplete</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">IDE knows your types</p>
+          </div>
+          <div class="card card-ts">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📖</div>
+            <h4 style="color: var(--ts);">Self-Documenting</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">Types explain the code</p>
+          </div>
+          <div class="card card-ts">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔄</div>
+            <h4 style="color: var(--ts);">Easier Refactoring</h4>
+            <p style="color: var(--muted); font-size: 0.85rem;">Safe code changes</p>
+          </div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📊 JavaScript vs TypeScript</h3>
+        <div class="vs-container">
+          <div class="vs-box js">
+            <h4 style="color: var(--warning); margin-bottom: 0.75rem;">❌ JavaScript</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="cmt">// No type checking - errors at runtime!</span>
+<span class="kw">function</span> <span class="fn">greet</span>(name) {
+  <span class="kw">return</span> <span class="str">`Hello, ${name}!`</span>;
+}
+
+<span class="fn">greet</span>(<span class="num">123</span>);  <span class="cmt">// No error! 😱</span>
+<span class="fn">greet</span>();      <span class="cmt">// No error! 😱</span></pre></div>
+            </div>
+          </div>
+          <div class="vs-divider">→</div>
+          <div class="vs-box ts">
+            <h4 style="color: var(--ts); margin-bottom: 0.75rem;">✅ TypeScript</h4>
+            <div class="code-block" style="margin: 0;">
+              <div class="code-body"><pre><span class="cmt">// Type checking - errors at compile time!</span>
+<span class="kw">function</span> <span class="fn">greet</span>(name: <span class="type">string</span>): <span class="type">string</span> {
+  <span class="kw">return</span> <span class="str">`Hello, ${name}!`</span>;
+}
+
+<span class="fn">greet</span>(<span class="num">123</span>);  <span class="cmt">// ❌ Error: number != string</span>
+<span class="fn">greet</span>();      <span class="cmt">// ❌ Error: missing argument</span></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🚀 Getting Started</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Create React App with TypeScript</div>
+          <div class="code-body"><pre><span class="cmt"># Create new project with TypeScript</span>
+npx create-react-app my-app --template typescript
+
+<span class="cmt"># Or with Vite (faster!)</span>
+npm create vite@latest my-app -- --template react-ts
+
+<span class="cmt"># Add TypeScript to existing project</span>
+npm install typescript @types/react @types/react-dom</pre></div>
+        </div>
+
+        <div class="note">
+          <div class="note-title">📁 TypeScript File Extensions</div>
+          <div class="note-content">
+            <code>.ts</code> - Regular TypeScript files<br>
+            <code>.tsx</code> - TypeScript files with JSX (React components)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Basic Types -->
+    <div class="section" id="s2">
+      <div class="section-header" onclick="toggleSection('s2')">
+        <div class="section-icon icon-basics">📦</div>
+        <div class="section-title">TypeScript Basic Types</div>
+        <span class="section-badge badge-type">Types</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--type); margin-bottom: 1rem;">📦 Essential TypeScript Types</h2>
+
+        <h3 style="color: var(--primary);">Primitive Types</h3>
+        <div class="grid-4" style="margin: 1rem 0;">
+          <div class="type-box primitive">
+            <div class="type-name" style="color: var(--type);">string</div>
+            <div class="type-example">"hello"</div>
+          </div>
+          <div class="type-box primitive">
+            <div class="type-name" style="color: var(--type);">number</div>
+            <div class="type-example">42, 3.14</div>
+          </div>
+          <div class="type-box primitive">
+            <div class="type-name" style="color: var(--type);">boolean</div>
+            <div class="type-example">true, false</div>
+          </div>
+          <div class="type-box primitive">
+            <div class="type-name" style="color: var(--type);">null / undefined</div>
+            <div class="type-example">null, undefined</div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Basic Type Annotations</div>
+          <div class="code-body"><pre><span class="cmt">// Primitive types</span>
+<span class="kw">let</span> name: <span class="type">string</span> = <span class="str">"John"</span>;
+<span class="kw">let</span> age: <span class="type">number</span> = <span class="num">30</span>;
+<span class="kw">let</span> isActive: <span class="type">boolean</span> = <span class="kw">true</span>;
+
+<span class="cmt">// Arrays</span>
+<span class="kw">let</span> numbers: <span class="type">number[]</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">let</span> names: <span class="type">string[]</span> = [<span class="str">"Alice"</span>, <span class="str">"Bob"</span>];
+<span class="kw">let</span> mixed: (<span class="type">string</span> | <span class="type">number</span>)[] = [<span class="str">"hello"</span>, <span class="num">42</span>];
+
+<span class="cmt">// Objects</span>
+<span class="kw">let</span> user: { <span class="prop">name</span>: <span class="type">string</span>; <span class="prop">age</span>: <span class="type">number</span> } = {
+  <span class="prop">name</span>: <span class="str">"John"</span>,
+  <span class="prop">age</span>: <span class="num">30</span>
+};
+
+<span class="cmt">// Functions</span>
+<span class="kw">function</span> <span class="fn">add</span>(a: <span class="type">number</span>, b: <span class="type">number</span>): <span class="type">number</span> {
+  <span class="kw">return</span> a + b;
+}
+
+<span class="cmt">// Arrow functions</span>
+<span class="kw">const</span> <span class="fn">multiply</span> = (a: <span class="type">number</span>, b: <span class="type">number</span>): <span class="type">number</span> => a * b;</pre></div>
+        </div>
+
+        <h3 style="color: var(--interface); margin: 2rem 0 1rem;">Interfaces & Type Aliases</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Interface vs Type</div>
+          <div class="code-body"><pre><span class="cmt">// Interface - preferred for objects</span>
+<span class="kw">interface</span> <span class="interface">User</span> {
+  <span class="prop">id</span>: <span class="type">number</span>;
+  <span class="prop">name</span>: <span class="type">string</span>;
+  <span class="prop">email</span>: <span class="type">string</span>;
+  <span class="prop">isAdmin</span>?: <span class="type">boolean</span>;  <span class="cmt">// Optional property</span>
+}
+
+<span class="cmt">// Type alias - for unions, primitives, etc.</span>
+<span class="kw">type</span> <span class="type">Status</span> = <span class="str">"pending"</span> | <span class="str">"active"</span> | <span class="str">"completed"</span>;
+<span class="kw">type</span> <span class="type">ID</span> = <span class="type">string</span> | <span class="type">number</span>;
+
+<span class="cmt">// Using them</span>
+<span class="kw">const</span> user: <span class="interface">User</span> = {
+  <span class="prop">id</span>: <span class="num">1</span>,
+  <span class="prop">name</span>: <span class="str">"John"</span>,
+  <span class="prop">email</span>: <span class="str">"john@example.com"</span>
+};
+
+<span class="kw">const</span> status: <span class="type">Status</span> = <span class="str">"active"</span>;
+
+<span class="cmt">// Extending interfaces</span>
+<span class="kw">interface</span> <span class="interface">Admin</span> <span class="kw">extends</span> <span class="interface">User</span> {
+  <span class="prop">permissions</span>: <span class="type">string[]</span>;
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--generic); margin: 2rem 0 1rem;">Special Types</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Special Types</div>
+          <div class="code-body"><pre><span class="cmt">// any - avoid if possible!</span>
+<span class="kw">let</span> anything: <span class="type">any</span> = <span class="str">"can be anything"</span>;  <span class="cmt">// ⚠️ Disables type checking</span>
+
+<span class="cmt">// unknown - safer than any</span>
+<span class="kw">let</span> value: <span class="type">unknown</span> = <span class="str">"something"</span>;
+<span class="cmt">// Must check type before using</span>
+<span class="kw">if</span> (<span class="kw">typeof</span> value === <span class="str">"string"</span>) {
+  console.<span class="fn">log</span>(value.<span class="fn">toUpperCase</span>());
+}
+
+<span class="cmt">// void - function returns nothing</span>
+<span class="kw">function</span> <span class="fn">logMessage</span>(msg: <span class="type">string</span>): <span class="type">void</span> {
+  console.<span class="fn">log</span>(msg);
+}
+
+<span class="cmt">// never - function never returns (throws or infinite loop)</span>
+<span class="kw">function</span> <span class="fn">throwError</span>(msg: <span class="type">string</span>): <span class="type">never</span> {
+  <span class="kw">throw new</span> <span class="fn">Error</span>(msg);
+}
+
+<span class="cmt">// Union types - multiple possible types</span>
+<span class="kw">let</span> id: <span class="type">string</span> | <span class="type">number</span> = <span class="str">"abc"</span>;
+id = <span class="num">123</span>;  <span class="cmt">// Also valid!</span>
+
+<span class="cmt">// Literal types - exact values</span>
+<span class="kw">type</span> <span class="type">Direction</span> = <span class="str">"up"</span> | <span class="str">"down"</span> | <span class="str">"left"</span> | <span class="str">"right"</span>;</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Typing Props -->
+    <div class="section" id="s3">
+      <div class="section-header" onclick="toggleSection('s3')">
+        <div class="section-icon icon-props">🎯</div>
+        <div class="section-title">Typing Component Props</div>
+        <span class="section-badge badge-interface">Props</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--interface); margin-bottom: 1rem;">🎯 Typing React Component Props</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Props are the most common place to use TypeScript in React. Define what props your component accepts.
+        </p>
+
+        <h3 style="color: var(--primary);">📝 Basic Props</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Typing Props with Interface</div>
+          <div class="code-body"><pre><span class="cmt">// Define props interface</span>
+<span class="kw">interface</span> <span class="interface">ButtonProps</span> {
+  <span class="prop">label</span>: <span class="type">string</span>;
+  <span class="prop">onClick</span>: () => <span class="type">void</span>;
+  <span class="prop">variant</span>?: <span class="str">"primary"</span> | <span class="str">"secondary"</span>;  <span class="cmt">// Optional</span>
+  <span class="prop">disabled</span>?: <span class="type">boolean</span>;
+}
+
+<span class="cmt">// Function component with typed props</span>
+<span class="kw">function</span> <span class="fn">Button</span>({ label, onClick, variant = <span class="str">"primary"</span>, disabled }: <span class="interface">ButtonProps</span>) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span>
+      <span class="attr">onClick</span>={onClick}
+      <span class="attr">disabled</span>={disabled}
+      <span class="attr">className</span>={<span class="str">`btn btn-${variant}`</span>}
+    <span class="tag">&gt;</span>
+      {label}
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage - TypeScript validates props!</span>
+<span class="tag">&lt;Button</span> <span class="attr">label</span>=<span class="str">"Click me"</span> <span class="attr">onClick</span>={() => <span class="fn">alert</span>(<span class="str">'Clicked!'</span>)} <span class="tag">/&gt;</span>
+<span class="tag">&lt;Button</span> <span class="attr">label</span>=<span class="str">"Secondary"</span> <span class="attr">onClick</span>={handleClick} <span class="attr">variant</span>=<span class="str">"secondary"</span> <span class="tag">/&gt;</span>
+
+<span class="cmt">// ❌ Error: missing required prop 'label'</span>
+<span class="tag">&lt;Button</span> <span class="attr">onClick</span>={() => {}} <span class="tag">/&gt;</span>
+
+<span class="cmt">// ❌ Error: 'danger' is not a valid variant</span>
+<span class="tag">&lt;Button</span> <span class="attr">label</span>=<span class="str">"Test"</span> <span class="attr">onClick</span>={() => {}} <span class="attr">variant</span>=<span class="str">"danger"</span> <span class="tag">/&gt;</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">👶 Children Props</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Typing Children</div>
+          <div class="code-body"><pre><span class="kw">import</span> { ReactNode } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Option 1: ReactNode (most flexible)</span>
+<span class="kw">interface</span> <span class="interface">CardProps</span> {
+  <span class="prop">title</span>: <span class="type">string</span>;
+  <span class="prop">children</span>: <span class="type">ReactNode</span>;  <span class="cmt">// Accepts anything renderable</span>
+}
+
+<span class="kw">function</span> <span class="fn">Card</span>({ title, children }: <span class="interface">CardProps</span>) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"card"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>{title}<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;div&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage</span>
+<span class="tag">&lt;Card</span> <span class="attr">title</span>=<span class="str">"Welcome"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;p&gt;</span>This is the content<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;button&gt;</span>Click me<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/Card&gt;</span>
+
+<span class="cmt">// Option 2: PropsWithChildren helper</span>
+<span class="kw">import</span> { PropsWithChildren } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">interface</span> <span class="interface">ContainerProps</span> {
+  <span class="prop">className</span>?: <span class="type">string</span>;
+}
+
+<span class="kw">function</span> <span class="fn">Container</span>({ className, children }: <span class="type">PropsWithChildren</span><<span class="interface">ContainerProps</span>>) {
+  <span class="kw">return</span> <span class="tag">&lt;div</span> <span class="attr">className</span>={className}<span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>;
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">🔄 Function Props (Callbacks)</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Typing Callback Props</div>
+          <div class="code-body"><pre><span class="kw">interface</span> <span class="interface">Todo</span> {
+  <span class="prop">id</span>: <span class="type">number</span>;
+  <span class="prop">text</span>: <span class="type">string</span>;
+  <span class="prop">completed</span>: <span class="type">boolean</span>;
+}
+
+<span class="kw">interface</span> <span class="interface">TodoItemProps</span> {
+  <span class="prop">todo</span>: <span class="interface">Todo</span>;
+  <span class="prop">onToggle</span>: (id: <span class="type">number</span>) => <span class="type">void</span>;
+  <span class="prop">onDelete</span>: (id: <span class="type">number</span>) => <span class="type">void</span>;
+  <span class="prop">onEdit</span>?: (id: <span class="type">number</span>, newText: <span class="type">string</span>) => <span class="type">void</span>;
+}
+
+<span class="kw">function</span> <span class="fn">TodoItem</span>({ todo, onToggle, onDelete, onEdit }: <span class="interface">TodoItemProps</span>) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">type</span>=<span class="str">"checkbox"</span>
+        <span class="attr">checked</span>={todo.completed}
+        <span class="attr">onChange</span>={() => <span class="fn">onToggle</span>(todo.id)}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;span&gt;</span>{todo.text}<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">onDelete</span>(todo.id)}<span class="tag">&gt;</span>Delete<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cmt">// Parent component</span>
+<span class="kw">function</span> <span class="fn">TodoList</span>() {
+  <span class="kw">const</span> [todos, setTodos] = <span class="hook">useState</span><<span class="interface">Todo</span>[]>([]);
+
+  <span class="kw">const</span> <span class="fn">handleToggle</span> = (id: <span class="type">number</span>) => {
+    <span class="fn">setTodos</span>(todos.<span class="fn">map</span>(t => 
+      t.id === id ? { ...t, <span class="prop">completed</span>: !t.completed } : t
+    ));
+  };
+
+  <span class="kw">const</span> <span class="fn">handleDelete</span> = (id: <span class="type">number</span>) => {
+    <span class="fn">setTodos</span>(todos.<span class="fn">filter</span>(t => t.id !== id));
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      {todos.<span class="fn">map</span>(todo => (
+        <span class="tag">&lt;TodoItem</span>
+          <span class="attr">key</span>={todo.id}
+          <span class="attr">todo</span>={todo}
+          <span class="attr">onToggle</span>={handleToggle}
+          <span class="attr">onDelete</span>={handleDelete}
+        <span class="tag">/&gt;</span>
+      ))}
+    <span class="tag">&lt;/&gt;</span>
+  );
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Typing Hooks -->
+    <div class="section" id="s4">
+      <div class="section-header" onclick="toggleSection('s4')">
+        <div class="section-icon icon-hooks">🪝</div>
+        <div class="section-title">Typing React Hooks</div>
+        <span class="section-badge" style="background: rgba(167,139,250,0.2); color: var(--hook);">Hooks</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--hook); margin-bottom: 1rem;">🪝 TypeScript with React Hooks</h2>
+
+        <h3 style="color: var(--primary);">1️⃣ useState</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Typing useState</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Inferred types (simple cases)</span>
+<span class="kw">const</span> [count, setCount] = <span class="hook">useState</span>(<span class="num">0</span>);        <span class="cmt">// number</span>
+<span class="kw">const</span> [name, setName] = <span class="hook">useState</span>(<span class="str">"John"</span>);   <span class="cmt">// string</span>
+<span class="kw">const</span> [isOpen, setIsOpen] = <span class="hook">useState</span>(<span class="kw">false</span>); <span class="cmt">// boolean</span>
+
+<span class="cmt">// Explicit type annotation (complex types)</span>
+<span class="kw">interface</span> <span class="interface">User</span> {
+  <span class="prop">id</span>: <span class="type">number</span>;
+  <span class="prop">name</span>: <span class="type">string</span>;
+  <span class="prop">email</span>: <span class="type">string</span>;
+}
+
+<span class="cmt">// User or null (initially null)</span>
+<span class="kw">const</span> [user, setUser] = <span class="hook">useState</span><<span class="interface">User</span> | <span class="kw">null</span>>(<span class="kw">null</span>);
+
+<span class="cmt">// Array of users</span>
+<span class="kw">const</span> [users, setUsers] = <span class="hook">useState</span><<span class="interface">User</span>[]>([]);
+
+<span class="cmt">// Union types</span>
+<span class="kw">type</span> <span class="type">Status</span> = <span class="str">"idle"</span> | <span class="str">"loading"</span> | <span class="str">"success"</span> | <span class="str">"error"</span>;
+<span class="kw">const</span> [status, setStatus] = <span class="hook">useState</span><<span class="type">Status</span>>(<span class="str">"idle"</span>);
+
+<span class="cmt">// Usage</span>
+<span class="fn">setUser</span>({ <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">name</span>: <span class="str">"John"</span>, <span class="prop">email</span>: <span class="str">"john@test.com"</span> });
+<span class="fn">setUsers</span>(prev => [...prev, newUser]);
+<span class="fn">setStatus</span>(<span class="str">"loading"</span>);</pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">2️⃣ useRef</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Typing useRef</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useRef } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// DOM element refs</span>
+<span class="kw">const</span> inputRef = <span class="hook">useRef</span><<span class="type">HTMLInputElement</span>>(<span class="kw">null</span>);
+<span class="kw">const</span> buttonRef = <span class="hook">useRef</span><<span class="type">HTMLButtonElement</span>>(<span class="kw">null</span>);
+<span class="kw">const</span> divRef = <span class="hook">useRef</span><<span class="type">HTMLDivElement</span>>(<span class="kw">null</span>);
+
+<span class="cmt">// Usage with DOM elements</span>
+<span class="kw">function</span> <span class="fn">SearchInput</span>() {
+  <span class="kw">const</span> inputRef = <span class="hook">useRef</span><<span class="type">HTMLInputElement</span>>(<span class="kw">null</span>);
+
+  <span class="kw">const</span> <span class="fn">focusInput</span> = () => {
+    inputRef.current?.<span class="fn">focus</span>();  <span class="cmt">// Optional chaining!</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">ref</span>={inputRef} <span class="attr">type</span>=<span class="str">"text"</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={focusInput}<span class="tag">&gt;</span>Focus<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  );
+}
+
+<span class="cmt">// Mutable value refs (not DOM)</span>
+<span class="kw">const</span> timerRef = <span class="hook">useRef</span><<span class="type">number</span> | <span class="kw">null</span>>(<span class="kw">null</span>);
+
+timerRef.current = window.<span class="fn">setInterval</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"tick"</span>);
+}, <span class="num">1000</span>);
+
+<span class="cmt">// Clear timer</span>
+<span class="kw">if</span> (timerRef.current) {
+  <span class="fn">clearInterval</span>(timerRef.current);
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">3️⃣ useEffect</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Typing useEffect</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">interface</span> <span class="interface">User</span> {
+  <span class="prop">id</span>: <span class="type">number</span>;
+  <span class="prop">name</span>: <span class="type">string</span>;
+}
+
+<span class="kw">function</span> <span class="fn">UserProfile</span>({ userId }: { <span class="prop">userId</span>: <span class="type">number</span> }) {
+  <span class="kw">const</span> [user, setUser] = <span class="hook">useState</span><<span class="interface">User</span> | <span class="kw">null</span>>(<span class="kw">null</span>);
+  <span class="kw">const</span> [loading, setLoading] = <span class="hook">useState</span>(<span class="kw">true</span>);
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">let</span> isMounted = <span class="kw">true</span>;
+
+    <span class="kw">async function</span> <span class="fn">fetchUser</span>() {
+      <span class="kw">try</span> {
+        <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`/api/users/${userId}`</span>);
+        <span class="kw">const</span> data: <span class="interface">User</span> = <span class="kw">await</span> response.<span class="fn">json</span>();
+        
+        <span class="kw">if</span> (isMounted) {
+          <span class="fn">setUser</span>(data);
+        }
+      } <span class="kw">catch</span> (error) {
+        console.<span class="fn">error</span>(error);
+      } <span class="kw">finally</span> {
+        <span class="kw">if</span> (isMounted) {
+          <span class="fn">setLoading</span>(<span class="kw">false</span>);
+        }
+      }
+    }
+
+    <span class="fn">fetchUser</span>();
+
+    <span class="cmt">// Cleanup function - TypeScript knows the return type</span>
+    <span class="kw">return</span> () => {
+      isMounted = <span class="kw">false</span>;
+    };
+  }, [userId]);
+
+  <span class="kw">if</span> (loading) <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>Loading...<span class="tag">&lt;/div&gt;</span>;
+  <span class="kw">if</span> (!user) <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>User not found<span class="tag">&lt;/div&gt;</span>;
+
+  <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>{user.name}<span class="tag">&lt;/div&gt;</span>;
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--warning); margin: 2rem 0 1rem;">4️⃣ useReducer</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Typing useReducer</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useReducer } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// State type</span>
+<span class="kw">interface</span> <span class="interface">State</span> {
+  <span class="prop">count</span>: <span class="type">number</span>;
+  <span class="prop">error</span>: <span class="type">string</span> | <span class="kw">null</span>;
+}
+
+<span class="cmt">// Action types (discriminated union)</span>
+<span class="kw">type</span> <span class="type">Action</span> =
+  | { <span class="prop">type</span>: <span class="str">"increment"</span> }
+  | { <span class="prop">type</span>: <span class="str">"decrement"</span> }
+  | { <span class="prop">type</span>: <span class="str">"reset"</span> }
+  | { <span class="prop">type</span>: <span class="str">"set"</span>; <span class="prop">payload</span>: <span class="type">number</span> }
+  | { <span class="prop">type</span>: <span class="str">"error"</span>; <span class="prop">payload</span>: <span class="type">string</span> };
+
+<span class="cmt">// Reducer function</span>
+<span class="kw">function</span> <span class="fn">reducer</span>(state: <span class="interface">State</span>, action: <span class="type">Action</span>): <span class="interface">State</span> {
+  <span class="kw">switch</span> (action.type) {
+    <span class="kw">case</span> <span class="str">"increment"</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">count</span>: state.count + <span class="num">1</span> };
+    <span class="kw">case</span> <span class="str">"decrement"</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">count</span>: state.count - <span class="num">1</span> };
+    <span class="kw">case</span> <span class="str">"reset"</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">count</span>: <span class="num">0</span> };
+    <span class="kw">case</span> <span class="str">"set"</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">count</span>: action.payload };
+    <span class="kw">case</span> <span class="str">"error"</span>:
+      <span class="kw">return</span> { ...state, <span class="prop">error</span>: action.payload };
+    <span class="kw">default</span>:
+      <span class="kw">return</span> state;
+  }
+}
+
+<span class="cmt">// Usage</span>
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="kw">const</span> [state, dispatch] = <span class="hook">useReducer</span>(reducer, { <span class="prop">count</span>: <span class="num">0</span>, <span class="prop">error</span>: <span class="kw">null</span> });
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Count: {state.count}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">dispatch</span>({ <span class="prop">type</span>: <span class="str">"increment"</span> })}<span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">dispatch</span>({ <span class="prop">type</span>: <span class="str">"decrement"</span> })}<span class="tag">&gt;</span>-<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">dispatch</span>({ <span class="prop">type</span>: <span class="str">"set"</span>, <span class="prop">payload</span>: <span class="num">100</span> })}<span class="tag">&gt;</span>Set 100<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Typing Events -->
+    <div class="section" id="s5">
+      <div class="section-header" onclick="toggleSection('s5')">
+        <div class="section-icon icon-events">🎪</div>
+        <div class="section-title">Typing Events</div>
+        <span class="section-badge badge-warning">Events</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--warning); margin-bottom: 1rem;">🎪 TypeScript Event Handlers</h2>
+
+        <h3 style="color: var(--primary);">📝 Common Event Types</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Event Types Reference</div>
+          <div class="code-body"><pre><span class="kw">import</span> { ChangeEvent, FormEvent, MouseEvent, KeyboardEvent } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="cmt">// Input change event</span>
+<span class="kw">const</span> <span class="fn">handleInputChange</span> = (e: <span class="type">ChangeEvent</span><<span class="type">HTMLInputElement</span>>) => {
+  console.<span class="fn">log</span>(e.target.value);  <span class="cmt">// string</span>
+};
+
+<span class="cmt">// Select change event</span>
+<span class="kw">const</span> <span class="fn">handleSelectChange</span> = (e: <span class="type">ChangeEvent</span><<span class="type">HTMLSelectElement</span>>) => {
+  console.<span class="fn">log</span>(e.target.value);
+};
+
+<span class="cmt">// Textarea change event</span>
+<span class="kw">const</span> <span class="fn">handleTextareaChange</span> = (e: <span class="type">ChangeEvent</span><<span class="type">HTMLTextAreaElement</span>>) => {
+  console.<span class="fn">log</span>(e.target.value);
+};
+
+<span class="cmt">// Form submit event</span>
+<span class="kw">const</span> <span class="fn">handleSubmit</span> = (e: <span class="type">FormEvent</span><<span class="type">HTMLFormElement</span>>) => {
+  e.<span class="fn">preventDefault</span>();
+  <span class="cmt">// Submit logic</span>
+};
+
+<span class="cmt">// Click event</span>
+<span class="kw">const</span> <span class="fn">handleClick</span> = (e: <span class="type">MouseEvent</span><<span class="type">HTMLButtonElement</span>>) => {
+  console.<span class="fn">log</span>(e.clientX, e.clientY);
+};
+
+<span class="cmt">// Keyboard event</span>
+<span class="kw">const</span> <span class="fn">handleKeyDown</span> = (e: <span class="type">KeyboardEvent</span><<span class="type">HTMLInputElement</span>>) => {
+  <span class="kw">if</span> (e.key === <span class="str">"Enter"</span>) {
+    console.<span class="fn">log</span>(<span class="str">"Enter pressed!"</span>);
+  }
+};</pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📋 Complete Form Example</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Typed Form Component</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState, FormEvent, ChangeEvent } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">interface</span> <span class="interface">FormData</span> {
+  <span class="prop">name</span>: <span class="type">string</span>;
+  <span class="prop">email</span>: <span class="type">string</span>;
+  <span class="prop">priority</span>: <span class="str">"low"</span> | <span class="str">"medium"</span> | <span class="str">"high"</span>;
+}
+
+<span class="kw">function</span> <span class="fn">ContactForm</span>() {
+  <span class="kw">const</span> [formData, setFormData] = <span class="hook">useState</span><<span class="interface">FormData</span>>({
+    <span class="prop">name</span>: <span class="str">""</span>,
+    <span class="prop">email</span>: <span class="str">""</span>,
+    <span class="prop">priority</span>: <span class="str">"medium"</span>
+  });
+
+  <span class="cmt">// Generic change handler</span>
+  <span class="kw">const</span> <span class="fn">handleChange</span> = (
+    e: <span class="type">ChangeEvent</span><<span class="type">HTMLInputElement</span> | <span class="type">HTMLSelectElement</span>>
+  ) => {
+    <span class="kw">const</span> { name, value } = e.target;
+    <span class="fn">setFormData</span>(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  <span class="kw">const</span> <span class="fn">handleSubmit</span> = (e: <span class="type">FormEvent</span><<span class="type">HTMLFormElement</span>>) => {
+    e.<span class="fn">preventDefault</span>();
+    console.<span class="fn">log</span>(<span class="str">"Submitting:"</span>, formData);
+    <span class="cmt">// API call here</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={handleSubmit}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">type</span>=<span class="str">"text"</span>
+        <span class="attr">name</span>=<span class="str">"name"</span>
+        <span class="attr">value</span>={formData.name}
+        <span class="attr">onChange</span>={handleChange}
+        <span class="attr">placeholder</span>=<span class="str">"Name"</span>
+      <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;input</span>
+        <span class="attr">type</span>=<span class="str">"email"</span>
+        <span class="attr">name</span>=<span class="str">"email"</span>
+        <span class="attr">value</span>={formData.email}
+        <span class="attr">onChange</span>={handleChange}
+        <span class="attr">placeholder</span>=<span class="str">"Email"</span>
+      <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;select</span> <span class="attr">name</span>=<span class="str">"priority"</span> <span class="attr">value</span>={formData.priority} <span class="attr">onChange</span>={handleChange}<span class="tag">&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"low"</span><span class="tag">&gt;</span>Low<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"medium"</span><span class="tag">&gt;</span>Medium<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"high"</span><span class="tag">&gt;</span>High<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;/select&gt;</span>
+      
+      <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"submit"</span><span class="tag">&gt;</span>Submit<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <h3 style="color: var(--accent); margin: 2rem 0 1rem;">📊 Event Types Cheat Sheet</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Type</th>
+              <th>Element</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>onChange (input)</td>
+              <td><code>ChangeEvent&lt;HTMLInputElement&gt;</code></td>
+              <td>&lt;input&gt;</td>
+            </tr>
+            <tr>
+              <td>onChange (select)</td>
+              <td><code>ChangeEvent&lt;HTMLSelectElement&gt;</code></td>
+              <td>&lt;select&gt;</td>
+            </tr>
+            <tr>
+              <td>onClick</td>
+              <td><code>MouseEvent&lt;HTMLButtonElement&gt;</code></td>
+              <td>&lt;button&gt;</td>
+            </tr>
+            <tr>
+              <td>onSubmit</td>
+              <td><code>FormEvent&lt;HTMLFormElement&gt;</code></td>
+              <td>&lt;form&gt;</td>
+            </tr>
+            <tr>
+              <td>onKeyDown</td>
+              <td><code>KeyboardEvent&lt;HTMLInputElement&gt;</code></td>
+              <td>&lt;input&gt;</td>
+            </tr>
+            <tr>
+              <td>onFocus/onBlur</td>
+              <td><code>FocusEvent&lt;HTMLInputElement&gt;</code></td>
+              <td>&lt;input&gt;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 6: Generics -->
+    <div class="section" id="s6">
+      <div class="section-header" onclick="toggleSection('s6')">
+        <div class="section-icon icon-generics">🔧</div>
+        <div class="section-title">Generic Components</div>
+        <span class="section-badge" style="background: rgba(251,146,60,0.2); color: var(--generic);">Generics</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--generic); margin-bottom: 1rem;">🔧 Generic Components</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          Generics let you create reusable components that work with multiple types while maintaining type safety.
+        </p>
+
+        <h3 style="color: var(--primary);">📝 Generic List Component</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Generic List</div>
+          <div class="code-body"><pre><span class="cmt">// Generic list component - works with any item type!</span>
+<span class="kw">interface</span> <span class="interface">ListProps</span><<span class="generic">T</span>> {
+  <span class="prop">items</span>: <span class="generic">T</span>[];
+  <span class="prop">renderItem</span>: (item: <span class="generic">T</span>) => <span class="type">ReactNode</span>;
+  <span class="prop">keyExtractor</span>: (item: <span class="generic">T</span>) => <span class="type">string</span> | <span class="type">number</span>;
+}
+
+<span class="kw">function</span> <span class="fn">List</span><<span class="generic">T</span>>({ items, renderItem, keyExtractor }: <span class="interface">ListProps</span><<span class="generic">T</span>>) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {items.<span class="fn">map</span>(item => (
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={<span class="fn">keyExtractor</span>(item)}<span class="tag">&gt;</span>
+          {<span class="fn">renderItem</span>(item)}
+        <span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}
+
+<span class="cmt">// Usage with User type</span>
+<span class="kw">interface</span> <span class="interface">User</span> {
+  <span class="prop">id</span>: <span class="type">number</span>;
+  <span class="prop">name</span>: <span class="type">string</span>;
+}
+
+<span class="kw">const</span> users: <span class="interface">User</span>[] = [
+  { <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">name</span>: <span class="str">"Alice"</span> },
+  { <span class="prop">id</span>: <span class="num">2</span>, <span class="prop">name</span>: <span class="str">"Bob"</span> }
+];
+
+<span class="tag">&lt;List</span>
+  <span class="attr">items</span>={users}
+  <span class="attr">renderItem</span>={(user) => <span class="tag">&lt;span&gt;</span>{user.name}<span class="tag">&lt;/span&gt;</span>}
+  <span class="attr">keyExtractor</span>={(user) => user.id}
+<span class="tag">/&gt;</span>
+
+<span class="cmt">// Usage with Product type</span>
+<span class="kw">interface</span> <span class="interface">Product</span> {
+  <span class="prop">sku</span>: <span class="type">string</span>;
+  <span class="prop">title</span>: <span class="type">string</span>;
+  <span class="prop">price</span>: <span class="type">number</span>;
+}
+
+<span class="tag">&lt;List</span>
+  <span class="attr">items</span>={products}
+  <span class="attr">renderItem</span>={(p) => <span class="tag">&lt;span&gt;</span>{p.title} - ${p.price}<span class="tag">&lt;/span&gt;</span>}
+  <span class="attr">keyExtractor</span>={(p) => p.sku}
+<span class="tag">/&gt;</span></pre></div>
+        </div>
+
+        <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">📦 Generic Custom Hook</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Generic useFetch Hook</div>
+          <div class="code-body"><pre><span class="kw">function</span> <span class="fn">useFetch</span><<span class="generic">T</span>>(url: <span class="type">string</span>) {
+  <span class="kw">const</span> [data, setData] = <span class="hook">useState</span><<span class="generic">T</span> | <span class="kw">null</span>>(<span class="kw">null</span>);
+  <span class="kw">const</span> [loading, setLoading] = <span class="hook">useState</span>(<span class="kw">true</span>);
+  <span class="kw">const</span> [error, setError] = <span class="hook">useState</span><<span class="type">string</span> | <span class="kw">null</span>>(<span class="kw">null</span>);
+
+  <span class="hook">useEffect</span>(() => {
+    <span class="kw">async function</span> <span class="fn">fetchData</span>() {
+      <span class="kw">try</span> {
+        <span class="fn">setLoading</span>(<span class="kw">true</span>);
+        <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(url);
+        <span class="kw">const</span> result: <span class="generic">T</span> = <span class="kw">await</span> response.<span class="fn">json</span>();
+        <span class="fn">setData</span>(result);
+      } <span class="kw">catch</span> (err) {
+        <span class="fn">setError</span>(err <span class="kw">instanceof</span> <span class="fn">Error</span> ? err.message : <span class="str">"Error"</span>);
+      } <span class="kw">finally</span> {
+        <span class="fn">setLoading</span>(<span class="kw">false</span>);
+      }
+    }
+    <span class="fn">fetchData</span>();
+  }, [url]);
+
+  <span class="kw">return</span> { data, loading, error };
+}
+
+<span class="cmt">// Usage - TypeScript knows the return type!</span>
+<span class="kw">interface</span> <span class="interface">User</span> {
+  <span class="prop">id</span>: <span class="type">number</span>;
+  <span class="prop">name</span>: <span class="type">string</span>;
+}
+
+<span class="kw">function</span> <span class="fn">UserList</span>() {
+  <span class="cmt">// data is typed as User[] | null</span>
+  <span class="kw">const</span> { data: users, loading, error } = <span class="fn">useFetch</span><<span class="interface">User</span>[]>(<span class="str">"/api/users"</span>);
+
+  <span class="kw">if</span> (loading) <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>Loading...<span class="tag">&lt;/div&gt;</span>;
+  <span class="kw">if</span> (error) <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>Error: {error}<span class="tag">&lt;/div&gt;</span>;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {users?.<span class="fn">map</span>(user => (
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={user.id}<span class="tag">&gt;</span>{user.name}<span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: API Types -->
+    <div class="section" id="s7">
+      <div class="section-header" onclick="toggleSection('s7')">
+        <div class="section-icon icon-api">🌐</div>
+        <div class="section-title">Typing API Responses</div>
+        <span class="section-badge badge-primary">APIs</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">🌐 Working with API Data</h2>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; Typing API Responses</div>
+          <div class="code-body"><pre><span class="cmt">// Define API response types</span>
+<span class="kw">interface</span> <span class="interface">ApiResponse</span><<span class="generic">T</span>> {
+  <span class="prop">data</span>: <span class="generic">T</span>;
+  <span class="prop">status</span>: <span class="type">number</span>;
+  <span class="prop">message</span>: <span class="type">string</span>;
+}
+
+<span class="kw">interface</span> <span class="interface">User</span> {
+  <span class="prop">id</span>: <span class="type">number</span>;
+  <span class="prop">name</span>: <span class="type">string</span>;
+  <span class="prop">email</span>: <span class="type">string</span>;
+  <span class="prop">role</span>: <span class="str">"admin"</span> | <span class="str">"user"</span>;
+}
+
+<span class="kw">interface</span> <span class="interface">PaginatedResponse</span><<span class="generic">T</span>> {
+  <span class="prop">data</span>: <span class="generic">T</span>[];
+  <span class="prop">page</span>: <span class="type">number</span>;
+  <span class="prop">totalPages</span>: <span class="type">number</span>;
+  <span class="prop">totalItems</span>: <span class="type">number</span>;
+}
+
+<span class="cmt">// Typed fetch function</span>
+<span class="kw">async function</span> <span class="fn">fetchUsers</span>(): <span class="type">Promise</span><<span class="interface">PaginatedResponse</span><<span class="interface">User</span>>> {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"/api/users"</span>);
+  
+  <span class="kw">if</span> (!response.ok) {
+    <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP error! status: ${response.status}`</span>);
+  }
+  
+  <span class="kw">const</span> data: <span class="interface">PaginatedResponse</span><<span class="interface">User</span>> = <span class="kw">await</span> response.<span class="fn">json</span>();
+  <span class="kw">return</span> data;
+}
+
+<span class="cmt">// API service class</span>
+<span class="kw">class</span> <span class="fn">ApiService</span> {
+  <span class="kw">private</span> baseUrl: <span class="type">string</span>;
+
+  <span class="kw">constructor</span>(baseUrl: <span class="type">string</span>) {
+    <span class="kw">this</span>.baseUrl = baseUrl;
+  }
+
+  <span class="kw">async</span> <span class="fn">get</span><<span class="generic">T</span>>(endpoint: <span class="type">string</span>): <span class="type">Promise</span><<span class="generic">T</span>> {
+    <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`${<span class="kw">this</span>.baseUrl}${endpoint}`</span>);
+    <span class="kw">return</span> response.<span class="fn">json</span>();
+  }
+
+  <span class="kw">async</span> <span class="fn">post</span><<span class="generic">T</span>, <span class="generic">U</span>>(endpoint: <span class="type">string</span>, body: <span class="generic">U</span>): <span class="type">Promise</span><<span class="generic">T</span>> {
+    <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`${<span class="kw">this</span>.baseUrl}${endpoint}`</span>, {
+      <span class="prop">method</span>: <span class="str">"POST"</span>,
+      <span class="prop">headers</span>: { <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span> },
+      <span class="prop">body</span>: <span class="fn">JSON.stringify</span>(body)
+    });
+    <span class="kw">return</span> response.<span class="fn">json</span>();
+  }
+}
+
+<span class="cmt">// Usage</span>
+<span class="kw">const</span> api = <span class="kw">new</span> <span class="fn">ApiService</span>(<span class="str">"https://api.example.com"</span>);
+
+<span class="cmt">// TypeScript knows users is User[]</span>
+<span class="kw">const</span> users = <span class="kw">await</span> api.<span class="fn">get</span><<span class="interface">User</span>[]>(<span class="str">"/users"</span>);
+
+<span class="cmt">// TypeScript validates the body type</span>
+<span class="kw">const</span> newUser = <span class="kw">await</span> api.<span class="fn">post</span><<span class="interface">User</span>, <span class="type">Omit</span><<span class="interface">User</span>, <span class="str">"id"</span>>>(<span class="str">"/users"</span>, {
+  <span class="prop">name</span>: <span class="str">"John"</span>,
+  <span class="prop">email</span>: <span class="str">"john@test.com"</span>,
+  <span class="prop">role</span>: <span class="str">"user"</span>
+});</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Complete App -->
+    <div class="section" id="s8">
+      <div class="section-header" onclick="toggleSection('s8')">
+        <div class="section-icon icon-app">🚀</div>
+        <div class="section-title">Complete App: Task Manager</div>
+        <span class="section-badge" style="background: linear-gradient(135deg, rgba(49,120,198,0.2), rgba(97,218,251,0.2)); color: var(--text);">Full App</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--react); margin-bottom: 1rem;">🚀 TypeScript Task Manager</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+          A complete type-safe task manager demonstrating all TypeScript + React concepts!
+        </p>
+
+        <!-- Live Demo -->
+        <div class="app-preview">
+          <div class="app-header">
+            <div class="app-title">
+              <span class="ts-logo" style="width: 30px; height: 30px; font-size: 0.9rem; border-radius: 4px;">TS</span>
+              Task Manager
+            </div>
+            <span class="badge badge-ts">TypeScript</span>
+          </div>
+          <div class="app-body">
+            <!-- Stats -->
+            <div class="stats-bar">
+              <div class="stat-item">
+                <div class="stat-value" id="total-tasks" style="color: var(--ts);">0</div>
+                <div class="stat-label">Total</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="active-tasks" style="color: var(--warning);">0</div>
+                <div class="stat-label">Active</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="completed-tasks" style="color: var(--accent);">0</div>
+                <div class="stat-label">Completed</div>
+              </div>
+            </div>
+
+            <!-- Add Task Form -->
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+              <input 
+                type="text" 
+                class="input" 
+                id="task-input" 
+                placeholder="Add a new task..."
+                style="flex: 1; min-width: 200px;"
+                onkeypress="if(event.key === 'Enter') addTask()"
+              >
+              <select class="select" id="priority-select" style="width: 120px;">
+                <option value="low">🟢 Low</option>
+                <option value="medium" selected>🟡 Medium</option>
+                <option value="high">🔴 High</option>
+              </select>
+              <button class="btn btn-ts" onclick="addTask()">+ Add Task</button>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+              <div class="filter-tab active" onclick="setFilter('all')" id="filter-all">All</div>
+              <div class="filter-tab" onclick="setFilter('active')" id="filter-active">Active</div>
+              <div class="filter-tab" onclick="setFilter('completed')" id="filter-completed">Completed</div>
+            </div>
+
+            <!-- Task List -->
+            <ul class="task-list" id="task-list">
+              <div class="empty-state" style="padding: 2rem; text-align: center; color: var(--muted);">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📝</div>
+                <p>No tasks yet. Add one above!</p>
+              </div>
+            </ul>
+
+            <!-- Clear Completed -->
+            <div style="margin-top: 1rem; text-align: right;">
+              <button class="btn btn-sm btn-secondary" onclick="clearCompleted()">
+                🗑️ Clear Completed
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📝 Complete TypeScript Code</h3>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; types.ts - Type Definitions</div>
+          <div class="code-body"><pre><span class="cmt">// Task priority type</span>
+<span class="kw">export type</span> <span class="type">Priority</span> = <span class="str">"low"</span> | <span class="str">"medium"</span> | <span class="str">"high"</span>;
+
+<span class="cmt">// Filter type</span>
+<span class="kw">export type</span> <span class="type">FilterType</span> = <span class="str">"all"</span> | <span class="str">"active"</span> | <span class="str">"completed"</span>;
+
+<span class="cmt">// Task interface</span>
+<span class="kw">export interface</span> <span class="interface">Task</span> {
+  <span class="prop">id</span>: <span class="type">string</span>;
+  <span class="prop">text</span>: <span class="type">string</span>;
+  <span class="prop">completed</span>: <span class="type">boolean</span>;
+  <span class="prop">priority</span>: <span class="type">Priority</span>;
+  <span class="prop">createdAt</span>: <span class="type">Date</span>;
+}
+
+<span class="cmt">// Component props interfaces</span>
+<span class="kw">export interface</span> <span class="interface">TaskItemProps</span> {
+  <span class="prop">task</span>: <span class="interface">Task</span>;
+  <span class="prop">onToggle</span>: (id: <span class="type">string</span>) => <span class="type">void</span>;
+  <span class="prop">onDelete</span>: (id: <span class="type">string</span>) => <span class="type">void</span>;
+}
+
+<span class="kw">export interface</span> <span class="interface">TaskListProps</span> {
+  <span class="prop">tasks</span>: <span class="interface">Task</span>[];
+  <span class="prop">onToggle</span>: (id: <span class="type">string</span>) => <span class="type">void</span>;
+  <span class="prop">onDelete</span>: (id: <span class="type">string</span>) => <span class="type">void</span>;
+}
+
+<span class="kw">export interface</span> <span class="interface">AddTaskFormProps</span> {
+  <span class="prop">onAdd</span>: (text: <span class="type">string</span>, priority: <span class="type">Priority</span>) => <span class="type">void</span>;
+}</pre></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; TaskManager.tsx - Main Component</div>
+          <div class="code-body"><pre><span class="kw">import</span> { useState, useMemo, useCallback } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { Task, Priority, FilterType } <span class="kw">from</span> <span class="str">'./types'</span>;
+
+<span class="kw">function</span> <span class="fn">TaskManager</span>() {
+  <span class="cmt">// State with explicit types</span>
+  <span class="kw">const</span> [tasks, setTasks] = <span class="hook">useState</span><<span class="interface">Task</span>[]>([]);
+  <span class="kw">const</span> [filter, setFilter] = <span class="hook">useState</span><<span class="type">FilterType</span>>(<span class="str">"all"</span>);
+
+  <span class="cmt">// Add task with typed parameters</span>
+  <span class="kw">const</span> <span class="fn">addTask</span> = <span class="fn">useCallback</span>((text: <span class="type">string</span>, priority: <span class="type">Priority</span>) => {
+    <span class="kw">const</span> newTask: <span class="interface">Task</span> = {
+      <span class="prop">id</span>: crypto.<span class="fn">randomUUID</span>(),
+      <span class="prop">text</span>,
+      <span class="prop">completed</span>: <span class="kw">false</span>,
+      <span class="prop">priority</span>,
+      <span class="prop">createdAt</span>: <span class="kw">new</span> <span class="fn">Date</span>()
+    };
+    <span class="fn">setTasks</span>(prev => [newTask, ...prev]);
+  }, []);
+
+  <span class="cmt">// Toggle task completion</span>
+  <span class="kw">const</span> <span class="fn">toggleTask</span> = <span class="fn">useCallback</span>((id: <span class="type">string</span>) => {
+    <span class="fn">setTasks</span>(prev =>
+      prev.<span class="fn">map</span>(task =>
+        task.id === id ? { ...task, <span class="prop">completed</span>: !task.completed } : task
+      )
+    );
+  }, []);
+
+  <span class="cmt">// Delete task</span>
+  <span class="kw">const</span> <span class="fn">deleteTask</span> = <span class="fn">useCallback</span>((id: <span class="type">string</span>) => {
+    <span class="fn">setTasks</span>(prev => prev.<span class="fn">filter</span>(task => task.id !== id));
+  }, []);
+
+  <span class="cmt">// Clear completed tasks</span>
+  <span class="kw">const</span> <span class="fn">clearCompleted</span> = <span class="fn">useCallback</span>(() => {
+    <span class="fn">setTasks</span>(prev => prev.<span class="fn">filter</span>(task => !task.completed));
+  }, []);
+
+  <span class="cmt">// Filtered tasks (memoized)</span>
+  <span class="kw">const</span> filteredTasks = <span class="fn">useMemo</span>(() => {
+    <span class="kw">switch</span> (filter) {
+      <span class="kw">case</span> <span class="str">"active"</span>:
+        <span class="kw">return</span> tasks.<span class="fn">filter</span>(t => !t.completed);
+      <span class="kw">case</span> <span class="str">"completed"</span>:
+        <span class="kw">return</span> tasks.<span class="fn">filter</span>(t => t.completed);
+      <span class="kw">default</span>:
+        <span class="kw">return</span> tasks;
+    }
+  }, [tasks, filter]);
+
+  <span class="cmt">// Stats (memoized)</span>
+  <span class="kw">const</span> stats = <span class="fn">useMemo</span>(() => ({
+    <span class="prop">total</span>: tasks.length,
+    <span class="prop">active</span>: tasks.<span class="fn">filter</span>(t => !t.completed).length,
+    <span class="prop">completed</span>: tasks.<span class="fn">filter</span>(t => t.completed).length
+  }), [tasks]);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"task-manager"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;Stats</span> <span class="attr">stats</span>={stats} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;AddTaskForm</span> <span class="attr">onAdd</span>={addTask} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;FilterTabs</span> <span class="attr">current</span>={filter} <span class="attr">onChange</span>={setFilter} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;TaskList</span>
+        <span class="attr">tasks</span>={filteredTasks}
+        <span class="attr">onToggle</span>={toggleTask}
+        <span class="attr">onDelete</span>={deleteTask}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={clearCompleted}<span class="tag">&gt;</span>Clear Completed<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>&nbsp; TaskItem.tsx - Child Component</div>
+          <div class="code-body"><pre><span class="kw">import</span> { TaskItemProps, Priority } <span class="kw">from</span> <span class="str">'./types'</span>;
+
+<span class="cmt">// Priority colors mapping</span>
+<span class="kw">const</span> priorityColors: <span class="type">Record</span><<span class="type">Priority</span>, <span class="type">string</span>> = {
+  <span class="prop">low</span>: <span class="str">"#4ade80"</span>,
+  <span class="prop">medium</span>: <span class="str">"#fbbf24"</span>,
+  <span class="prop">high</span>: <span class="str">"#ef4444"</span>
+};
+
+<span class="kw">function</span> <span class="fn">TaskItem</span>({ task, onToggle, onDelete }: <span class="interface">TaskItemProps</span>) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;li</span> <span class="attr">className</span>={<span class="str">`task-item ${task.completed ? <span class="str">"completed"</span> : <span class="str">""</span>}`</span>}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attr">type</span>=<span class="str">"checkbox"</span>
+        <span class="attr">checked</span>={task.completed}
+        <span class="attr">onChange</span>={() => <span class="fn">onToggle</span>(task.id)}
+      <span class="tag">/&gt;</span>
+      
+      <span class="tag">&lt;span</span> <span class="attr">className</span>=<span class="str">"task-text"</span><span class="tag">&gt;</span>{task.text}<span class="tag">&lt;/span&gt;</span>
+      
+      <span class="tag">&lt;span</span>
+        <span class="attr">className</span>=<span class="str">"priority-badge"</span>
+        <span class="attr">style</span>={{ <span class="prop">color</span>: priorityColors[task.priority] }}
+      <span class="tag">&gt;</span>
+        {task.priority}
+      <span class="tag">&lt;/span&gt;</span>
+      
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">onDelete</span>(task.id)}<span class="tag">&gt;</span>×<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/li&gt;</span>
+  );
+}
+
+<span class="kw">export default</span> TaskItem;</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9: Best Practices -->
+    <div class="section" id="s9">
+      <div class="section-header" onclick="toggleSection('s9')">
+        <div class="section-icon icon-tips">⚠️</div>
+        <div class="section-title">Best Practices & Common Mistakes</div>
+        <span class="section-badge badge-danger">Critical</span>
+        <div class="section-toggle">▼</div>
+      </div>
+      <div class="section-content">
+        <h2 style="color: var(--danger); margin-bottom: 1rem;">⚠️ TypeScript Best Practices</h2>
+
+        <h3 style="color: var(--accent);">✅ Do's</h3>
+        <div class="grid-2">
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Use Interfaces for Objects</h4>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem;">
+              Interfaces are more extensible and provide better error messages.
+            </p>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Explicit Return Types</h4>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem;">
+              Add return types to functions for better documentation.
+            </p>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Use Union Types</h4>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem;">
+              Prefer <code>"a" | "b"</code> over <code>string</code> for known values.
+            </p>
+          </div>
+          <div class="card card-accent">
+            <h4 style="color: var(--accent);">Type Your State</h4>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem;">
+              Always type useState, especially for complex data.
+            </p>
+          </div>
+        </div>
+
+        <h3 style="color: var(--danger); margin: 2rem 0 1rem;">❌ Don'ts</h3>
+        <div class="grid-2">
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">Avoid <code>any</code></h4>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem;">
+              <code>any</code> disables type checking. Use <code>unknown</code> instead.
+            </p>
+          </div>
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">Don't Ignore Errors</h4>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem;">
+              Don't use <code>// @ts-ignore</code> to silence errors. Fix them!
+            </p>
+          </div>
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">Don't Overtype</h4>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem;">
+              Let TypeScript infer types when obvious.
+            </p>
+          </div>
+          <div class="card" style="border-color: var(--danger);">
+            <h4 style="color: var(--danger);">Don't Use Type Assertions Carelessly</h4>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem;">
+              <code>as Type</code> bypasses checks. Use sparingly.
+            </p>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin: 2rem 0 1rem;">📋 Quick Reference</h3>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Concept</th>
+              <th>Syntax</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Typed Props</td>
+              <td><code>function Comp({ name }: { name: string })</code></td>
+            </tr>
+            <tr>
+              <td>useState</td>
+              <td><code>useState&lt;User | null&gt;(null)</code></td>
+            </tr>
+            <tr>
+              <td>useRef (DOM)</td>
+              <td><code>useRef&lt;HTMLInputElement&gt;(null)</code></td>
+            </tr>
+            <tr>
+              <td>Event Handler</td>
+              <td><code>(e: ChangeEvent&lt;HTMLInputElement&gt;) =&gt; void</code></td>
+            </tr>
+            <tr>
+              <td>Children</td>
+              <td><code>children: ReactNode</code></td>
+            </tr>
+            <tr>
+              <td>Generic Component</td>
+              <td><code>function List&lt;T&gt;(props: ListProps&lt;T&gt;)</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <h3 style="color: var(--ts); margin-bottom: 0.5rem;">🎉 React + TypeScript Mastered!</h3>
+      <p style="color: var(--muted); margin-bottom: 1rem;">You're ready to build type-safe React applications!</p>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+        <span class="badge badge-ts">TypeScript</span>
+        <span class="badge badge-type">Types</span>
+        <span class="badge badge-interface">Interfaces</span>
+        <span class="badge" style="background: rgba(167,139,250,0.2); color: var(--hook);">Hooks</span>
+        <span class="badge" style="background: rgba(251,146,60,0.2); color: var(--generic);">Generics</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle sections
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle('open');
+    }
+
+    // Task Manager Demo
+    let tasks = [];
+    let currentFilter = 'all';
+    let nextId = 1;
+
+    function addTask() {
+      const input = document.getElementById('task-input');
+      const prioritySelect = document.getElementById('priority-select');
+      const text = input.value.trim();
+      
+      if (!text) return;
+
+      const task = {
+        id: nextId++,
+        text,
+        completed: false,
+        priority: prioritySelect.value,
+        createdAt: new Date()
+      };
+
+      tasks.unshift(task);
+      input.value = '';
+      renderTasks();
+      updateStats();
+    }
+
+    function toggleTask(id) {
+      tasks = tasks.map(t => 
+        t.id === id ? { ...t, completed: !t.completed } : t
+      );
+      renderTasks();
+      updateStats();
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      renderTasks();
+      updateStats();
+    }
+
+    function clearCompleted() {
+      tasks = tasks.filter(t => !t.completed);
+      renderTasks();
+      updateStats();
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.getElementById(`filter-${filter}`).classList.add('active');
+      renderTasks();
+    }
+
+    function getFilteredTasks() {
+      switch (currentFilter) {
+        case 'active':
+          return tasks.filter(t => !t.completed);
+        case 'completed':
+          return tasks.filter(t => t.completed);
+        default:
+          return tasks;
+      }
+    }
+
+    function renderTasks() {
+      const list = document.getElementById('task-list');
+      const filtered = getFilteredTasks();
+
+      if (filtered.length === 0) {
+        list.innerHTML = `
+          <div style="padding: 2rem; text-align: center; color: var(--muted);">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📝</div>
+            <p>${tasks.length === 0 ? 'No tasks yet. Add one above!' : 'No tasks match this filter.'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = filtered.map(task => `
+        <li class="task-item ${task.completed ? 'completed' : ''}">
+          <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask(${task.id})">
+            ${task.completed ? '✓' : ''}
+          </div>
+          <span class="task-text">${task.text}</span>
+          <span class="task-priority priority-${task.priority}">
+            ${task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟡' : '🟢'} ${task.priority}
+          </span>
+          <button class="task-delete" onclick="deleteTask(${task.id})">×</button>
+        </li>
+      `).join('');
+    }
+
+    function updateStats() {
+      document.getElementById('total-tasks').textContent = tasks.length;
+      document.getElementById('active-tasks').textContent = tasks.filter(t => !t.completed).length;
+      document.getElementById('completed-tasks').textContent = tasks.filter(t => t.completed).length;
+    }
+
+    // Initialize
+    renderTasks();
+    updateStats();
+
+    // Open first section
+    document.getElementById('s1').classList.add('open');
+  </script>
+</body>
+</html>
