@@ -1,0 +1,246 @@
+.app {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #1d9bf0, #7856ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: #8899a6;
+  font-size: 1.1rem;
+}
+
+.content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  padding: 0.75rem 1.25rem;
+  background: #1c2938;
+  border: 1px solid #38444d;
+  border-radius: 9999px;
+  color: #e7e9ea;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover {
+  background: #22303c;
+  border-color: #1d9bf0;
+}
+
+.nav-btn.active {
+  background: #1d9bf0;
+  border-color: #1d9bf0;
+  color: white;
+}
+
+.demo-section {
+  background: #15202b;
+  border: 1px solid #38444d;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.demo-section h2 {
+  color: #1d9bf0;
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+}
+
+.demo-section .intro {
+  color: #8899a6;
+  margin-bottom: 1.5rem;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.example-card {
+  background: #192734;
+  border: 1px solid #38444d;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.example-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.example-card h3 {
+  color: #e7e9ea;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.code-block {
+  background: #0f1419;
+  border: 1px solid #38444d;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.code-block pre {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: #aab8c2;
+  margin: 0;
+}
+
+.comparison-table-container {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #192734;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid #38444d;
+}
+
+.comparison-table th {
+  background: #1c2938;
+  color: #1d9bf0;
+  font-weight: 600;
+}
+
+.comparison-table td:first-child {
+  text-align: left;
+  font-weight: 500;
+  color: #e7e9ea;
+}
+
+.comparison-table td {
+  color: #aab8c2;
+}
+
+.comparison-table td.yes {
+  color: #17bf63;
+}
+
+.comparison-table td.no {
+  color: #8899a6;
+}
+
+.use-cases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.use-case-card {
+  background: #192734;
+  border: 1px solid #38444d;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.use-case-card h3 {
+  color: #1d9bf0;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.use-case-card code {
+  background: #0f1419;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.use-case-card ul {
+  list-style: none;
+}
+
+.use-case-card li {
+  padding: 0.35rem 0;
+  color: #aab8c2;
+  font-size: 0.85rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.use-case-card li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #1d9bf0;
+}
+
+.tip-box {
+  background: linear-gradient(135deg, rgba(29, 155, 240, 0.1), rgba(120, 86, 255, 0.1));
+  border: 1px solid #1d9bf0;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.tip-box h4 {
+  color: #1d9bf0;
+  margin-bottom: 0.5rem;
+}
+
+.tip-box p {
+  color: #aab8c2;
+  line-height: 1.6;
+}
+
+.tip-box strong {
+  color: #e7e9ea;
+}
+
+.tip-box code {
+  background: #0f1419;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: #7856ff;
+}
+
+@media (max-width: 900px) {
+  .example-grid { grid-template-columns: 1fr; }
+  .use-cases { grid-template-columns: 1fr; }
+  .example-card.full-width { grid-column: 1; }
+}
+
+@media (max-width: 600px) {
+  .app { padding: 1rem; }
+  .header h1 { font-size: 1.75rem; }
+  .nav-btn { padding: 0.6rem 1rem; font-size: 0.85rem; }
+}
